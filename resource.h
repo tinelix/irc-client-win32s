@@ -1,3 +1,6 @@
+// Tinelix IRC Client for Win32s (Windows 3.1x / Windows 9x / Windows NT)
+// Licensed by GPLv3.
+
 //{{NO_DEPENDENCIES}}
 // Microsoft Visual C++ generated include file.
 // Used by TLX_IRC.RC

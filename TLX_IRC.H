@@ -1,3 +1,6 @@
+// Tinelix IRC Client for Win32s (Windows 3.1x / Windows 9x / Windows NT)
+// Licensed by GPLv3.
+
 // TLX_IRC.h : main header file for the TLX_IRC application
 //
 
