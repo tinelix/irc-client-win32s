@@ -1,6 +1,3 @@
-// Tinelix IRC Client for Win32s (Windows 3.1x / Windows 9x / Windows NT)
-// Licensed by GPLv3.
-
 // mainwin.cpp : implementation file
 //
 
@@ -16,6 +13,7 @@
 #include <direct.h>
 #include <locale.h>
 #include <afxtempl.h>
+#include <conio.h>
 
 #pragma comment(lib, "wsock32.lib")
 
@@ -25,6 +23,10 @@ static char BASED_CODE THIS_FILE[] = __FILE__;
 #endif
 
 SOCKET sock;
+HINSTANCE parserLib;
+
+typedef void (WINAPI *cfunc) ();
+typedef void (WINAPI *ParseMessage)(char*, char*[], char*);
 
 /////////////////////////////////////////////////////////////////////////////
 // CAboutDlg dialog used for App About
@@ -106,7 +108,7 @@ BOOL CAboutDlg::OnInitDialog()
 			GetDlgItem(IDC_WINVER_LABEL)->SetWindowText("Версия Windows:");
 			GetDlgItem(IDC_LICENSE_NOTIFICATION)->SetWindowText("Это свободное программное обеспечение с"
 			" открытым исходным кодом, распространяемое с условиями GNU General Public License 3.0. Прочитайте"
-			" на сайте https://www.gnu.org/licenses/gnu-3.0-ru.html или смотрите файл LICENSE.MD.\n\nБЕЗ КАКИХ-ЛИБО"
+			" на сайте https://www.gnu.org/licenses/gnu-3.0-ru.html или смотрите файл LICENSE.TXT.\n\nБЕЗ КАКИХ-ЛИБО"
 			" ГАРАНТИЙ, ВКЛЮЧАЯ КОММЕРЧЕСКУЮ ЦЕННОСТЬ.");
 		} else {
 			SetWindowText("About Tinelix IRC Client");
@@ -116,7 +118,7 @@ BOOL CAboutDlg::OnInitDialog()
 			GetDlgItem(IDC_LICENSE_NOTIFICATION)->SetWindowText("Windows version:");
 			GetDlgItem(IDC_LICENSE_NOTIFICATION)->SetWindowText("This is free software with open source,"
 			" distributed under the terms of the GNU General Public License 3.0. Read"
-			" on https://www.gnu.org/licenses/gnu-3.0.html or watch LICENSE.MD file.\n\nWITHOUT ANY"
+			" on https://www.gnu.org/licenses/gnu-3.0.html or watch LICENSE.TXT file.\n\nWITHOUT ANY"
 			" WARRANTY, NOT EVEN FOR MERCHANTABILITY.");
 		};
 	} catch(...) {
@@ -173,7 +175,6 @@ BEGIN_MESSAGE_MAP(MainWindow, CDialog)
 	ON_WM_CREATE()
 	ON_COMMAND(ID_FILE_CONNECT, OnConnectClicked)
 	ON_MESSAGE(WM_SOCKET_MESSAGE, MessageOutput)
-	ON_WM_CLOSE()
 	ON_WM_TIMER()
 	ON_COMMAND(ID_FILE_QUIT, OnFileQuitClicked)
 	ON_WM_SHOWWINDOW()
@@ -181,6 +182,7 @@ BEGIN_MESSAGE_MAP(MainWindow, CDialog)
 	ON_COMMAND(ID_HELP_ABOUT, OnHelpAboutClicked)
 	ON_EN_CHANGE(IDC_MSGTEXT, OnChangeMsgText)
 	ON_BN_CLICKED(IDC_SENDMSG, OnSendmsg)
+	ON_WM_CLOSE()
 	//}}AFX_MSG_MAP
 END_MESSAGE_MAP()
 
@@ -221,13 +223,20 @@ BOOL MainWindow::OnInitDialog()
 		SetWindowText("Tinelix IRC Client");
 	};
 	char exe_path[MAX_PATH] = {0};
+	char dll_path[MAX_PATH] = {0};
 	char exe_name[MAX_PATH] = "TLX_IRC.EXE"; // EXE filename
 
-	GetModuleFileName(NULL, exe_path, MAX_PATH);  
+	GetModuleFileName(NULL, exe_path, MAX_PATH);
+	GetModuleFileName(NULL, dll_path, MAX_PATH);  
 
 	MainWindow::delsymbs(exe_path, strlen(exe_path) - strlen(exe_name) - 1, strlen(exe_path) - strlen(exe_name) - 1); // deleting EXE filename
+	MainWindow::delsymbs(dll_path, strlen(dll_path) - strlen(exe_name) - 1, strlen(dll_path) - strlen(exe_name) - 1); // deleting EXE filename
 
 	strcat(exe_path, "\\settings");	// add settings filename
+
+	strcat(dll_path, "\\parser.dll");
+
+	parserLib = LoadLibrary(dll_path);
 
 	TCHAR language_string[MAX_PATH] = {0};
 	
@@ -474,13 +483,24 @@ void MainWindow::CreateConnectionThread(PARAMETERS params)
 void MainWindow::OnClose() 
 {
 	WSACleanup();
+	if (parserLib == NULL) {
+		MessageBox("Не удалось загрузить библотеку \"PARSER.DLL\". Без нее программа может работать некорректно.", "Ошибка", MB_OK); 
+		FreeLibrary(parserLib);
+	} else {
+		//cfunc FreeArray;
+		//FreeArray = (cfunc)GetProcAddress((HMODULE)parserLib, "FreeArray");
+		//FreeArray();
+		TRACE("Quiting...\r\n");
+		FreeLibrary(parserLib);
+		TRACE("Shutting down library...\r\n");
+	};
 	SetMenu(NULL);	
 	CDialog::OnClose();
 }
 
 void MainWindow::OnTimer(UINT event)
 {
-
+	
 };
 
 LRESULT MainWindow::WindowProc(UINT message, WPARAM wParam, LPARAM lParam) 
@@ -493,9 +513,9 @@ LRESULT MainWindow::WindowProc(UINT message, WPARAM wParam, LPARAM lParam)
 	MainWindow::delsymbs(exe_path, strlen(exe_path) - strlen(exe_name) - 1, strlen(exe_path) - strlen(exe_name) - 1); // deleting EXE filename
 
 	strcat(exe_path, "\\settings");	// add settings filename
-
+	
 	TCHAR language_string[MAX_PATH] = {0};
-	try {
+	//try {
 		switch(message) {
 			case WM_SOCKET_MESSAGE:
 				GetPrivateProfileString("Main", "Language", "English", language_string, MAX_PATH, exe_path);
@@ -540,46 +560,70 @@ LRESULT MainWindow::WindowProc(UINT message, WPARAM wParam, LPARAM lParam)
 				if(previous_listing == NULL) {
 				};
 				sp = sprintf(listing, "%s\n", previous_listing);
-				sp += sprintf(listing + sp, "%s",  sock_buffer);
 				CString sock_buffer_str;
-				CArray<CString, CString> new_line_splitter;
-				CArray<CString, CString> spaces_splitter;
 				char pong_msg[400];
 				int string_index = 0;
+				int array_index_2 = 0;
+				char nwline[32768];
+				char* parsed_msg;
+				char* parsed_msg_list;
+				parsed_msg_list = (char*)malloc(sizeof(char) * 32768);
+				char* nw_token;
+				CArray<CString, CString> new_line_splitter;
 				while(AfxExtractSubString(sock_buffer_str, sock_buffer, string_index, '\n'))
 				{
 					new_line_splitter.Add(sock_buffer_str);
 					++string_index;
 				};
-				string_index = 0;
-				while(AfxExtractSubString(sock_buffer_str, sock_buffer, string_index, ' '))
-				{
-					spaces_splitter.Add(sock_buffer_str);
-					++string_index;
-				};
-				char nwline[100];
 				CString pong;
-				for (int i = 0; i < new_line_splitter.GetSize(); i++) {
+				nw_token = strtok(sock_buffer, "\r\n");										   
+				while(nw_token != NULL) {
+					new_line_splitter[array_index_2++] = nw_token;
+					nw_token = strtok(NULL, "\r\n");
+				};
+
+				int parsed_msg_index = 0;
+
+                for (int i = 0; i < new_line_splitter.GetSize(); i++) {
 					pong = "";
+					//TRACE("LINE: %s\r\n", new_line_splitter[i]);
 					if (new_line_splitter[i].Left(4) == "PING") {
 						int pong_index;
 						sprintf(pong_msg, "PONG %s\r\n", new_line_splitter[i].Right(strlen(new_line_splitter[i]) - 5));
 						status = send((SOCKET)wParam, pong_msg, strlen(pong_msg), 0);
 						pong = pong_msg;
 						i = new_line_splitter.GetSize();
+					} else {
+							char* unparsed_msg;
+							char** parsing_array;
+							unparsed_msg = (char*)malloc(sizeof(char) * 32768);
+							parsed_msg = (char*)malloc(sizeof(char) * 32768);
+							parsing_array = (char**)malloc(sizeof(char*) * 32768);
+							for (int array_index = 0; array_index < sizeof(parsing_array); array_index++) {
+								parsing_array[array_index] = (char*)malloc(sizeof(char) * 32768);
+							};
+							sprintf(unparsed_msg, "%s", new_line_splitter[i]);
+							ParseMessage ParseMsg;
+							ParseMsg = (ParseMessage)GetProcAddress((HMODULE)parserLib, "ParseMessage");
+							try {
+								ParseMsg(unparsed_msg, parsing_array, parsed_msg);
+								//TRACE("OUTPUT: %s\r\n", parsed_msg);
+								parsed_msg_index += sprintf(parsed_msg_list + parsed_msg_index, "%s", parsed_msg);
+								
+							} catch(...) {
+
+							};
 					};
 				};
 				if(pong == "") {
+					sp += sprintf(listing + sp, "%s",  parsed_msg_list);
 					AfxGetApp()->GetMainWnd()->GetDlgItem(IDC_SOCKMSGS)->SetWindowText(listing);
 					CEdit* msg_box = (CEdit*)AfxGetApp()->GetMainWnd()->GetDlgItem(IDC_SOCKMSGS);
 					msg_box->SetSel(0, -1);
 					msg_box->SetSel(-1);
-				};	
-			break;
-	
-		};
-	} catch(...) { 
-	};	
+				};
+			break;	
+		};	
 	return CDialog::WindowProc(message, wParam, lParam);
 }
 
@@ -640,6 +684,8 @@ void MainWindow::OnChangeMsgText()
 void MainWindow::OnSendmsg() 
 {
 	char msg_text[1024] = {0};
+	char socks_msg[32768] = {0};
+	GetDlgItem(IDC_SOCKMSGS)->GetWindowText(socks_msg, 32767);
 	GetDlgItem(IDC_MSGTEXT)->GetWindowText(msg_text, 1024);
 	CString msg_txt(msg_text);
 	CArray<CString, CString> spaces_splitter;
@@ -703,7 +749,13 @@ void MainWindow::OnSendmsg()
 			int status = send(sock, msg, strlen(msg), 0);
 		};
 	};
+	char listing[32768];
+	sprintf(listing, "%s\r\nYou: %s", socks_msg, msg_text);	
+	GetDlgItem(IDC_SOCKMSGS)->SetWindowText(listing);
 	GetDlgItem(IDC_MSGTEXT)->SetWindowText("");
+	CEdit* msg_box = (CEdit*)AfxGetApp()->GetMainWnd()->GetDlgItem(IDC_SOCKMSGS);
+	msg_box->SetSel(0, -1);
+	msg_box->SetSel(-1);
 }
 
 void MainWindow::OnOK() 

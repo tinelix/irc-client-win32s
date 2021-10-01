@@ -1,6 +1,3 @@
-// Tinelix IRC Client for Win32s (Windows 3.1x / Windows 9x / Windows NT)
-// Licensed by GPLv3.
-
 // profmnp.cpp : implementation file
 //
 

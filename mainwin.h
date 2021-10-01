@@ -1,6 +1,3 @@
-// Tinelix IRC Client for Win32s (Windows 3.1x / Windows 9x / Windows NT)
-// Licensed by GPLv3.
-
 // mainwin.h : header file
 //
 
@@ -56,7 +53,6 @@ protected:
 	afx_msg int OnCreate(LPCREATESTRUCT lpCreateStruct);
 	afx_msg void OnConnectClicked();
 	afx_msg LRESULT MessageOutput(WPARAM wp, LPARAM lp);
-	afx_msg void OnClose();
 	afx_msg void OnTimer(UINT event);
 	afx_msg void OnFileQuitClicked();
 	afx_msg void OnShowWindow(BOOL bShow, UINT nStatus);
@@ -66,6 +62,7 @@ protected:
 	afx_msg void OnSendmsg();
 	virtual void OnOK();
 	virtual void OnCancel();
+	afx_msg void OnClose();
 	//}}AFX_MSG
 	DECLARE_MESSAGE_MAP()
 

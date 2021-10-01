@@ -1,11 +1,8 @@
-; Tinelix IRC Client for Win32s (Windows 3.1x / Windows 9x / Windows NT)
-; Licensed by GPLv3.
-
 ; CLW file contains information for the MFC ClassWizard
 
 [General Info]
 Version=1
-LastClass=CAboutDlg
+LastClass=MainWindow
 LastTemplate=CPropertyPage
 NewFileInclude1=#include "stdafx.h"
 NewFileInclude2=#include "TLX_IRC.h"
