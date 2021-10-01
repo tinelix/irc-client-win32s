@@ -594,6 +594,9 @@ LRESULT MainWindow::WindowProc(UINT message, WPARAM wParam, LPARAM lParam)
 						pong = pong_msg;
 						i = new_line_splitter.GetSize();
 					} else {
+						if( GetVersion() & 0x80000000 && (GetVersion() & 0xFF) ==3) {
+							parsed_msg_index += sprintf(parsed_msg_list + parsed_msg_index, "%s", new_line_splitter[i]);
+						} else {	
 							char* unparsed_msg;
 							char** parsing_array;
 							unparsed_msg = (char*)malloc(sizeof(char) * 32768);
@@ -613,6 +616,7 @@ LRESULT MainWindow::WindowProc(UINT message, WPARAM wParam, LPARAM lParam)
 							} catch(...) {
 
 							};
+						};
 					};
 				};
 				if(pong == "") {
