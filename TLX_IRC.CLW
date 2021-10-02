@@ -138,7 +138,7 @@ Type=0
 HeaderFile=profmnp.h
 ImplementationFile=profmnp.cpp
 Filter=D
-LastObject=IDC_REALNAME
+LastObject=ProfileMainPage
 
 [MNU:IDR_MENU1]
 Type=1

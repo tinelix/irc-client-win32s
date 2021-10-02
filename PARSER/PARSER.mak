@@ -25,6 +25,7 @@ CFG=Win32 Debug
 
 ################################################################################
 # Begin Project
+# PROP Target_Last_Scanned "Win32 Debug"
 MTL=MkTypLib.exe
 CPP=cl.exe
 RSC=rc.exe
@@ -57,6 +58,7 @@ CPP_PROJ=/nologo /MT /W3 /GX /YX /O2 /D "WIN32" /D "NDEBUG" /D "_WINDOWS"\
 CPP_OBJS=.\WinRel/
 # ADD BASE RSC /l 0x419 /d "NDEBUG"
 # ADD RSC /l 0x419 /d "NDEBUG"
+RSC_PROJ=/l 0x419 /fo$(INTDIR)/"parser.res" /d "NDEBUG" 
 BSC32=bscmake.exe
 # ADD BASE BSC32 /nologo
 # ADD BSC32 /nologo
@@ -79,7 +81,8 @@ LINK32_FLAGS=kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib\
  /IMPLIB:$(OUTDIR)/"PARSER.lib" 
 DEF_FILE=
 LINK32_OBJS= \
-	$(INTDIR)/parser.obj
+	$(INTDIR)/parser.obj \
+	$(INTDIR)/parser.res
 
 $(OUTDIR)/PARSER.dll : $(OUTDIR)  $(DEF_FILE) $(LINK32_OBJS)
     $(LINK32) @<<
@@ -115,6 +118,7 @@ CPP_PROJ=/nologo /MT /W3 /GX /Zi /YX /Od /D "WIN32" /D "_DEBUG" /D "_WINDOWS"\
 CPP_OBJS=.\WinDebug/
 # ADD BASE RSC /l 0x419 /d "_DEBUG"
 # ADD RSC /l 0x419 /d "_DEBUG"
+RSC_PROJ=/l 0x419 /fo$(INTDIR)/"parser.res" /d "_DEBUG" 
 BSC32=bscmake.exe
 # ADD BASE BSC32 /nologo
 # ADD BSC32 /nologo
@@ -137,7 +141,8 @@ LINK32_FLAGS=kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib\
  /IMPLIB:$(OUTDIR)/"PARSER.lib" 
 DEF_FILE=
 LINK32_OBJS= \
-	$(INTDIR)/parser.obj
+	$(INTDIR)/parser.obj \
+	$(INTDIR)/parser.res
 
 $(OUTDIR)/PARSER.dll : $(OUTDIR)  $(DEF_FILE) $(LINK32_OBJS)
     $(LINK32) @<<
@@ -166,6 +171,15 @@ DEP_PARSE=\
 	.\parser.h
 
 $(INTDIR)/parser.obj :  $(SOURCE)  $(DEP_PARSE) $(INTDIR)
+
+# End Source File
+################################################################################
+# Begin Source File
+
+SOURCE=.\parser.rc
+
+$(INTDIR)/parser.res :  $(SOURCE)  $(INTDIR)
+   $(RSC) $(RSC_PROJ)  $(SOURCE) 
 
 # End Source File
 # End Group

@@ -26,7 +26,7 @@ SOCKET sock;
 HINSTANCE parserLib;
 
 typedef void (WINAPI *cfunc) ();
-typedef void (WINAPI *ParseMessage)(char*, char*[], char*);
+typedef void (WINAPI *ParseMessage)(char*, char*[], char*, BOOL);
 
 /////////////////////////////////////////////////////////////////////////////
 // CAboutDlg dialog used for App About
@@ -257,8 +257,12 @@ BOOL MainWindow::OnInitDialog()
 				TRACE("Winsock initialed.\r\n");
     		}
     		else {
-				MessageBox("Winsock не может быть инициализирован.", "Ошибка", MB_OK|MB_ICONSTOP);
+				MessageBox("WinSock не может быть инициализирован.", "Ошибка", MB_OK|MB_ICONSTOP);
     		};
+			if (parserLib == NULL) {
+				MessageBox("Не удалось загрузить библотеку \"PARSER.DLL\". Без нее программа может работать некорректно.", "Ошибка", MB_OK); 
+				FreeLibrary(parserLib);
+			};
 			MessageBox("Это альфа-версия данной программы. Многие функции на данный момент не реализованы.", "Предупреждение", MB_OK|MB_ICONEXCLAMATION);
 			MoveWindow(40, 40, 600, 360);
 		} else {
@@ -267,8 +271,12 @@ BOOL MainWindow::OnInitDialog()
 				TRACE("Winsock initialed.\r\n");
     		}
     		else {
-				MessageBox("Winsock cannot be initialed.", "Error", MB_OK|MB_ICONSTOP);
+				MessageBox("WinSock cannot be initialed.", "Error", MB_OK|MB_ICONSTOP);
     		};
+			if (parserLib == NULL) {
+				MessageBox("Cannot load \"PARSER.DLL\" library. Without it, the program may not work correctly.", "Error", MB_OK); 
+				FreeLibrary(parserLib);
+			};
 			MessageBox("This is alpha version of program. Many features are not yet implemented.", "Warning", MB_OK|MB_ICONEXCLAMATION);
 			MoveWindow(40, 40, 600, 360);
 		};
@@ -483,17 +491,12 @@ void MainWindow::CreateConnectionThread(PARAMETERS params)
 void MainWindow::OnClose() 
 {
 	WSACleanup();
-	if (parserLib == NULL) {
-		MessageBox("Не удалось загрузить библотеку \"PARSER.DLL\". Без нее программа может работать некорректно.", "Ошибка", MB_OK); 
-		FreeLibrary(parserLib);
-	} else {
-		//cfunc FreeArray;
-		//FreeArray = (cfunc)GetProcAddress((HMODULE)parserLib, "FreeArray");
-		//FreeArray();
-		TRACE("Quiting...\r\n");
-		FreeLibrary(parserLib);
-		TRACE("Shutting down library...\r\n");
-	};
+	//cfunc FreeArray;
+	//FreeArray = (cfunc)GetProcAddress((HMODULE)parserLib, "FreeArray");
+	//FreeArray();
+	TRACE("Quiting...\r\n");
+	FreeLibrary(parserLib);
+	TRACE("Shutting down library...\r\n");
 	SetMenu(NULL);	
 	CDialog::OnClose();
 }
@@ -594,7 +597,7 @@ LRESULT MainWindow::WindowProc(UINT message, WPARAM wParam, LPARAM lParam)
 						pong = pong_msg;
 						i = new_line_splitter.GetSize();
 					} else {
-						if( GetVersion() & 0x80000000 && (GetVersion() & 0xFF) ==3) {
+						if( GetVersion() & 0x80000000 && (GetVersion() & 0xFF) == 3 || parserLib == NULL) {
 							parsed_msg_index += sprintf(parsed_msg_list + parsed_msg_index, "%s\r\n", new_line_splitter[i]);
 						} else {	
 							char* unparsed_msg;
@@ -609,7 +612,7 @@ LRESULT MainWindow::WindowProc(UINT message, WPARAM wParam, LPARAM lParam)
 							ParseMessage ParseMsg;
 							ParseMsg = (ParseMessage)GetProcAddress((HMODULE)parserLib, "ParseMessage");
 							try {
-								ParseMsg(unparsed_msg, parsing_array, parsed_msg);
+								ParseMsg(unparsed_msg, parsing_array, parsed_msg, FALSE);
 								//TRACE("OUTPUT: %s\r\n", parsed_msg);
 								parsed_msg_index += sprintf(parsed_msg_list + parsed_msg_index, "%s", parsed_msg);
 								
@@ -664,7 +667,8 @@ void MainWindow::OnSize(UINT nType, int cx, int cy)
 	
 	GetDlgItem(IDC_SOCKMSGS)->MoveWindow(2, 2, cx - 4, cy - 28);
 	GetDlgItem(IDC_MSGTEXT)->MoveWindow(2, cy - 24, cx - 72, 22);
-	GetDlgItem(IDC_SENDMSG)->MoveWindow(cx - 68, cy - 24, 66, 22); 	
+	GetDlgItem(IDC_SENDMSG)->MoveWindow(cx - 68, cy - 24, 66, 22);
+	CEdit* msg_box = (CEdit*)GetDlgItem(IDC_SOCKMSGS); 	
 }
 
 void MainWindow::OnHelpAboutClicked() 
@@ -753,8 +757,8 @@ void MainWindow::OnSendmsg()
 			int status = send(sock, msg, strlen(msg), 0);
 		};
 	};
-	char listing[32768];
-	sprintf(listing, "%s\r\nYou: %s", socks_msg, msg_text);	
+	char listing[32768] = {0};
+	sprintf(listing, "%sYou: %s\r", socks_msg, msg_text);	
 	GetDlgItem(IDC_SOCKMSGS)->SetWindowText(listing);
 	GetDlgItem(IDC_MSGTEXT)->SetWindowText("");
 	CEdit* msg_box = (CEdit*)AfxGetApp()->GetMainWnd()->GetDlgItem(IDC_SOCKMSGS);

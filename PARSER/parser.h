@@ -6,7 +6,7 @@
 #include <windows.h>
 #include <conio.h>
 
-extern "C" __declspec(dllexport) void ParseMessage(char* line, char* array[], char* output);
+extern "C" __declspec(dllexport) void ParseMessage(char* line, char* array[], char* output, BOOL debug);
 extern "C" __declspec(dllexport) void FreeArray();
 
 #endif
