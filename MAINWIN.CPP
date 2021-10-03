@@ -43,6 +43,7 @@ public:
 
 // Implementation
 protected:
+	CFont mainfont;
 	virtual void DoDataExchange(CDataExchange* pDX);	// DDX/DDV support
 	//{{AFX_MSG(CAboutDlg)
 	virtual BOOL OnInitDialog();
@@ -96,6 +97,16 @@ BOOL CAboutDlg::OnInitDialog()
 	strcat(exe_path, "\\settings");	// add settings filename
 
 	TCHAR language_string[MAX_PATH] = {0};
+
+	mainfont.CreateFont(8, 0, 0, 0, FW_REGULAR, FALSE, FALSE, 0, DEFAULT_CHARSET, 0, 0, 
+	0, 0, "MS Sans Serif");
+	GetDlgItem(IDC_WIN32S_EDITION)->SetFont(&mainfont);
+	GetDlgItem(IDC_TECHINFO)->SetFont(&mainfont);
+	GetDlgItem(IDC_WINVER_LABEL)->SetFont(&mainfont);
+	GetDlgItem(IDC_WINVER)->SetFont(&mainfont);
+	GetDlgItem(IDC_LICENSE_NOTIFICATION)->SetFont(&mainfont);
+	GetDlgItem(IDC_COPYRIGHT)->SetFont(&mainfont);
+	GetDlgItem(IDOK)->SetFont(&mainfont);
 
 	try {
 		GetPrivateProfileString("Main", "Language", "English", language_string, MAX_PATH, exe_path);
@@ -207,16 +218,20 @@ BOOL MainWindow::OnInitDialog()
 
 	CString strAboutMenu;
 	strAboutMenu.LoadString(IDS_ABOUTBOX);
-	CMenu* pSysMenu;
+	CMenu* pSysMenu = (CMenu*)malloc(sizeof(CMenu));
 	pSysMenu = GetSystemMenu(FALSE);
 	if (!strAboutMenu.IsEmpty())
 	{
 		pSysMenu->AppendMenu(MF_SEPARATOR);
 		pSysMenu->AppendMenu(MF_STRING, IDM_ABOUTBOX, strAboutMenu);
 	};
-	font.CreateFont(11, 0, 0, 0, FW_REGULAR, FALSE, FALSE, 0, DEFAULT_CHARSET, 0, 0, 
+	font.CreateFont(10, 0, 0, 0, FW_REGULAR, FALSE, FALSE, 0, DEFAULT_CHARSET, 0, 0, 
 	0, 0, "Fixedsys");
+	mainfont.CreateFont(8, 0, 0, 0, FW_REGULAR, FALSE, FALSE, 0, DEFAULT_CHARSET, 0, 0, 
+	0, 0, "MS Sans Serif");
 	AfxGetApp()->GetMainWnd()->GetDlgItem(IDC_SOCKMSGS)->SetFont(&font);
+	AfxGetApp()->GetMainWnd()->GetDlgItem(IDC_MSGTEXT)->SetFont(&mainfont);
+	AfxGetApp()->GetMainWnd()->GetDlgItem(IDC_SENDMSG)->SetFont(&mainfont);
 	if( GetVersion() & 0x80000000 && (GetVersion() & 0xFF) ==3) {
 		SetWindowText("Tinelix IRC Client (Win32s)");
 	} else {
@@ -309,7 +324,7 @@ void MainWindow::OnSysCommand(UINT nID, LPARAM lParam)
 void MainWindow::OnPaint() 
 {
 	
-	CMenu* mainmenu = new CMenu();
+	CMenu* mainmenu = (CMenu*)malloc(sizeof(CMenu));
 	char exe_path[MAX_PATH] = {0};
 	char exe_name[MAX_PATH] = "TLX_IRC.EXE"; // EXE filename
 
@@ -691,10 +706,10 @@ void MainWindow::OnChangeMsgText()
 
 void MainWindow::OnSendmsg() 
 {
-	char msg_text[1024] = {0};
+	char msg_text[4096] = {0};
 	char socks_msg[32768] = {0};
 	GetDlgItem(IDC_SOCKMSGS)->GetWindowText(socks_msg, 32767);
-	GetDlgItem(IDC_MSGTEXT)->GetWindowText(msg_text, 1024);
+	GetDlgItem(IDC_MSGTEXT)->GetWindowText(msg_text, 4096);
 	CString msg_txt(msg_text);
 	CArray<CString, CString> spaces_splitter;
 	int string_index = 0;
@@ -768,6 +783,11 @@ void MainWindow::OnSendmsg()
 
 void MainWindow::OnOK() 
 {	
+	char* msg_text = (char*)malloc(4096);
+	GetDlgItem(IDC_MSGTEXT)->GetWindowText(msg_text, 4096);
+	if (strcmp(msg_text, "") != 0) {
+		MainWindow::OnSendmsg();
+	};
 	//CDialog::OnOK();
 }
 

@@ -83,7 +83,19 @@ BOOL ProfileMainPage::OnInitDialog()
 	strcat(exe_path, "\\settings");	// add settings filename
 
 	TCHAR language_string[MAX_PATH] = {0};
-	
+
+	mainfont.CreateFont(8, 0, 0, 0, FW_REGULAR, FALSE, FALSE, 0, DEFAULT_CHARSET, 0, 0, 
+	0, 0, "MS Sans Serif");
+	GetDlgItem(IDC_PROFNAME_LABEL)->SetFont(&mainfont);
+	GetDlgItem(IDC_NICKNAMES_LABEL)->SetFont(&mainfont);
+	GetDlgItem(IDC_PASSWORD_LABEL)->SetFont(&mainfont);
+	GetDlgItem(IDC_REALNAME_LABEL)->SetFont(&mainfont);
+	GetDlgItem(IDC_CLEAR_BUTTON)->SetFont(&mainfont);
+	GetDlgItem(IDC_PROFNAME)->SetFont(&mainfont);
+	GetDlgItem(IDC_NICKNAMES)->SetFont(&mainfont);
+	GetDlgItem(IDC_PASSWORD)->SetFont(&mainfont);
+	GetDlgItem(IDC_REALNAME)->SetFont(&mainfont);
+
 	try {
 		GetPrivateProfileString("Main", "Language", "English", language_string, MAX_PATH, exe_path);
 

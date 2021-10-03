@@ -30,6 +30,7 @@ public:
 
 // Implementation
 protected:
+	CFont mainfont;
 	// Generated message map functions
 	//{{AFX_MSG(ProfileConnectionPage)
 	afx_msg void OnChangeServer();

@@ -27,7 +27,7 @@ public:
 
 // Implementation
 protected:
-
+	CFont mainfont;
 	// Generated message map functions
 	//{{AFX_MSG(ConnectionManagerDialog)
 	virtual BOOL OnInitDialog();

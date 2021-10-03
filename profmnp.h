@@ -30,6 +30,7 @@ public:
 
 // Implementation
 protected:
+	CFont mainfont;
 	// Generated message map functions
 	//{{AFX_MSG(ProfileMainPage)
 	afx_msg int OnCreate(LPCREATESTRUCT lpCreateStruct);

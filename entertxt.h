@@ -26,7 +26,7 @@ public:
 
 // Implementation
 protected:
-
+	CFont mainfont;
 	// Generated message map functions
 	//{{AFX_MSG(EnterTextDlg)
 	virtual void OnOK();

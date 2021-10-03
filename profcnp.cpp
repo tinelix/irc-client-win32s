@@ -78,6 +78,15 @@ BOOL ProfileConnectionPage::OnInitDialog()
 	
 	SetModified(TRUE);
 
+	mainfont.CreateFont(8, 0, 0, 0, FW_REGULAR, FALSE, FALSE, 0, DEFAULT_CHARSET, 0, 0, 
+	0, 0, "MS Sans Serif");
+	GetDlgItem(IDC_SERVER_LABEL)->SetFont(&mainfont);
+	GetDlgItem(IDC_PORT_LABEL)->SetFont(&mainfont);
+	GetDlgItem(IDC_ENCODING_LABEL)->SetFont(&mainfont);
+	GetDlgItem(IDC_SERVER)->SetFont(&mainfont);
+	GetDlgItem(IDC_PORT)->SetFont(&mainfont);
+	GetDlgItem(IDC_ENCODING)->SetFont(&mainfont);
+
 	char exe_path[MAX_PATH] = {0};
 	char exe_name[MAX_PATH] = "TLX_IRC.EXE"; // EXE filename
 

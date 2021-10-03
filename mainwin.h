@@ -43,6 +43,7 @@ public:
 protected:
 	HICON m_hIcon;
 	CFont font;
+	CFont mainfont;
 
 	// Generated message map functions
 	//{{AFX_MSG(MainWindow)

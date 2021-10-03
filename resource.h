@@ -48,9 +48,10 @@
 #define IDC_SERVER_LABEL                1013
 #define IDC_PORT_LABEL                  1014
 #define IDC_ENCODING_LABEL              1015
-#define IDC_COMBO1                      1016
+#define IDC_ENCODING                    1016
 #define IDC_WIN32S_EDITION              1020
 #define IDC_LICENSE_NOTIFICATION        1021
+#define IDC_COPYRIGHT                   1022
 #define ID_FILE_CONNECT                 32771
 #define ID_FILE_QUIT                    32772
 #define ID_HELP_ABOUT                   32773
@@ -59,9 +60,10 @@
 // 
 #ifdef APSTUDIO_INVOKED
 #ifndef APSTUDIO_READONLY_SYMBOLS
+#define _APS_3D_CONTROLS                     1
 #define _APS_NEXT_RESOURCE_VALUE        140
 #define _APS_NEXT_COMMAND_VALUE         32775
-#define _APS_NEXT_CONTROL_VALUE         1022
+#define _APS_NEXT_CONTROL_VALUE         1023
 #define _APS_NEXT_SYMED_VALUE           101
 #endif
 #endif

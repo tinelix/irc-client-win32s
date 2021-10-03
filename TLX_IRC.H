@@ -30,6 +30,9 @@ public:
 	//}}AFX_MSG
 	DECLARE_MESSAGE_MAP()
 
+protected:
+	CFont mainfont;
+
 	friend class ConnectionManagerDialog;
 };
 

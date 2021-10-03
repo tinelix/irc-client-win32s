@@ -67,6 +67,13 @@ int ProfileTabs::OnCreate(LPCREATESTRUCT lpCreateStruct)
 	try {
 		GetPrivateProfileString("Main", "Language", "English", language_string, MAX_PATH, exe_path);
 
+		mainfont.CreateFont(8, 0, 0, 0, FW_REGULAR, FALSE, FALSE, 0, DEFAULT_CHARSET, 0, 0, 
+		0, 0, "MS Sans Serif");
+		GetDlgItem(IDOK)->SetFont(&mainfont);
+		GetDlgItem(IDCANCEL)->SetFont(&mainfont);
+		GetDlgItem(ID_APPLY_NOW)->SetFont(&mainfont);
+		GetDlgItem(ID_HELP)->SetFont(&mainfont);
+
 		CString lng_selitemtext_2(language_string);
 		if (lng_selitemtext_2 == "Russian") {
 			GetDlgItem(IDCANCEL)->SetWindowText("Отмена");

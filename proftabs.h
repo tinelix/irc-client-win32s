@@ -31,6 +31,7 @@ public:
 
 	// Generated message map functions
 protected:
+	CFont mainfont;
 	//{{AFX_MSG(ProfileTabs)
 	afx_msg int OnCreate(LPCREATESTRUCT lpCreateStruct);
 	afx_msg void OnClose();
