@@ -251,6 +251,8 @@ BOOL MainWindow::OnInitDialog()
 
 	strcat(dll_path, "\\parser.dll");
 
+	parserLib = (HINSTANCE)malloc(sizeof(HINSTANCE));
+
 	parserLib = LoadLibrary(dll_path);
 
 	TCHAR language_string[MAX_PATH] = {0};
@@ -278,7 +280,6 @@ BOOL MainWindow::OnInitDialog()
 				MessageBox("Не удалось загрузить библотеку \"PARSER.DLL\". Без нее программа может работать некорректно.", "Ошибка", MB_OK); 
 				FreeLibrary(parserLib);
 			};
-			MessageBox("Это альфа-версия данной программы. Многие функции на данный момент не реализованы.", "Предупреждение", MB_OK|MB_ICONEXCLAMATION);
 			MoveWindow(40, 40, 600, 360);
 		} else {
 			GetDlgItem(IDC_SENDMSG)->SetWindowText("Send");
@@ -292,7 +293,6 @@ BOOL MainWindow::OnInitDialog()
 				MessageBox("Cannot load \"PARSER.DLL\" library. Without it, the program may not work correctly.", "Error", MB_OK); 
 				FreeLibrary(parserLib);
 			};
-			MessageBox("This is alpha version of program. Many features are not yet implemented.", "Warning", MB_OK|MB_ICONEXCLAMATION);
 			MoveWindow(40, 40, 600, 360);
 		};
 	} 
@@ -344,13 +344,18 @@ void MainWindow::OnPaint()
 		CString lng_selitemtext_2(language_string);
 		if(lng_selitemtext_2 == "Russian") {
 			setlocale(LC_ALL, "Russian");
-			if( GetVersion() & 0x80000000 && (GetVersion() & 0xFF) ==3) {  // Win32s
-				mainmenu->LoadMenu(IDR_MAINMENU);
-				SetMenu(mainmenu);
-			} else { // Win32/Win64
-				mainmenu->LoadMenu(IDR_RUS_MAINMENU);
-				SetMenu(mainmenu);
-			};
+			mainmenu = (CMenu*)malloc(sizeof(CMenu));
+			mainmenu->CreateMenu();
+			CMenu* file_submenu = (CMenu*)malloc(sizeof(CMenu));
+			file_submenu->CreatePopupMenu();
+			file_submenu->AppendMenu(MF_STRING, ID_FILE_CONNECT, "Подключиться...");
+			file_submenu->AppendMenu(MF_STRING, ID_FILE_QUIT, "Выход");
+			CMenu* file_helpmenu = (CMenu*)malloc(sizeof(CMenu));
+			file_helpmenu->CreatePopupMenu();
+			file_helpmenu->AppendMenu(MF_STRING, ID_HELP_ABOUT, "О программе...");
+			mainmenu->AppendMenu(MF_STRING | MF_POPUP, (UINT)file_submenu->m_hMenu, "Файл");
+			mainmenu->AppendMenu(MF_STRING | MF_POPUP, (UINT)file_helpmenu->m_hMenu, "Справка");
+			SetMenu(mainmenu); 
 		} else {
 			setlocale(LC_ALL, "English");
 			mainmenu->LoadMenu(IDR_MAINMENU);
@@ -511,8 +516,7 @@ void MainWindow::OnClose()
 	//FreeArray();
 	TRACE("Quiting...\r\n");
 	FreeLibrary(parserLib);
-	TRACE("Shutting down library...\r\n");
-	SetMenu(NULL);	
+	TRACE("Shutting down library...\r\n");	
 	CDialog::OnClose();
 }
 
@@ -612,7 +616,7 @@ LRESULT MainWindow::WindowProc(UINT message, WPARAM wParam, LPARAM lParam)
 						pong = pong_msg;
 						i = new_line_splitter.GetSize();
 					} else {
-						if( GetVersion() & 0x80000000 && (GetVersion() & 0xFF) == 3 || parserLib == NULL) {
+						if(parserLib == NULL) {
 							parsed_msg_index += sprintf(parsed_msg_list + parsed_msg_index, "%s\r\n", new_line_splitter[i]);
 						} else {	
 							char* unparsed_msg;
@@ -660,7 +664,7 @@ LRESULT MainWindow::MessageOutput(WPARAM wp, LPARAM lp)
 
 void MainWindow::OnFileQuitClicked() 
 {
-	CloseWindow();	
+	DestroyWindow();	
 }
 
 BOOL MainWindow::DestroyWindow() 
