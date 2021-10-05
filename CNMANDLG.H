@@ -35,9 +35,14 @@ protected:
 	afx_msg void OnConnectProfileClicked();
 	virtual void OnOK();
 	afx_msg void OnSelchangeProfilelist();
+	afx_msg void OnChangeProfileBtn();
 	//}}AFX_MSG
 	DECLARE_MESSAGE_MAP()
 
 public:
 	INT ConnectionManagerDialog::GetCountLines(LPCSTR str);
+	BOOL IsConnected;
+	void SetConnectionState(BOOL value);
+
+friend class MainWindow;
 };

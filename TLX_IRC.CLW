@@ -2,7 +2,7 @@
 
 [General Info]
 Version=1
-LastClass=MainWindow
+LastClass=ConnectionManagerDialog
 LastTemplate=CPropertyPage
 NewFileInclude1=#include "stdafx.h"
 NewFileInclude2=#include "TLX_IRC.h"
@@ -15,7 +15,7 @@ Class3=CAboutDlg
 ResourceCount=9
 Resource1=IDD_ABOUTBOX
 Resource2=IDR_MAINFRAME
-Resource3=IDD_PROFCONNPAGE
+Resource3=IDD_MAINWINDOW
 Resource4=IDD_PROFMAINPAGE
 Class4=ConnectionManagerDialog
 Resource5=IDD_CONNMAN
@@ -26,7 +26,7 @@ Resource7=IDR_MAINMENU
 Resource8=IDR_MENU1
 Class7=ProfileTabs
 Class8=ProfileConnectionPage
-Resource9=IDD_MAINWINDOW
+Resource9=IDD_PROFCONNPAGE
 
 [CLS:IRCClient]
 Type=0
@@ -39,7 +39,7 @@ Type=0
 HeaderFile=mainwin.h
 ImplementationFile=mainwin.cpp
 Filter=D
-LastObject=IDC_SENDMSG
+LastObject=MainWindow
 VirtualFilter=dWC
 
 [CLS:CAboutDlg]
@@ -83,7 +83,7 @@ Type=0
 HeaderFile=cnmandlg.h
 ImplementationFile=cnmandlg.cpp
 Filter=D
-LastObject=IDC_PROFILELIST
+LastObject=IDC_CHANGE_PROFILE_BTN
 VirtualFilter=dWC
 
 [DLG:IDD_CONNMAN]
@@ -156,13 +156,14 @@ LastObject=ProfileTabs
 [DLG:IDD_PROFCONNPAGE]
 Type=1
 Class=ProfileConnectionPage
-ControlCount=6
+ControlCount=7
 Control1=IDC_SERVER_LABEL,static,1342308352
 Control2=IDC_SERVER,edit,1350631440
 Control3=IDC_PORT_LABEL,static,1342308352
 Control4=IDC_PORT,edit,1350631424
-Control5=IDC_ENCODING_LABEL,static,1342308352
-Control6=IDC_ENCODING,combobox,1344340227
+Control5=IDC_ENCODING_LABEL,static,1476526080
+Control6=IDC_ENCODING,combobox,1478557955
+Control7=IDC_STATIC,static,1342308352
 
 [CLS:ProfileConnectionPage]
 Type=0

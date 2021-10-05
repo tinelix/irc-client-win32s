@@ -233,6 +233,7 @@ BOOL MainWindow::OnInitDialog()
 	AfxGetApp()->GetMainWnd()->GetDlgItem(IDC_SOCKMSGS)->SetFont(&font);
 	AfxGetApp()->GetMainWnd()->GetDlgItem(IDC_MSGTEXT)->SetFont(&mainfont);
 	AfxGetApp()->GetMainWnd()->GetDlgItem(IDC_SENDMSG)->SetFont(&mainfont);
+	IsConnected = FALSE;
 	if( GetVersion() & 0x80000000 && (GetVersion() & 0xFF) ==3) {
 		SetWindowText("Tinelix IRC Client (Win32s)");
 	} else {
@@ -381,6 +382,7 @@ int MainWindow::OnCreate(LPCREATESTRUCT lpCreateStruct)
 void MainWindow::OnConnectClicked() 
 {
 	ConnectionManagerDialog connman;
+	connman.SetConnectionState(IsConnected);
 	connman.DoModal();
 	
 }
@@ -392,7 +394,7 @@ void ConnectionFunc(HWND hwnd, struct MainWindow::PARAMETERS params)
 	TCHAR* exe_name = "TLX_IRC.EXE"; // EXE filename
 	GetModuleFileName(NULL, exe_path, MAX_PATH);
 	GetModuleFileName(NULL, history_path, MAX_PATH); 
-	MainWindow* mainwin;
+	MainWindow* mainwin = (MainWindow*)AfxGetMainWnd();
 	mainwin->delsymbs(history_path, strlen(history_path) - strlen(exe_name) - 1, strlen(history_path) - strlen(exe_name) - 1); // deleting EXE filename
 	strcat(history_path, "\\history.txt");	// add settings filename
 	char server[256];
@@ -435,6 +437,7 @@ void ConnectionFunc(HWND hwnd, struct MainWindow::PARAMETERS params)
 	else 
 	{
 		TRACE("[NOHOST_ERROR] Could not calculate this hostname.\n");
+		exit;
 	};
 	client_param.sin_port = htons(port);
 	connecting_msg = "Connecting...\n";
@@ -445,6 +448,12 @@ void ConnectionFunc(HWND hwnd, struct MainWindow::PARAMETERS params)
 		char error_msg[100];
 		wsprintf(error_msg, "[SOCKET_ERROR] Could not start WinSocket with error code: %d\n", WSAGetLastError()); 
 		TRACE0(error_msg, WSAGetLastError());
+		exit;
+	};
+	try {
+		mainwin->IsConnected = TRUE;
+	} catch(...) {
+	
 	};
 	char sock_buffer[32768];
 	char listing[32768];

@@ -97,44 +97,42 @@ BOOL ProfileMainPage::OnInitDialog()
 	GetDlgItem(IDC_REALNAME)->SetFont(&mainfont);
 
 	try {
-		GetPrivateProfileString("Main", "Language", "English", language_string, MAX_PATH, exe_path);
+		if(m_hWnd != NULL) {
+			GetPrivateProfileString("Main", "Language", "English", language_string, MAX_PATH, exe_path);
 
-		CString lng_selitemtext_2(language_string);
-		CComboBox* nick_cb = (CComboBox*)GetDlgItem(IDC_NICKNAMES);
-		if (currnickname == NULL) {
-			if(m_hWnd != NULL) {
+			CString lng_selitemtext_2(language_string);
+			CComboBox* nick_cb = (CComboBox*)GetDlgItem(IDC_NICKNAMES);
+			if (currnickname == NULL) {
 				nick_cb->AddString("");
-			};
-		} else {
-			if(m_hWnd != NULL) {
+			} else {
 				TRACE(currnickname);
 				nick_cb->InsertString(0, currnickname);
+				GetDlgItem(IDC_CLEAR_BUTTON)->EnableWindow(TRUE);
 			};
-			GetDlgItem(IDC_CLEAR_BUTTON)->EnableWindow(TRUE);
+			if (lng_selitemtext_2 == "Russian") {
+				GetDlgItem(IDC_PROFNAME_LABEL)->SetWindowText("Имя профиля:");
+				GetDlgItem(IDC_NICKNAMES_LABEL)->SetWindowText("Никнеймы:");
+				GetDlgItem(IDC_PASSWORD_LABEL)->SetWindowText("Пароль:");
+				GetDlgItem(IDC_REALNAME_LABEL)->SetWindowText("Настоящее имя:");
+				GetDlgItem(IDC_CLEAR_BUTTON)->SetWindowText("Очистить");
+				nick_cb->InsertString(1,"Изменить никнейм...");
+			} else {
+				GetDlgItem(IDC_PROFNAME_LABEL)->SetWindowText("Profile name:");
+				GetDlgItem(IDC_NICKNAMES_LABEL)->SetWindowText("Nicknames:");
+				GetDlgItem(IDC_PASSWORD_LABEL)->SetWindowText("Password:");
+				GetDlgItem(IDC_REALNAME_LABEL)->SetWindowText("Realname:");
+				GetDlgItem(IDC_CLEAR_BUTTON)->SetWindowText("Clear");
+				nick_cb->InsertString(1, "Change nickname...");
+			};
+			//GetDlgItem(IDC_ENTERTEXTEDIT)->SetWindowText(&profilename);
 		};
-		if (lng_selitemtext_2 == "Russian") {
-			GetDlgItem(IDC_PROFNAME_LABEL)->SetWindowText("Имя профиля:");
-			GetDlgItem(IDC_NICKNAMES_LABEL)->SetWindowText("Никнеймы:");
-			GetDlgItem(IDC_PASSWORD_LABEL)->SetWindowText("Пароль:");
-			GetDlgItem(IDC_REALNAME_LABEL)->SetWindowText("Настоящее имя:");
-			GetDlgItem(IDC_CLEAR_BUTTON)->SetWindowText("Очистить");
-			nick_cb->InsertString(1,"Изменить никнейм...");
-		} else {
-			GetDlgItem(IDC_PROFNAME_LABEL)->SetWindowText("Profile name:");
-			GetDlgItem(IDC_NICKNAMES_LABEL)->SetWindowText("Nicknames:");
-			GetDlgItem(IDC_PASSWORD_LABEL)->SetWindowText("Password:");
-			GetDlgItem(IDC_REALNAME_LABEL)->SetWindowText("Realname:");
-			GetDlgItem(IDC_CLEAR_BUTTON)->SetWindowText("Clear");
-			nick_cb->InsertString(1, "Change nickname...");
-		};
-		//GetDlgItem(IDC_ENTERTEXTEDIT)->SetWindowText(&profilename);
 	} 
 	catch(...)
 	{
 		MessageBox("Error reading INI file.", "Error", MB_OK|MB_ICONSTOP);
 	};
 
-	if (profilename != NULL) {
+	if (profilename != NULL && m_hWnd != NULL) {
 		GetDlgItem(IDC_PROFNAME)->SetWindowText(profilename);
 	};
 

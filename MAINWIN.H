@@ -19,7 +19,7 @@ public:
 		HWND hwnd;
 	};
 	char channel[256];
-	BOOL is_connected;
+	BOOL IsConnected;
 	MainWindow(CWnd* pParent = NULL);	// standard constructor
 	void MainWindow::CreateConnectionThread(PARAMETERS params);
 	void MainWindow::delsymbs(char *str, int begin, int lng);

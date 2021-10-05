@@ -76,43 +76,44 @@ BOOL ProfileConnectionPage::OnInitDialog()
 	CPropertyPage::OnInitDialog();
 	
 	SetModified(TRUE);
+	if(m_hWnd != NULL) {
+		mainfont.CreateFont(8, 0, 0, 0, FW_REGULAR, FALSE, FALSE, 0, DEFAULT_CHARSET, 0, 0, 
+		0, 0, "MS Sans Serif");
+		GetDlgItem(IDC_SERVER_LABEL)->SetFont(&mainfont);
+		GetDlgItem(IDC_PORT_LABEL)->SetFont(&mainfont);
+		GetDlgItem(IDC_ENCODING_LABEL)->SetFont(&mainfont);
+		GetDlgItem(IDC_SERVER)->SetFont(&mainfont);
+		GetDlgItem(IDC_PORT)->SetFont(&mainfont);
+		GetDlgItem(IDC_ENCODING)->SetFont(&mainfont);
 
-	mainfont.CreateFont(8, 0, 0, 0, FW_REGULAR, FALSE, FALSE, 0, DEFAULT_CHARSET, 0, 0, 
-	0, 0, "MS Sans Serif");
-	GetDlgItem(IDC_SERVER_LABEL)->SetFont(&mainfont);
-	GetDlgItem(IDC_PORT_LABEL)->SetFont(&mainfont);
-	GetDlgItem(IDC_ENCODING_LABEL)->SetFont(&mainfont);
-	GetDlgItem(IDC_SERVER)->SetFont(&mainfont);
-	GetDlgItem(IDC_PORT)->SetFont(&mainfont);
-	GetDlgItem(IDC_ENCODING)->SetFont(&mainfont);
+		char exe_path[MAX_PATH] = {0};
+		char exe_name[MAX_PATH] = "TLX_IRC.EXE"; // EXE filename
 
-	char exe_path[MAX_PATH] = {0};
-	char exe_name[MAX_PATH] = "TLX_IRC.EXE"; // EXE filename
+		GetModuleFileName(NULL, exe_path, MAX_PATH);  
 
-	GetModuleFileName(NULL, exe_path, MAX_PATH);  
+		ProfileConnectionPage::delsymbs(exe_path, strlen(exe_path) - strlen(exe_name) - 1, strlen(exe_path) - strlen(exe_name) - 1); // deleting EXE filename
 
-	ProfileConnectionPage::delsymbs(exe_path, strlen(exe_path) - strlen(exe_name) - 1, strlen(exe_path) - strlen(exe_name) - 1); // deleting EXE filename
+		strcat(exe_path, "\\settings");	// add settings filename
 
-	strcat(exe_path, "\\settings");	// add settings filename
-
-	TCHAR language_string[MAX_PATH] = {0};
+		TCHAR language_string[MAX_PATH] = {0};
 	
-	try {
-		GetPrivateProfileString("Main", "Language", "English", language_string, MAX_PATH, exe_path);
+		try {
+			GetPrivateProfileString("Main", "Language", "English", language_string, MAX_PATH, exe_path);
 		
-		CString lng_selitemtext_2(language_string);
+			CString lng_selitemtext_2(language_string);
 		
-		if (lng_selitemtext_2 == "Russian") {
-			GetDlgItem(IDC_SERVER_LABEL)->SetWindowText("Сервер:");
-			GetDlgItem(IDC_PORT_LABEL)->SetWindowText("Порт:");
-			GetDlgItem(IDC_ENCODING_LABEL)->SetWindowText("Кодировка:");
-		} else {
-			GetDlgItem(IDC_SERVER_LABEL)->SetWindowText("Server:");
-			GetDlgItem(IDC_PORT_LABEL)->SetWindowText("Port:");
-			GetDlgItem(IDC_ENCODING_LABEL)->SetWindowText("Encoding:");
-		};
-	} catch(...) {
+			if (lng_selitemtext_2 == "Russian") {
+				GetDlgItem(IDC_SERVER_LABEL)->SetWindowText("Сервер:");
+				GetDlgItem(IDC_PORT_LABEL)->SetWindowText("Порт:");
+				GetDlgItem(IDC_ENCODING_LABEL)->SetWindowText("Кодировка:");
+			} else {
+				GetDlgItem(IDC_SERVER_LABEL)->SetWindowText("Server:");
+				GetDlgItem(IDC_PORT_LABEL)->SetWindowText("Port:");
+				GetDlgItem(IDC_ENCODING_LABEL)->SetWindowText("Encoding:");
+			};
+		} catch(...) {
 
+		};
 	};
 				
 	return TRUE;  // return TRUE unless you set the focus to a control
