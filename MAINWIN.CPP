@@ -43,6 +43,7 @@ public:
 
 // Implementation
 protected:
+	CFont mainfont;
 	virtual void DoDataExchange(CDataExchange* pDX);	// DDX/DDV support
 	//{{AFX_MSG(CAboutDlg)
 	virtual BOOL OnInitDialog();
@@ -97,6 +98,16 @@ BOOL CAboutDlg::OnInitDialog()
 
 	TCHAR language_string[MAX_PATH] = {0};
 
+	mainfont.CreateFont(8, 0, 0, 0, FW_REGULAR, FALSE, FALSE, 0, DEFAULT_CHARSET, 0, 0, 
+	0, 0, "MS Sans Serif");
+	GetDlgItem(IDC_WIN32S_EDITION)->SetFont(&mainfont);
+	GetDlgItem(IDC_TECHINFO)->SetFont(&mainfont);
+	GetDlgItem(IDC_WINVER_LABEL)->SetFont(&mainfont);
+	GetDlgItem(IDC_WINVER)->SetFont(&mainfont);
+	GetDlgItem(IDC_LICENSE_NOTIFICATION)->SetFont(&mainfont);
+	GetDlgItem(IDC_COPYRIGHT)->SetFont(&mainfont);
+	GetDlgItem(IDOK)->SetFont(&mainfont);
+
 	try {
 		GetPrivateProfileString("Main", "Language", "English", language_string, MAX_PATH, exe_path);
 
@@ -110,6 +121,7 @@ BOOL CAboutDlg::OnInitDialog()
 			" открытым исходным кодом, распространяемое с условиями GNU General Public License 3.0. Прочитайте"
 			" на сайте https://www.gnu.org/licenses/gnu-3.0-ru.html или смотрите файл LICENSE.TXT.\n\nБЕЗ КАКИХ-ЛИБО"
 			" ГАРАНТИЙ, ВКЛЮЧАЯ КОММЕРЧЕСКУЮ ЦЕННОСТЬ.");
+			
 		} else {
 			SetWindowText("About Tinelix IRC Client");
 			GetDlgItem(IDC_WIN32S_EDITION)->SetWindowText("for Win32s");
@@ -207,16 +219,21 @@ BOOL MainWindow::OnInitDialog()
 
 	CString strAboutMenu;
 	strAboutMenu.LoadString(IDS_ABOUTBOX);
-	CMenu* pSysMenu;
+	CMenu* pSysMenu = (CMenu*)malloc(sizeof(CMenu));
 	pSysMenu = GetSystemMenu(FALSE);
 	if (!strAboutMenu.IsEmpty())
 	{
 		pSysMenu->AppendMenu(MF_SEPARATOR);
 		pSysMenu->AppendMenu(MF_STRING, IDM_ABOUTBOX, strAboutMenu);
 	};
-	font.CreateFont(11, 0, 0, 0, FW_REGULAR, FALSE, FALSE, 0, DEFAULT_CHARSET, 0, 0, 
+	font.CreateFont(10, 0, 0, 0, FW_REGULAR, FALSE, FALSE, 0, DEFAULT_CHARSET, 0, 0, 
 	0, 0, "Fixedsys");
+	mainfont.CreateFont(8, 0, 0, 0, FW_REGULAR, FALSE, FALSE, 0, DEFAULT_CHARSET, 0, 0, 
+	0, 0, "MS Sans Serif");
 	AfxGetApp()->GetMainWnd()->GetDlgItem(IDC_SOCKMSGS)->SetFont(&font);
+	AfxGetApp()->GetMainWnd()->GetDlgItem(IDC_MSGTEXT)->SetFont(&mainfont);
+	AfxGetApp()->GetMainWnd()->GetDlgItem(IDC_SENDMSG)->SetFont(&mainfont);
+	IsConnected = FALSE;
 	if( GetVersion() & 0x80000000 && (GetVersion() & 0xFF) ==3) {
 		SetWindowText("Tinelix IRC Client (Win32s)");
 	} else {
@@ -236,16 +253,19 @@ BOOL MainWindow::OnInitDialog()
 
 	strcat(dll_path, "\\parser.dll");
 
+	parserLib = (HINSTANCE)malloc(sizeof(HINSTANCE));
+
 	parserLib = LoadLibrary(dll_path);
 
 	TCHAR language_string[MAX_PATH] = {0};
+	CMenu* mainmenu;
 	
 	WSADATA WSAData;
 	char szTemp[80];
 
 	int status = (WSAStartup(MAKEWORD(1,1), &WSAData));
 
-	try {
+	//try {
 		GetPrivateProfileString("Main", "Language", "English", language_string, MAX_PATH, exe_path);
 		CComboBox *language_combo = (CComboBox*)GetDlgItem(IDC_LANGCOMBO1);
 		language_combo->SelectString(NULL, language_string);
@@ -263,8 +283,19 @@ BOOL MainWindow::OnInitDialog()
 				MessageBox("Не удалось загрузить библотеку \"PARSER.DLL\". Без нее программа может работать некорректно.", "Ошибка", MB_OK); 
 				FreeLibrary(parserLib);
 			};
-			MessageBox("Это альфа-версия данной программы. Многие функции на данный момент не реализованы.", "Предупреждение", MB_OK|MB_ICONEXCLAMATION);
-			MoveWindow(40, 40, 600, 360);
+			setlocale(LC_ALL, "Russian");
+			mainmenu = (CMenu*)malloc(sizeof(CMenu));
+			mainmenu->CreateMenu();
+			CMenu* file_submenu = (CMenu*)malloc(sizeof(CMenu));
+			file_submenu->CreatePopupMenu();
+			file_submenu->AppendMenu(MF_STRING, ID_FILE_CONNECT, "Подключиться...");
+			file_submenu->AppendMenu(MF_STRING, ID_FILE_QUIT, "Выход");
+			CMenu* file_helpmenu = (CMenu*)malloc(sizeof(CMenu));
+			file_helpmenu->CreatePopupMenu();
+			file_helpmenu->AppendMenu(MF_STRING, ID_HELP_ABOUT, "О программе...");
+			mainmenu->AppendMenu(MF_STRING | MF_POPUP, (UINT)file_submenu->m_hMenu, "Файл");
+			mainmenu->AppendMenu(MF_STRING | MF_POPUP, (UINT)file_helpmenu->m_hMenu, "Справка");
+			SetMenu(mainmenu); 
 		} else {
 			GetDlgItem(IDC_SENDMSG)->SetWindowText("Send");
 			if (status == 0) {
@@ -277,14 +308,17 @@ BOOL MainWindow::OnInitDialog()
 				MessageBox("Cannot load \"PARSER.DLL\" library. Without it, the program may not work correctly.", "Error", MB_OK); 
 				FreeLibrary(parserLib);
 			};
-			MessageBox("This is alpha version of program. Many features are not yet implemented.", "Warning", MB_OK|MB_ICONEXCLAMATION);
-			MoveWindow(40, 40, 600, 360);
+			setlocale(LC_ALL, "English");
+			mainmenu = (CMenu*)malloc(sizeof(CMenu));
+			mainmenu->LoadMenu(IDR_MAINMENU);
+			SetMenu(mainmenu);
 		};
-	} 
-	catch(...)
-	{
-		MessageBox("Error reading INI file.", "Error", MB_OK|MB_ICONSTOP);
-	};
+		MoveWindow(40, 40, 600, 360);
+	//} 
+	//catch(...)
+	//{
+		//MessageBox("Error reading INI file.", "Error", MB_OK|MB_ICONSTOP);
+	//};
 	
 	return TRUE;  // return TRUE  unless you set the focus to a control
 }
@@ -308,42 +342,8 @@ void MainWindow::OnSysCommand(UINT nID, LPARAM lParam)
 
 void MainWindow::OnPaint() 
 {
-	
-	CMenu* mainmenu = new CMenu();
-	char exe_path[MAX_PATH] = {0};
-	char exe_name[MAX_PATH] = "TLX_IRC.EXE"; // EXE filename
 
-	GetModuleFileName(NULL, exe_path, MAX_PATH);  
 
-	MainWindow::delsymbs(exe_path, strlen(exe_path) - strlen(exe_name) - 1, strlen(exe_path) - strlen(exe_name) - 1); // deleting EXE filename
-
-	strcat(exe_path, "\\settings");	// add settings filename
-
-	TCHAR language_string[MAX_PATH] = {0};
-
-	try {
-		GetPrivateProfileString("Main", "Language", "English", language_string, MAX_PATH, exe_path);
-		CComboBox *language_combo = (CComboBox*)GetDlgItem(IDC_LANGCOMBO1);
-		language_combo->SelectString(NULL, language_string);
-
-		CString lng_selitemtext_2(language_string);
-		if(lng_selitemtext_2 == "Russian") {
-			setlocale(LC_ALL, "Russian");
-			if( GetVersion() & 0x80000000 && (GetVersion() & 0xFF) ==3) {  // Win32s
-				mainmenu->LoadMenu(IDR_MAINMENU);
-				SetMenu(mainmenu);
-			} else { // Win32/Win64
-				mainmenu->LoadMenu(IDR_RUS_MAINMENU);
-				SetMenu(mainmenu);
-			};
-		} else {
-			setlocale(LC_ALL, "English");
-			mainmenu->LoadMenu(IDR_MAINMENU);
-			SetMenu(mainmenu);
-		};
-	}
-	catch(...) {
-	};
 	if (IsIconic())
 	{
 		CPaintDC dc(this); // device context for painting
@@ -382,6 +382,7 @@ int MainWindow::OnCreate(LPCREATESTRUCT lpCreateStruct)
 void MainWindow::OnConnectClicked() 
 {
 	ConnectionManagerDialog connman;
+	connman.SetConnectionState(IsConnected);
 	connman.DoModal();
 	
 }
@@ -393,7 +394,7 @@ void ConnectionFunc(HWND hwnd, struct MainWindow::PARAMETERS params)
 	TCHAR* exe_name = "TLX_IRC.EXE"; // EXE filename
 	GetModuleFileName(NULL, exe_path, MAX_PATH);
 	GetModuleFileName(NULL, history_path, MAX_PATH); 
-	MainWindow* mainwin;
+	MainWindow* mainwin = (MainWindow*)AfxGetMainWnd();
 	mainwin->delsymbs(history_path, strlen(history_path) - strlen(exe_name) - 1, strlen(history_path) - strlen(exe_name) - 1); // deleting EXE filename
 	strcat(history_path, "\\history.txt");	// add settings filename
 	char server[256];
@@ -436,6 +437,7 @@ void ConnectionFunc(HWND hwnd, struct MainWindow::PARAMETERS params)
 	else 
 	{
 		TRACE("[NOHOST_ERROR] Could not calculate this hostname.\n");
+		exit;
 	};
 	client_param.sin_port = htons(port);
 	connecting_msg = "Connecting...\n";
@@ -446,6 +448,12 @@ void ConnectionFunc(HWND hwnd, struct MainWindow::PARAMETERS params)
 		char error_msg[100];
 		wsprintf(error_msg, "[SOCKET_ERROR] Could not start WinSocket with error code: %d\n", WSAGetLastError()); 
 		TRACE0(error_msg, WSAGetLastError());
+		exit;
+	};
+	try {
+		mainwin->IsConnected = TRUE;
+	} catch(...) {
+	
 	};
 	char sock_buffer[32768];
 	char listing[32768];
@@ -496,8 +504,7 @@ void MainWindow::OnClose()
 	//FreeArray();
 	TRACE("Quiting...\r\n");
 	FreeLibrary(parserLib);
-	TRACE("Shutting down library...\r\n");
-	SetMenu(NULL);	
+	TRACE("Shutting down library...\r\n");	
 	CDialog::OnClose();
 }
 
@@ -535,10 +542,14 @@ LRESULT MainWindow::WindowProc(UINT message, WPARAM wParam, LPARAM lParam)
 						sprintf(error_msg, "Socket error: %d", WSAGetLastError());
 						MessageBox(error_msg, "Error", MB_OK|MB_ICONSTOP);
 					};
-					if( GetVersion() & 0x80000000 && (GetVersion() & 0xFF) ==3) {
-						AfxGetApp()->GetMainWnd()->SetWindowText("Tinelix IRC Client (Win32s)");
-					} else {
-						AfxGetApp()->GetMainWnd()->SetWindowText("Tinelix IRC Client");
+					try {
+						if( GetVersion() & 0x80000000 && (GetVersion() & 0xFF) ==3) {
+							AfxGetApp()->GetMainWnd()->SetWindowText("Tinelix IRC Client (Win32s)");
+						} else {
+							AfxGetApp()->GetMainWnd()->SetWindowText("Tinelix IRC Client");
+						};
+					} catch(...) {
+
 					};
 					exit;
 				};
@@ -597,24 +608,25 @@ LRESULT MainWindow::WindowProc(UINT message, WPARAM wParam, LPARAM lParam)
 						pong = pong_msg;
 						i = new_line_splitter.GetSize();
 					} else {
-						if( GetVersion() & 0x80000000 && (GetVersion() & 0xFF) == 3 || parserLib == NULL) {
+						if(parserLib == NULL) {
 							parsed_msg_index += sprintf(parsed_msg_list + parsed_msg_index, "%s\r\n", new_line_splitter[i]);
 						} else {	
 							char* unparsed_msg;
 							char** parsing_array;
-							unparsed_msg = (char*)malloc(sizeof(char) * 32768);
-							parsed_msg = (char*)malloc(sizeof(char) * 32768);
-							parsing_array = (char**)malloc(sizeof(char*) * 32768);
+							unparsed_msg = (char*)calloc(sizeof(char), 32768 + 1);
+							parsed_msg = (char*)calloc(sizeof(char), 32768 + 1);
+							parsing_array = (char**)calloc(sizeof(char*), 32768 + 1);
 							for (int array_index = 0; array_index < sizeof(parsing_array); array_index++) {
-								parsing_array[array_index] = (char*)malloc(sizeof(char) * 32768);
+								parsing_array[array_index] = (char*)calloc(sizeof(char), 32768 + 1);
 							};
 							sprintf(unparsed_msg, "%s", new_line_splitter[i]);
 							ParseMessage ParseMsg;
 							ParseMsg = (ParseMessage)GetProcAddress((HMODULE)parserLib, "ParseMessage");
 							try {
 								ParseMsg(unparsed_msg, parsing_array, parsed_msg, FALSE);
+								CString p_msg(parsed_msg);
 								//TRACE("OUTPUT: %s\r\n", parsed_msg);
-								parsed_msg_index += sprintf(parsed_msg_list + parsed_msg_index, "%s", parsed_msg);
+								parsed_msg_index += sprintf(parsed_msg_list + parsed_msg_index, "%s\r\n", p_msg);
 								
 							} catch(...) {
 
@@ -645,7 +657,7 @@ LRESULT MainWindow::MessageOutput(WPARAM wp, LPARAM lp)
 
 void MainWindow::OnFileQuitClicked() 
 {
-	CloseWindow();	
+	DestroyWindow();	
 }
 
 BOOL MainWindow::DestroyWindow() 
@@ -691,16 +703,18 @@ void MainWindow::OnChangeMsgText()
 
 void MainWindow::OnSendmsg() 
 {
-	char msg_text[1024] = {0};
+	char msg_text[4096] = {0};
 	char socks_msg[32768] = {0};
 	GetDlgItem(IDC_SOCKMSGS)->GetWindowText(socks_msg, 32767);
-	GetDlgItem(IDC_MSGTEXT)->GetWindowText(msg_text, 1024);
+	GetDlgItem(IDC_MSGTEXT)->GetWindowText(msg_text, 4096);
 	CString msg_txt(msg_text);
 	CArray<CString, CString> spaces_splitter;
 	int string_index = 0;
 	while(AfxExtractSubString(msg_txt, msg_text, string_index, ' '))
 	{
-		spaces_splitter.Add(msg_txt);
+		if(strlen(msg_txt) > 0) {
+			spaces_splitter.Add(msg_txt);
+		};
 		++string_index;
 	};
 	
@@ -715,13 +729,13 @@ void MainWindow::OnSendmsg()
 	slash = spaces_splitter[0][0];
 
 	if(spaces_splitter.GetSize() >= 2) {
-		first_symbol_in_args = spaces_splitter[1][0];
-		for (int i = 1; i > spaces_splitter.GetSize(); i++) {
-		  	args += spaces_splitter[i];
-			if(i < (spaces_splitter.GetSize() - 1)) {
-				args += " ";
-			};
-		}; 
+			first_symbol_in_args = spaces_splitter[1][0];
+			for (int i = 1; i > spaces_splitter.GetSize(); i++) {
+		  		args += spaces_splitter[i];
+				if(i < (spaces_splitter.GetSize() - 1)) {
+					args += " ";
+				};
+			}; 
 	} else {
 		first_symbol_in_args = "";
 		args = "";
@@ -758,8 +772,9 @@ void MainWindow::OnSendmsg()
 		};
 	};
 	char listing[32768] = {0};
-	sprintf(listing, "%sYou: %s\r", socks_msg, msg_text);	
-	GetDlgItem(IDC_SOCKMSGS)->SetWindowText(listing);
+	sprintf(listing, "%sYou: %s\n\r", socks_msg, msg_text);
+	CString listing_2(listing);
+	GetDlgItem(IDC_SOCKMSGS)->SetWindowText(listing_2);
 	GetDlgItem(IDC_MSGTEXT)->SetWindowText("");
 	CEdit* msg_box = (CEdit*)AfxGetApp()->GetMainWnd()->GetDlgItem(IDC_SOCKMSGS);
 	msg_box->SetSel(0, -1);
@@ -768,6 +783,11 @@ void MainWindow::OnSendmsg()
 
 void MainWindow::OnOK() 
 {	
+	char* msg_text = (char*)malloc(4096);
+	GetDlgItem(IDC_MSGTEXT)->GetWindowText(msg_text, 4096);
+	if (strcmp(msg_text, "") != 0) {
+		MainWindow::OnSendmsg();
+	};
 	//CDialog::OnOK();
 }
 

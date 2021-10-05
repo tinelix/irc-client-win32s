@@ -2,7 +2,7 @@
 
 [General Info]
 Version=1
-LastClass=MainWindow
+LastClass=ConnectionManagerDialog
 LastTemplate=CPropertyPage
 NewFileInclude1=#include "stdafx.h"
 NewFileInclude2=#include "TLX_IRC.h"
@@ -12,11 +12,11 @@ Class1=IRCClient
 Class2=MainWindow
 Class3=CAboutDlg
 
-ResourceCount=10
-Resource1=IDR_RUS_MAINMENU
+ResourceCount=9
+Resource1=IDD_ABOUTBOX
 Resource2=IDR_MAINFRAME
-Resource3=IDD_PROFCONNPAGE
-Resource4=IDD_MAINWINDOW
+Resource3=IDD_MAINWINDOW
+Resource4=IDD_PROFMAINPAGE
 Class4=ConnectionManagerDialog
 Resource5=IDD_CONNMAN
 Resource6=IDD_EDITTEXT
@@ -25,9 +25,8 @@ Class6=ProfileMainPage
 Resource7=IDR_MAINMENU
 Resource8=IDR_MENU1
 Class7=ProfileTabs
-Resource9=IDD_PROFMAINPAGE
 Class8=ProfileConnectionPage
-Resource10=IDD_ABOUTBOX
+Resource9=IDD_PROFCONNPAGE
 
 [CLS:IRCClient]
 Type=0
@@ -57,7 +56,7 @@ ControlCount=9
 Control1=IDC_STATIC,static,1342177283
 Control2=IDOK,button,1342373889
 Control3=IDC_STATIC,static,1342308352
-Control4=IDC_STATIC,static,1342308352
+Control4=IDC_COPYRIGHT,static,1342308352
 Control5=IDC_WIN32S_EDITION,static,1342308352
 Control6=IDC_TECHINFO,button,1342177287
 Control7=IDC_WINVER_LABEL,static,1342308352
@@ -84,7 +83,7 @@ Type=0
 HeaderFile=cnmandlg.h
 ImplementationFile=cnmandlg.cpp
 Filter=D
-LastObject=IDC_PROFILELIST
+LastObject=IDC_CHANGE_PROFILE_BTN
 VirtualFilter=dWC
 
 [DLG:IDD_CONNMAN]
@@ -147,13 +146,6 @@ Command2=ID_FILE_QUIT
 Command3=ID_HELP_ABOUT
 CommandCount=3
 
-[MNU:IDR_RUS_MAINMENU]
-Type=1
-Command1=ID_FILE_CONNECT
-Command2=ID_FILE_QUIT
-Command3=ID_HELP_ABOUT
-CommandCount=3
-
 [CLS:ProfileTabs]
 Type=0
 HeaderFile=proftabs.h
@@ -164,13 +156,14 @@ LastObject=ProfileTabs
 [DLG:IDD_PROFCONNPAGE]
 Type=1
 Class=ProfileConnectionPage
-ControlCount=6
+ControlCount=7
 Control1=IDC_SERVER_LABEL,static,1342308352
 Control2=IDC_SERVER,edit,1350631440
 Control3=IDC_PORT_LABEL,static,1342308352
 Control4=IDC_PORT,edit,1350631424
-Control5=IDC_ENCODING_LABEL,static,1342308352
-Control6=IDC_COMBO1,combobox,1344340227
+Control5=IDC_ENCODING_LABEL,static,1476526080
+Control6=IDC_ENCODING,combobox,1478557955
+Control7=IDC_STATIC,static,1342308352
 
 [CLS:ProfileConnectionPage]
 Type=0
