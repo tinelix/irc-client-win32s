@@ -54,8 +54,7 @@ void ProfileConnectionPage::delsymbs(char *str, int begin, int lng)
 
 void ProfileConnectionPage::OnChangeServer() 
 {
-	GetDlgItem(IDC_SERVER)->GetWindowText(server, 80);
-	TRACE(server);	
+	GetDlgItem(IDC_SERVER)->GetWindowText(server, 80);	
 }
 
 void ProfileConnectionPage::OnChangePort() 

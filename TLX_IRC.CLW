@@ -12,11 +12,11 @@ Class1=IRCClient
 Class2=MainWindow
 Class3=CAboutDlg
 
-ResourceCount=10
-Resource1=IDR_RUS_MAINMENU
+ResourceCount=9
+Resource1=IDD_ABOUTBOX
 Resource2=IDR_MAINFRAME
 Resource3=IDD_PROFCONNPAGE
-Resource4=IDD_MAINWINDOW
+Resource4=IDD_PROFMAINPAGE
 Class4=ConnectionManagerDialog
 Resource5=IDD_CONNMAN
 Resource6=IDD_EDITTEXT
@@ -25,9 +25,8 @@ Class6=ProfileMainPage
 Resource7=IDR_MAINMENU
 Resource8=IDR_MENU1
 Class7=ProfileTabs
-Resource9=IDD_PROFMAINPAGE
 Class8=ProfileConnectionPage
-Resource10=IDD_ABOUTBOX
+Resource9=IDD_MAINWINDOW
 
 [CLS:IRCClient]
 Type=0
@@ -40,7 +39,7 @@ Type=0
 HeaderFile=mainwin.h
 ImplementationFile=mainwin.cpp
 Filter=D
-LastObject=MainWindow
+LastObject=IDC_SENDMSG
 VirtualFilter=dWC
 
 [CLS:CAboutDlg]
@@ -141,13 +140,6 @@ Filter=D
 LastObject=ProfileMainPage
 
 [MNU:IDR_MENU1]
-Type=1
-Command1=ID_FILE_CONNECT
-Command2=ID_FILE_QUIT
-Command3=ID_HELP_ABOUT
-CommandCount=3
-
-[MNU:IDR_RUS_MAINMENU]
 Type=1
 Command1=ID_FILE_CONNECT
 Command2=ID_FILE_QUIT

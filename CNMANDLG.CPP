@@ -6,6 +6,7 @@
 #include "cnmandlg.h"
 #include "entertxt.h"
 #include "mainwin.h"
+#include <locale.h>
 
 #ifdef _DEBUG
 #undef THIS_FILE
@@ -218,7 +219,18 @@ void ConnectionManagerDialog::OnOK()
 	strcat(exe_path, "\\settings");	// add settings filename
 	GetPrivateProfileString("Main", "Language", "English", language_string, MAX_PATH, exe_path);
 	CString lng_selitemtext_3(language_string);
-	CMenu *mainmenu;
+	CMenu *eng_mainmenu;
+	CMenu *rus_mainmenu;
+	CMenu *file_submenu;
+	CMenu *help_submenu;
+	//eng_mainmenu = (CMenu*)malloc(sizeof(CMenu));
+	//rus_mainmenu = (CMenu*)malloc(sizeof(CMenu));
+	//file_submenu = (CMenu*)malloc(sizeof(CMenu));
+	//help_submenu = (CMenu*)malloc(sizeof(CMenu));
+	eng_mainmenu = new CMenu;
+	rus_mainmenu = new CMenu;
+	file_submenu = new CMenu;
+	help_submenu = new CMenu;
 
 	if(lng_selitemtext_2 == "Russian") {
 		if (lng_selitemtext_3 != "Russian") {
@@ -231,12 +243,30 @@ void ConnectionManagerDialog::OnOK()
 			if (msgbox == IDYES) {
 				WritePrivateProfileSection("Main", "Language=Russian", exe_path);
 			};
+
+			file_submenu->CreatePopupMenu();
+			file_submenu->AppendMenu(MF_STRING, ID_FILE_CONNECT, "Подключиться...");
+			file_submenu->AppendMenu(MF_STRING, ID_FILE_QUIT, "Выход");
+			help_submenu->CreatePopupMenu();
+			help_submenu->AppendMenu(MF_STRING, ID_HELP_ABOUT, "О программе...");
+			rus_mainmenu->CreateMenu();
+			rus_mainmenu->AppendMenu(MF_STRING | MF_POPUP, (UINT)file_submenu->m_hMenu, "Файл");
+			rus_mainmenu->AppendMenu(MF_STRING | MF_POPUP, (UINT)help_submenu->m_hMenu, "Справка");
+			GetParent()->SetMenu(rus_mainmenu);
 		} else {
 			WritePrivateProfileSection("Main", "Language=Russian", exe_path);
 		};
 	} else {
 		WritePrivateProfileSection("Main", "Language=English", exe_path);
+		setlocale(LC_ALL, "English");
+		eng_mainmenu->LoadMenu(IDR_MAINMENU);
+		GetParent()->SetMenu(eng_mainmenu);
 	};
+
+	delete(eng_mainmenu);
+	delete(rus_mainmenu);
+	delete(file_submenu);
+	delete(help_submenu);
 
 	CDialog::OnOK();
 }

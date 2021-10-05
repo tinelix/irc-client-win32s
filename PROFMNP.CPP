@@ -102,10 +102,14 @@ BOOL ProfileMainPage::OnInitDialog()
 		CString lng_selitemtext_2(language_string);
 		CComboBox* nick_cb = (CComboBox*)GetDlgItem(IDC_NICKNAMES);
 		if (currnickname == NULL) {
-			nick_cb->AddString("");
+			if(m_hWnd != NULL) {
+				nick_cb->AddString("");
+			};
 		} else {
-			TRACE(currnickname);
-			nick_cb->AddString(currnickname);
+			if(m_hWnd != NULL) {
+				TRACE(currnickname);
+				nick_cb->InsertString(0, currnickname);
+			};
 			GetDlgItem(IDC_CLEAR_BUTTON)->EnableWindow(TRUE);
 		};
 		if (lng_selitemtext_2 == "Russian") {
