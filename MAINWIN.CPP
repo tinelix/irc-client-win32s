@@ -630,11 +630,7 @@ LRESULT MainWindow::WindowProc(UINT message, WPARAM wParam, LPARAM lParam)
 								ParseMsg(unparsed_msg, parsing_array, parsed_msg, FALSE);
 								CString p_msg(parsed_msg);
 								//TRACE("OUTPUT: %s\r\n", parsed_msg);
-								if(i >= new_line_splitter.GetSize() - 1) {
-									parsed_msg_index += sprintf(parsed_msg_list + parsed_msg_index, "%s", p_msg);
-								} else {
-									parsed_msg_index += sprintf(parsed_msg_list + parsed_msg_index, "%s\r\n", p_msg);
-								};
+								parsed_msg_index += sprintf(parsed_msg_list + parsed_msg_index, "%s", p_msg);
 								
 							} catch(...) {
 
