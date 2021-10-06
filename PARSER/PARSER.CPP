@@ -24,7 +24,7 @@ extern "C" __declspec(dllexport) void ParseMessage(char* line, char* array[], ch
 		token = strtok(NULL, " ");
 	};
 	
-	//OutputDebugString("Parsing...\r\n");
+	OutputDebugString("Parsing...\r\n");
 
 	for (int i = 0; i < index; i++) {
 		if(i < 2 && strlen(array[i]) < 4) {
@@ -60,7 +60,7 @@ extern "C" __declspec(dllexport) void ParseMessage(char* line, char* array[], ch
 				OutputDebugString("Code isn't digit. (i > index - 2 && index == 4)");
 				OutputDebugString("\r\n");
 			};
-			string_index += sprintf(output + string_index, " %s", array[i] + 1);
+			string_index += sprintf(output + string_index, " %s\r\n", array[i] + 1);
 		} if(i == 0 && strcmp(array[1], "JOIN") == 0) {
 			if (debug == TRUE) {
 				OutputDebugString("Code is JOIN.");
@@ -73,7 +73,7 @@ extern "C" __declspec(dllexport) void ParseMessage(char* line, char* array[], ch
 				OutputDebugString("Code is JOIN.");
 				OutputDebugString("\r\n");
 			};
-			string_index += sprintf(output + string_index, "%s channel.", array[i] + 1);
+			string_index += sprintf(output + string_index, "%s channel.\r\n", array[i] + 1);
 		} if(i < 3 && strlen(array[i]) < 4 && isdigit(code) != 0) {
 			if (debug == TRUE) {
 				OutputDebugString("Code is digit.");
@@ -86,9 +86,9 @@ extern "C" __declspec(dllexport) void ParseMessage(char* line, char* array[], ch
 				OutputDebugString("\r\n");
 			};
 			if(index > 4 && strcmp(array[1], "PRIVMSG") == 0) {
-				string_index += sprintf(output + string_index, " %s", array[i]);
+				string_index += sprintf(output + string_index, " %s\r\n", array[i]);
 			} if (strcmp(array[1], "PRIVMSG") != 0) {
-				string_index += sprintf(output + string_index, " %s", array[i]);
+				string_index += sprintf(output + string_index, " %s\r\n", array[i]);
 			}; 
 		} else {
 			if (i >= 1 && i <= index - 2) {

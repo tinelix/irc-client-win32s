@@ -10,6 +10,7 @@ class ConnectionManagerDialog : public CDialog
 public:
 	ConnectionManagerDialog(CWnd* pParent = NULL);   // standard constructor
 	void ConnectionManagerDialog::delsymbs(char *str, int begin, int lng);
+	BOOL IsConnected;
 
 // Dialog Data
 	//{{AFX_DATA(ConnectionManagerDialog)
@@ -41,8 +42,5 @@ protected:
 
 public:
 	INT ConnectionManagerDialog::GetCountLines(LPCSTR str);
-	BOOL IsConnected;
 	void SetConnectionState(BOOL value);
-
-friend class MainWindow;
 };
