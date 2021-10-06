@@ -9,7 +9,7 @@ Tinelix IRC <i>(Internet Relay Chat protocol)</i> client written on Microsoft Vi
 <p><p><b>1.</b> configured the Microsoft Windows Network via Network Setup (on Windows 3.1 / 3.11 for Workgroups), because the connection to IRC server is done using the WinSock component.
 <p><img src="https://user-images.githubusercontent.com/76806170/134756327-ccf1dbea-7992-4168-9752-53ac4564ccaf.png"></img>
 <p><b>2.</b> the Win32s compatibility layer installed. Version 1.25 or 1.30c is recommended.
-<p><b>...and then you can run the IRC client<sup>*</sup>.</b>
+<p><b>...and then you can run the IRC client.</b>
 <h2>Known issues</h2>
 <b>1. SSL not supported.</b>
 <p>Use the <a href="https://github.com/tinelix/irc-client">Python version (in repo)</a> for this, but it is not compatible with older versions of Windows.
