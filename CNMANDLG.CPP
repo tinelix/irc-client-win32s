@@ -190,6 +190,68 @@ void ConnectionManagerDialog::OnAddProfileClicked()
 {
 	EnterTextDlg edittext;
 	edittext.DoModal();
+	char selitemtext[80];
+	char section[800];
+	char port[5];
+	char port_to_str[20];
+	char nicknames[80]; 
+	char exe_path[MAX_PATH] = {0};
+	char exe_name[MAX_PATH] = "TLX_IRC.EXE"; // EXE filename
+	char settings[32768] = {0};
+	GetModuleFileName(NULL, exe_path, MAX_PATH);
+	CListBox *profiles_cb = (CListBox*)GetDlgItem(IDC_PROFILELIST);
+	int selindex = profiles_cb->GetCurSel(); 
+	ConnectionManagerDialog::delsymbs(exe_path, strlen(exe_path) - strlen(exe_name) - 1, strlen(exe_path) - strlen(exe_name) - 1); // deleting EXE filename
+	strcat(exe_path, "\\settings");	// add settings filename
+	try 
+	{	
+		int profiles_count = profiles_cb->GetCount();
+		for (int index = 0; index < profiles_count; index++) {
+		 	profiles_cb->DeleteString(index);
+		};
+		CStdioFile settings_file;
+		try {
+			if(settings_file.Open(exe_path, CFile::modeReadWrite)) {
+				settings_file.Read(settings, 32767);
+			} else {
+				if (settings_file.Open(exe_path, CFile::modeReadWrite | CFile::modeCreate)) {
+					settings_file.Read(settings, 32767);
+				} else {
+					exit;
+				};
+			}
+		} catch(CFileException* cfe) {
+			exit;
+		};
+
+		CString settings_str(settings);
+
+		BOOL IsSection;
+		CString section;
+		
+		for(int i = 0; i < strlen(settings_str); i++)
+		{
+			CString settings_symbol(settings[i]);
+			settings_symbol.Right(i);
+			if (settings_symbol.Find("]") != -1) {
+				IsSection = FALSE;
+				if (section.IsEmpty() == FALSE && section != "Main") {
+					profiles_cb->AddString(section);
+				};
+				section = "";
+			};
+			if (IsSection == TRUE) {
+				section += settings_symbol;
+			};
+			if (settings_symbol.Find("[") != -1) {
+				IsSection = TRUE;
+			};	
+		};
+	}
+	catch(...)
+	{
+		TRACE("Error creating file");
+	};
 }
 
 void ConnectionManagerDialog::OnConnectProfileClicked() 
@@ -257,7 +319,7 @@ void ConnectionManagerDialog::OnOK()
 			text_parts+= sprintf(msgboxtext + text_parts, "Вы действительно хотите сменить язык? Текст на русском языке может быть некорректен на некоторых версиях Windows.");
 			msgbox = MessageBox((char*)msgboxtext, "Warning", MB_YESNO|MB_ICONEXCLAMATION);
 			if (msgbox == IDYES) {
-				WritePrivateProfileSection("Main", "Language=Russian", exe_path);
+				WritePrivateProfileSection("Main", "Language=Russian", settings_path);
 			};
 
 			file_submenu->CreatePopupMenu();
@@ -270,10 +332,10 @@ void ConnectionManagerDialog::OnOK()
 			rus_mainmenu->AppendMenu(MF_STRING | MF_POPUP, (UINT)help_submenu->m_hMenu, "Справка");
 			GetParent()->SetMenu(rus_mainmenu);
 		} else {
-			WritePrivateProfileSection("Main", "Language=Russian", exe_path);
+			WritePrivateProfileSection("Main", "Language=Russian", settings_path);
 		};
 	} else {
-		WritePrivateProfileSection("Main", "Language=English", exe_path);
+		WritePrivateProfileSection("Main", "Language=English", settings_path);
 		setlocale(LC_ALL, "English");
 		eng_mainmenu->LoadMenu(IDR_MAINMENU);
 		GetParent()->SetMenu(eng_mainmenu);

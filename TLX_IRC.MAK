@@ -27,7 +27,7 @@ CFG=Win32 Debug
 
 ################################################################################
 # Begin Project
-# PROP Target_Last_Scanned "Win32 Debug"
+# PROP Target_Last_Scanned "Win32 Prerelease"
 MTL=MkTypLib.exe
 CPP=cl.exe
 RSC=rc.exe
@@ -69,10 +69,7 @@ BSC32_SBRS= \
 	$(INTDIR)/TLX_IRC.SBR \
 	$(INTDIR)/MAINWIN.SBR \
 	$(INTDIR)/CNMANDLG.SBR \
-	$(INTDIR)/ENTERTXT.SBR \
-	$(INTDIR)/PROFMNP.SBR \
-	$(INTDIR)/PROFTABS.SBR \
-	$(INTDIR)/profcnp.sbr
+	$(INTDIR)/ENTERTXT.SBR
 
 $(OUTDIR)/TLX_IRC.bsc : $(OUTDIR)  $(BSC32_SBRS)
     $(BSC32) @<<
@@ -93,10 +90,7 @@ LINK32_OBJS= \
 	$(INTDIR)/MAINWIN.OBJ \
 	$(INTDIR)/TLX_IRC.res \
 	$(INTDIR)/CNMANDLG.OBJ \
-	$(INTDIR)/ENTERTXT.OBJ \
-	$(INTDIR)/PROFMNP.OBJ \
-	$(INTDIR)/PROFTABS.OBJ \
-	$(INTDIR)/profcnp.obj
+	$(INTDIR)/ENTERTXT.OBJ
 
 $(OUTDIR)/TLX_IRC.exe : $(OUTDIR)  $(DEF_FILE) $(LINK32_OBJS)
     $(LINK32) @<<
@@ -140,10 +134,7 @@ BSC32_SBRS= \
 	$(INTDIR)/TLX_IRC.SBR \
 	$(INTDIR)/MAINWIN.SBR \
 	$(INTDIR)/CNMANDLG.SBR \
-	$(INTDIR)/ENTERTXT.SBR \
-	$(INTDIR)/PROFMNP.SBR \
-	$(INTDIR)/PROFTABS.SBR \
-	$(INTDIR)/profcnp.sbr
+	$(INTDIR)/ENTERTXT.SBR
 
 $(OUTDIR)/TLX_IRC.bsc : $(OUTDIR)  $(BSC32_SBRS)
     $(BSC32) @<<
@@ -164,10 +155,7 @@ LINK32_OBJS= \
 	$(INTDIR)/MAINWIN.OBJ \
 	$(INTDIR)/TLX_IRC.res \
 	$(INTDIR)/CNMANDLG.OBJ \
-	$(INTDIR)/ENTERTXT.OBJ \
-	$(INTDIR)/PROFMNP.OBJ \
-	$(INTDIR)/PROFTABS.OBJ \
-	$(INTDIR)/profcnp.obj
+	$(INTDIR)/ENTERTXT.OBJ
 
 $(OUTDIR)/TLX_IRC.exe : $(OUTDIR)  $(DEF_FILE) $(LINK32_OBJS)
     $(LINK32) @<<
@@ -213,10 +201,7 @@ BSC32_SBRS= \
 	$(INTDIR)/TLX_IRC.SBR \
 	$(INTDIR)/MAINWIN.SBR \
 	$(INTDIR)/CNMANDLG.SBR \
-	$(INTDIR)/ENTERTXT.SBR \
-	$(INTDIR)/PROFMNP.SBR \
-	$(INTDIR)/PROFTABS.SBR \
-	$(INTDIR)/profcnp.sbr
+	$(INTDIR)/ENTERTXT.SBR
 
 $(OUTDIR)/TLX_IRC.bsc : $(OUTDIR)  $(BSC32_SBRS)
     $(BSC32) @<<
@@ -235,10 +220,7 @@ LINK32_OBJS= \
 	$(INTDIR)/MAINWIN.OBJ \
 	$(INTDIR)/TLX_IRC.res \
 	$(INTDIR)/CNMANDLG.OBJ \
-	$(INTDIR)/ENTERTXT.OBJ \
-	$(INTDIR)/PROFMNP.OBJ \
-	$(INTDIR)/PROFTABS.OBJ \
-	$(INTDIR)/profcnp.obj
+	$(INTDIR)/ENTERTXT.OBJ
 
 $(OUTDIR)/TLX_IRC.exe : $(OUTDIR)  $(DEF_FILE) $(LINK32_OBJS)
     $(LINK32) @<<
@@ -303,7 +285,7 @@ SOURCE=.\TLX_IRC.CPP
 DEP_TLX_I=\
 	.\STDAFX.H\
 	.\TLX_IRC.H\
-	.\mainwin.h
+	.\MAINWIN.H
 
 !IF  "$(CFG)" == "Win32 Debug"
 
@@ -327,8 +309,8 @@ SOURCE=.\MAINWIN.CPP
 DEP_MAINW=\
 	.\STDAFX.H\
 	.\TLX_IRC.H\
-	.\mainwin.h\
-	.\cnmandlg.h
+	.\MAINWIN.H\
+	.\CNMANDLG.H
 
 !IF  "$(CFG)" == "Win32 Debug"
 
@@ -378,9 +360,9 @@ SOURCE=.\CNMANDLG.CPP
 DEP_CNMAN=\
 	.\STDAFX.H\
 	.\TLX_IRC.H\
-	.\cnmandlg.h\
-	.\entertxt.h\
-	.\mainwin.h
+	.\CNMANDLG.H\
+	.\ENTERTXT.H\
+	.\MAINWIN.H
 
 !IF  "$(CFG)" == "Win32 Debug"
 
@@ -406,9 +388,7 @@ SOURCE=.\ENTERTXT.CPP
 DEP_ENTER=\
 	.\STDAFX.H\
 	.\TLX_IRC.H\
-	.\entertxt.h\
-	.\profmnp.h\
-	.\proftabs.h
+	.\ENTERTXT.H
 
 !IF  "$(CFG)" == "Win32 Debug"
 
@@ -423,81 +403,6 @@ $(INTDIR)/ENTERTXT.OBJ :  $(SOURCE)  $(DEP_ENTER) $(INTDIR)\
 !ELSEIF  "$(CFG)" == "Win32 Prerelease"
 
 $(INTDIR)/ENTERTXT.OBJ :  $(SOURCE)  $(DEP_ENTER) $(INTDIR)
-
-!ENDIF 
-
-# End Source File
-################################################################################
-# Begin Source File
-
-SOURCE=.\PROFMNP.CPP
-DEP_PROFM=\
-	.\STDAFX.H\
-	.\TLX_IRC.H\
-	.\profmnp.h\
-	.\proftabs.h
-
-!IF  "$(CFG)" == "Win32 Debug"
-
-$(INTDIR)/PROFMNP.OBJ :  $(SOURCE)  $(DEP_PROFM) $(INTDIR) $(INTDIR)/STDAFX.OBJ
-
-!ELSEIF  "$(CFG)" == "Win32 Release"
-
-$(INTDIR)/PROFMNP.OBJ :  $(SOURCE)  $(DEP_PROFM) $(INTDIR) $(INTDIR)/STDAFX.OBJ
-
-!ELSEIF  "$(CFG)" == "Win32 Prerelease"
-
-$(INTDIR)/PROFMNP.OBJ :  $(SOURCE)  $(DEP_PROFM) $(INTDIR)
-
-!ENDIF 
-
-# End Source File
-################################################################################
-# Begin Source File
-
-SOURCE=.\PROFTABS.CPP
-DEP_PROFT=\
-	.\STDAFX.H\
-	.\TLX_IRC.H\
-	.\proftabs.h
-
-!IF  "$(CFG)" == "Win32 Debug"
-
-$(INTDIR)/PROFTABS.OBJ :  $(SOURCE)  $(DEP_PROFT) $(INTDIR)\
- $(INTDIR)/STDAFX.OBJ
-
-!ELSEIF  "$(CFG)" == "Win32 Release"
-
-$(INTDIR)/PROFTABS.OBJ :  $(SOURCE)  $(DEP_PROFT) $(INTDIR)\
- $(INTDIR)/STDAFX.OBJ
-
-!ELSEIF  "$(CFG)" == "Win32 Prerelease"
-
-$(INTDIR)/PROFTABS.OBJ :  $(SOURCE)  $(DEP_PROFT) $(INTDIR)
-
-!ENDIF 
-
-# End Source File
-################################################################################
-# Begin Source File
-
-SOURCE=.\profcnp.cpp
-DEP_PROFC=\
-	.\STDAFX.H\
-	.\TLX_IRC.H\
-	.\profcnp.h
-
-!IF  "$(CFG)" == "Win32 Debug"
-
-$(INTDIR)/profcnp.obj :  $(SOURCE)  $(DEP_PROFC) $(INTDIR) $(INTDIR)/STDAFX.OBJ
-
-!ELSEIF  "$(CFG)" == "Win32 Release"
-
-$(INTDIR)/profcnp.obj :  $(SOURCE)  $(DEP_PROFC) $(INTDIR) $(INTDIR)/STDAFX.OBJ
-
-!ELSEIF  "$(CFG)" == "Win32 Prerelease"
-
-$(INTDIR)/profcnp.obj :  $(SOURCE)  $(DEP_PROFC) $(INTDIR)
 
 !ENDIF 
 

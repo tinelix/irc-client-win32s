@@ -107,6 +107,7 @@ BOOL CAboutDlg::OnInitDialog()
 	GetDlgItem(IDC_LICENSE_NOTIFICATION)->SetFont(&mainfont);
 	GetDlgItem(IDC_COPYRIGHT)->SetFont(&mainfont);
 	GetDlgItem(IDOK)->SetFont(&mainfont);
+	GetDlgItem(IDC_GITHUB_REPO_LINK)->SetFont(&mainfont);
 
 	try {
 		GetPrivateProfileString("Main", "Language", "English", language_string, MAX_PATH, exe_path);
@@ -120,8 +121,7 @@ BOOL CAboutDlg::OnInitDialog()
 			GetDlgItem(IDC_LICENSE_NOTIFICATION)->SetWindowText("Ýòî ñâîáîäíîå ïðîãðàììíîå îáåñïå÷åíèå ñ"
 			" îòêðûòûì èñõîäíûì êîäîì, ðàñïðîñòðàíÿåìîå ñ óñëîâèÿìè GNU General Public License 3.0. Ïðî÷èòàéòå"
 			" íà ñàéòå https://www.gnu.org/licenses/gnu-3.0-ru.html èëè ñìîòðèòå ôàéë LICENSE.TXT.\n\nÁÅÇ ÊÀÊÈÕ-ËÈÁÎ"
-			" ÃÀÐÀÍÒÈÉ, ÂÊËÞ×Àß ÊÎÌÌÅÐ×ÅÑÊÓÞ ÖÅÍÍÎÑÒÜ.");
-			
+			" ÃÀÐÀÍÒÈÉ, ÂÊËÞ×Àß ÊÎÌÌÅÐ×ÅÑÊÓÞ ÖÅÍÍÎÑÒÜ.");			
 		} else {
 			SetWindowText("About Tinelix IRC Client");
 			GetDlgItem(IDC_WIN32S_EDITION)->SetWindowText("for Win32s");
@@ -573,7 +573,7 @@ LRESULT MainWindow::WindowProc(UINT message, WPARAM wParam, LPARAM lParam)
 				AfxGetApp()->GetMainWnd()->GetDlgItem(IDC_SOCKMSGS)->GetWindowText(previous_listing, 32767);
 				if(previous_listing == NULL) {
 				};
-				sp = sprintf(listing, "%s\n", previous_listing);
+				sp = sprintf(listing, "%s", previous_listing);
 				CString sock_buffer_str;
 				char pong_msg[400];
 				int string_index = 0;
@@ -609,7 +609,11 @@ LRESULT MainWindow::WindowProc(UINT message, WPARAM wParam, LPARAM lParam)
 						i = new_line_splitter.GetSize();
 					} else {
 						if(parserLib == NULL) {
-							parsed_msg_index += sprintf(parsed_msg_list + parsed_msg_index, "%s\r\n", new_line_splitter[i]);
+							if(i >= new_line_splitter.GetSize() - 1) {
+								parsed_msg_index += sprintf(parsed_msg_list + parsed_msg_index, "%s", new_line_splitter[i]);
+							} else {
+								parsed_msg_index += sprintf(parsed_msg_list + parsed_msg_index, "%s\r\n", new_line_splitter[i]);
+							};
 						} else {	
 							char* unparsed_msg;
 							char** parsing_array;
@@ -626,7 +630,11 @@ LRESULT MainWindow::WindowProc(UINT message, WPARAM wParam, LPARAM lParam)
 								ParseMsg(unparsed_msg, parsing_array, parsed_msg, FALSE);
 								CString p_msg(parsed_msg);
 								//TRACE("OUTPUT: %s\r\n", parsed_msg);
-								parsed_msg_index += sprintf(parsed_msg_list + parsed_msg_index, "%s\r\n", p_msg);
+								if(i >= new_line_splitter.GetSize() - 1) {
+									parsed_msg_index += sprintf(parsed_msg_list + parsed_msg_index, "%s", p_msg);
+								} else {
+									parsed_msg_index += sprintf(parsed_msg_list + parsed_msg_index, "%s\r\n", p_msg);
+								};
 								
 							} catch(...) {
 
@@ -752,6 +760,24 @@ void MainWindow::OnSendmsg()
 		sprintf(join_msg, "JOIN %s\r\n", spaces_splitter[1]);
 		sprintf(channel, "%s", spaces_splitter[1]);
 		int status = send(sock, join_msg, strlen(join_msg), 0);	
+	} if(spaces_splitter[0] == "/part" && first_symbol_in_args != "#") {
+		char part_msg[1024] = {0};
+		sprintf(part_msg, "PART #%s\r\n", spaces_splitter[1]);
+		sprintf(channel, "#%s", spaces_splitter[1]);
+		int status = send(sock, part_msg, strlen(part_msg), 0);
+	} if(spaces_splitter[0] == "/part" && first_symbol_in_args == "#") {
+		char part_msg[1024] = {0};
+		sprintf(part_msg, "PART %s\r\n", spaces_splitter[1]);
+		sprintf(channel, "%s", spaces_splitter[1]);
+		int status = send(sock, part_msg, strlen(part_msg), 0);	
+	}  if(spaces_splitter[0] == "/whois" && first_symbol_in_args != "#") {
+		char whois_msg[1024] = {0};
+		sprintf(whois_msg, "WHOIS %s\r\n", spaces_splitter[1]);
+		int status = send(sock, whois_msg, strlen(whois_msg), 0);
+	} if(spaces_splitter[0] == "/ping" && first_symbol_in_args != "#") {
+		char ping_msg[1024] = {0};
+		sprintf(ping_msg, "PING %s\r\n", spaces_splitter[1]);
+		int status = send(sock, ping_msg, strlen(ping_msg), 0);
 	} if(slash == "/") {
 		char cmd_msg[1024] = {0};
 		int msg_index;
@@ -772,7 +798,7 @@ void MainWindow::OnSendmsg()
 		};
 	};
 	char listing[32768] = {0};
-	sprintf(listing, "%sYou: %s\n\r", socks_msg, msg_text);
+	sprintf(listing, "%sYou: %s\r\n", socks_msg, msg_text);
 	CString listing_2(listing);
 	GetDlgItem(IDC_SOCKMSGS)->SetWindowText(listing_2);
 	GetDlgItem(IDC_MSGTEXT)->SetWindowText("");

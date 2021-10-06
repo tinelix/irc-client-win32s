@@ -2,7 +2,7 @@
 
 [General Info]
 Version=1
-LastClass=ConnectionManagerDialog
+LastClass=ProfileMainPage
 LastTemplate=CPropertyPage
 NewFileInclude1=#include "stdafx.h"
 NewFileInclude2=#include "TLX_IRC.h"
@@ -12,21 +12,19 @@ Class1=IRCClient
 Class2=MainWindow
 Class3=CAboutDlg
 
-ResourceCount=9
-Resource1=IDD_ABOUTBOX
+ResourceCount=7
+Resource1=IDR_MAINMENU
 Resource2=IDR_MAINFRAME
 Resource3=IDD_MAINWINDOW
-Resource4=IDD_PROFMAINPAGE
+Resource4=IDR_MENU1
 Class4=ConnectionManagerDialog
 Resource5=IDD_CONNMAN
 Resource6=IDD_EDITTEXT
 Class5=EnterTextDlg
 Class6=ProfileMainPage
-Resource7=IDR_MAINMENU
-Resource8=IDR_MENU1
 Class7=ProfileTabs
 Class8=ProfileConnectionPage
-Resource9=IDD_PROFCONNPAGE
+Resource7=IDD_ABOUTBOX
 
 [CLS:IRCClient]
 Type=0
@@ -52,7 +50,7 @@ LastObject=CAboutDlg
 [DLG:IDD_ABOUTBOX]
 Type=1
 Class=CAboutDlg
-ControlCount=9
+ControlCount=10
 Control1=IDC_STATIC,static,1342177283
 Control2=IDOK,button,1342373889
 Control3=IDC_STATIC,static,1342308352
@@ -62,6 +60,7 @@ Control6=IDC_TECHINFO,button,1342177287
 Control7=IDC_WINVER_LABEL,static,1342308352
 Control8=IDC_WINVER,static,1342308352
 Control9=IDC_LICENSE_NOTIFICATION,static,1342308353
+Control10=IDC_GITHUB_REPO_LINK,static,1342308354
 
 [MNU:IDR_MAINMENU]
 Type=1
@@ -118,20 +117,6 @@ Filter=D
 VirtualFilter=dWC
 LastObject=EnterTextDlg
 
-[DLG:IDD_PROFMAINPAGE]
-Type=1
-Class=ProfileMainPage
-ControlCount=9
-Control1=IDC_PROFNAME_LABEL,static,1342308352
-Control2=IDC_PROFNAME,edit,1350631552
-Control3=IDC_NICKNAMES_LABEL,static,1342308352
-Control4=IDC_NICKNAMES,combobox,1344340227
-Control5=IDC_CLEAR_BUTTON,button,1476460544
-Control6=IDC_PASSWORD_LABEL,static,1342308352
-Control7=IDC_PASSWORD,edit,1350631584
-Control8=IDC_REALNAME_LABEL,static,1342308352
-Control9=IDC_REALNAME,edit,1350631552
-
 [CLS:ProfileMainPage]
 Type=0
 HeaderFile=profmnp.h
@@ -152,18 +137,6 @@ HeaderFile=proftabs.h
 ImplementationFile=proftabs.cpp
 Filter=W
 LastObject=ProfileTabs
-
-[DLG:IDD_PROFCONNPAGE]
-Type=1
-Class=ProfileConnectionPage
-ControlCount=7
-Control1=IDC_SERVER_LABEL,static,1342308352
-Control2=IDC_SERVER,edit,1350631440
-Control3=IDC_PORT_LABEL,static,1342308352
-Control4=IDC_PORT,edit,1350631424
-Control5=IDC_ENCODING_LABEL,static,1476526080
-Control6=IDC_ENCODING,combobox,1478557955
-Control7=IDC_STATIC,static,1342308352
 
 [CLS:ProfileConnectionPage]
 Type=0

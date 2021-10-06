@@ -54,14 +54,16 @@ FONT 8, "MS Sans Serif"
 BEGIN
     ICON            IDI_MAINFRAME,IDC_STATIC,7,7,18,20
     DEFPUSHBUTTON   "OK",IDOK,175,151,37,14,WS_GROUP
-    LTEXT           "Tinelix IRC Client 0.0.6 Beta",IDC_STATIC,31,8,104,8
+    LTEXT           "Tinelix IRC Client 0.0.7 Beta",IDC_STATIC,30,8,105,8
     LTEXT           "Copyright \251 2021 Dmitry Tretyakov (aka. Tinelix)",
                     IDC_COPYRIGHT,7,154,164,8
     LTEXT           "for Win32s",IDC_WIN32S_EDITION,31,18,44,9
     GROUPBOX        "Technical Information",IDC_TECHINFO,7,37,205,27
     LTEXT           "Windows version:",IDC_WINVER_LABEL,11,50,59,10
     LTEXT           "n/a",IDC_WINVER,71,50,133,10
-    CTEXT           "",IDC_LICENSE_NOTIFICATION,7,68,204,76
+    CTEXT           "",IDC_LICENSE_NOTIFICATION,7,68,204,62
+    RTEXT           "https://github.com/tinelix/irc-client-win32s",
+                    IDC_GITHUB_REPO_LINK,69,138,143,9
 END
 
 IDD_MAINWINDOW DIALOG DISCARDABLE  0, 0, 247, 137
@@ -109,38 +111,6 @@ BEGIN
     LTEXT           "Type text here",IDC_ENTERTEXTLABEL,5,6,173,11
 END
 
-IDD_PROFMAINPAGE DIALOG DISCARDABLE  0, 0, 200, 145
-STYLE WS_CHILD | WS_DISABLED | WS_CAPTION
-CAPTION "Main"
-FONT 8, "MS Sans Serif"
-BEGIN
-    LTEXT           "Profile name:",IDC_PROFNAME_LABEL,5,6,62,9
-    EDITTEXT        IDC_PROFNAME,69,4,128,12,ES_AUTOHSCROLL
-    LTEXT           "Nicknames:",IDC_NICKNAMES_LABEL,5,20,61,9
-    COMBOBOX        IDC_NICKNAMES,69,19,88,52,CBS_DROPDOWNLIST | CBS_SORT | 
-                    WS_VSCROLL | WS_TABSTOP
-    PUSHBUTTON      "Clear",IDC_CLEAR_BUTTON,158,19,39,12,WS_DISABLED
-    LTEXT           "Password:",IDC_PASSWORD_LABEL,5,35,60,9
-    EDITTEXT        IDC_PASSWORD,69,33,128,12,ES_PASSWORD | ES_AUTOHSCROLL
-    LTEXT           "Real name:",IDC_REALNAME_LABEL,5,49,60,9
-    EDITTEXT        IDC_REALNAME,69,47,128,12,ES_AUTOHSCROLL
-END
-
-IDD_PROFCONNPAGE DIALOG DISCARDABLE  0, 0, 203, 140
-STYLE WS_CHILD | WS_DISABLED | WS_CAPTION
-CAPTION "Connection"
-FONT 8, "MS Sans Serif"
-BEGIN
-    LTEXT           "Server:",IDC_SERVER_LABEL,5,6,29,10
-    EDITTEXT        IDC_SERVER,46,4,92,12,ES_LOWERCASE
-    LTEXT           "Port:",IDC_PORT_LABEL,145,6,22,9
-    EDITTEXT        IDC_PORT,168,4,29,12
-    LTEXT           "Encoding:",IDC_ENCODING_LABEL,5,21,38,10,WS_DISABLED
-    COMBOBOX        IDC_ENCODING,46,19,151,65,CBS_DROPDOWNLIST | CBS_SORT | 
-                    WS_DISABLED | WS_VSCROLL | WS_TABSTOP
-    LTEXT           "(not implemented yet)",IDC_STATIC,46,33,80,9
-END
-
 
 /////////////////////////////////////////////////////////////////////////////
 //
@@ -148,8 +118,8 @@ END
 //
 
 VS_VERSION_INFO VERSIONINFO
- FILEVERSION 0,0,6,0
- PRODUCTVERSION 0,0,6,0
+ FILEVERSION 0,0,7,0
+ PRODUCTVERSION 0,0,7,0
  FILEFLAGSMASK 0x3fL
 #ifdef _DEBUG
  FILEFLAGS 0x23L
@@ -164,16 +134,16 @@ BEGIN
     BEGIN
         BLOCK "040904b0"
         BEGIN
-            VALUE "Comments", "Tinelix IRC Client for Win32s (for Windows NT / 9x / 3.1x). Version 0.0.6 Beta (2021-10-05)\0"
+            VALUE "Comments", "Tinelix IRC Client for Win32s (for Windows NT / 9x / 3.1x). Version 0.0.7 Beta (2021-10-06)\0"
             VALUE "CompanyName", "\0"
             VALUE "FileDescription", "Tinelix IRC Client for Win32s\0"
-            VALUE "FileVersion", "0, 0, 6, 0\0"
+            VALUE "FileVersion", "0, 0, 8, 0\0"
             VALUE "InternalName", "Tinelix IRC Client\0"
             VALUE "LegalCopyright", "Copyright \251 2021 Dmitry Tretyakov (aka. Tinelix)\0"
             VALUE "OriginalFilename", "TLX_IRC.EXE\0"
             VALUE "ProductName", "Tinelix IRC Client\0"
-            VALUE "ProductVersion", "0, 0, 6, 0\0"
-            VALUE "SpecialBuild", "0.0.6 Beta (2021-10-05)\0"
+            VALUE "ProductVersion", "0, 0, 7, 0\0"
+            VALUE "SpecialBuild", "0.0.7 Beta (2021-10-05)\0"
         END
     END
     BLOCK "VarFileInfo"

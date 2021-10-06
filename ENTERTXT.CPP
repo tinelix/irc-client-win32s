@@ -4,9 +4,6 @@
 #include "stdafx.h"
 #include "TLX_IRC.h"
 #include "entertxt.h"
-#include "profmnp.h"
-#include "profcnp.h"
-#include "proftabs.h"
 
 #ifdef _DEBUG
 #undef THIS_FILE
@@ -62,44 +59,39 @@ void EnterTextDlg::SetProfileName(char* name)
 
 void EnterTextDlg::OnOK() 
 {
-	ProfileMainPage profilemain;
-	ProfileConnectionPage profileconn;
-	if (setting_profile != TRUE) {
-		GetDlgItem(IDC_ENTERTEXTEDIT)->GetWindowText(profilename, 80);
-		char nickname[80] = {0};
-		profilemain.SetCurrentNickname(nickname);
-	} else {
-		char nickname[80] = {0};
-		GetDlgItem(IDC_ENTERTEXTEDIT)->GetWindowText(nickname, 80);
-		profilemain.SetCurrentNickname(nickname);
-	};
-	CString profname(profilename);
-	profilemain.SetProfileName(profilename);
-	ProfileTabs settingsDlg("Profile settings");
-	settingsDlg.AddPage(&profilemain);
-	settingsDlg.AddPage(&profileconn);
-	settingsDlg.Create(NULL, WS_CHILD|WS_VISIBLE);
-	CRect rectWnd;
-	GetWindowRect(rectWnd);
-	SetWindowPos(settingsDlg.GetPage(0), 0, 0,
-	rectWnd.Width() + 100,
-	rectWnd.Height(),
-	SWP_NOMOVE | SWP_NOZORDER | SWP_NOACTIVATE);
-	CDialog::OnOK();
-	int prof_settings_result = settingsDlg.DoModal();
+	GetDlgItem(IDC_ENTERTEXTEDIT)->GetWindowText(profilename, 79);
+	
 	char exe_path[MAX_PATH] = {0};
 	char exe_name[MAX_PATH] = "TLX_IRC.EXE"; // EXE filename
+
 	GetModuleFileName(NULL, exe_path, MAX_PATH);  
+
 	EnterTextDlg::delsymbs(exe_path, strlen(exe_path) - strlen(exe_name) - 1, strlen(exe_path) - strlen(exe_name) - 1); // deleting EXE filename
-	strcat(exe_path, "\\settings");	// add settings filename
-	if(prof_settings_result == IDOK && profname != "") {
-		WritePrivateProfileString(profname, "Nicknames", profilemain.currnickname, exe_path);
-		WritePrivateProfileString(profname, "Password", profilemain.password, exe_path);
-		WritePrivateProfileString(profname, "Realname", profilemain.realname, exe_path);
-		WritePrivateProfileString(profname, "Server", profileconn.server, exe_path);
-		char port_to_str[5] = {0};
-		sprintf(port_to_str, "%d", profileconn.port);
-		WritePrivateProfileString(profname, "Port", port_to_str, exe_path);
+
+	strcat(exe_path, "\\settings");
+
+	char language_string[MAX_PATH] = {0};
+	GetPrivateProfileString("Main", "Language", "English", language_string, MAX_PATH, exe_path);
+	CString lng_selitemtext_2(language_string);
+
+	WritePrivateProfileString(profilename, "Nicknames", "", exe_path);
+	WritePrivateProfileString(profilename, "Password", "", exe_path);
+	WritePrivateProfileString(profilename, "Realname", "", exe_path);
+	WritePrivateProfileString(profilename, "Server", "", exe_path);
+	WritePrivateProfileString(profilename, "Port", "", exe_path);
+
+	CDialog::OnOK();
+
+	if((UINT)ShellExecute(NULL, "open", "notepad.exe", exe_path, NULL, SW_SHOWNORMAL) <= 32) {
+		try {
+			if(lng_selitemtext_2 == "Russian") {
+				MessageBox("Блокнот не найден. Воспользуйтесь другим редактором для изменения данного конфигурационного файла.", "Ошибка", MB_OK | MB_ICONSTOP);
+			} else {
+				MessageBox("Notepad not found. Use another editor to modify this configuration file.", "Error", MB_OK | MB_ICONSTOP);
+			};
+		} catch(...) {
+		
+		};
 	};	
 }
 
