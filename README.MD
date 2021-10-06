@@ -12,7 +12,7 @@ Tinelix IRC <i>(Internet Relay Chat protocol)</i> client written on Microsoft Vi
 <p><b>...and then you can run the IRC client<sup>*</sup>.</b>
 <h2>Known issues</h2>
 <b>1. SSL not supported.</b>
-<p>Use the Python version for this, but it is not compatible with older versions of Windows.
+<p>Use the <a href="https://github.io/tinelix/irc-client">Python version (in repo)</a> for this, but it is not compatible with older versions of Windows.
 <p><b>2. Program crash when closing the "Profile Settings" window.</b>
 <p>The thing is that the CPropertySheet object does not work very well with multiple tabs in those versions where there is a standard interface (with the Start menu, etc.). We are trying to solve this problem, but so far not very unsuccessfully.
 <p><b>3. Standard encoding is system dependent.</b>
