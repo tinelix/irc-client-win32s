@@ -17,5 +17,5 @@ Tinelix IRC <i>(Internet Relay Chat protocol)</i> client written on Microsoft Vi
 <p>The thing is that the CPropertySheet object does not work very well with multiple tabs in those versions where there is a standard interface (with the Start menu, etc.). We are trying to solve this problem, but so far not very unsuccessfully.
 <p><b>3. Standard encoding is system dependent.<b>
 <br>I haven't figured out how to add this yet, but note that Unicode (UTF-16) is not supported in Win32s.
-<p><b><code>PARSER.DLL</b> does not work in Windows 3.1x.</b>
+<p><b><code>PARSER.DLL</code> does not work in Windows 3.1x.</b>
 <p>Sorry, but to develop a string handler inside the main project (without DLL), then I had random crashes due to the array of the <code>char*</code> object. And no matter how much I tried to write the DLL again, it may still not start on Windows 3.1x.
