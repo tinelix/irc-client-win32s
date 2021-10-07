@@ -895,7 +895,8 @@ void MainWindow::OnSendmsg()
 		int msg_index;
 		if(channel) {
 	   		msg_index = sprintf(msg, "PRIVMSG %s", channel);
-			msg_index += sprintf(msg + msg_index, "%s\r\n", msg_text);
+			msg_index += sprintf(msg + msg_index, " %s\r\n", msg_text);
+			TRACE("[%s]", msg);
 			int status = send(sock, msg, strlen(msg), 0);
 		};
 	};
