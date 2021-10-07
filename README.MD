@@ -8,9 +8,16 @@ Tinelix IRC <i>(Internet Relay Chat protocol)</i> client written on Microsoft Vi
 <b>Make sure you have:</b>
 <p><p><b>1.</b> configured the Microsoft Windows Network via Network Setup (on Windows 3.1 / 3.11 for Workgroups), because the connection to IRC server is done using the WinSock component.
 <p><img src="https://user-images.githubusercontent.com/76806170/134756327-ccf1dbea-7992-4168-9752-53ac4564ccaf.png"></img>
-<p><b>2.</b> the Win32s compatibility layer installed. Version 1.25 is recommended.
-<p><b>...and then you can run the IRC client<sup>*</sup>.</b>
-<h6>* The <code>PARSER.DLL</code> (Tinelix IRC Parser library) does not work the Windows versions listed below:
-<br>Windows 3.1x, Windows NT 3.1 / 3.5. But the program can run without this DLL.
-  
+<p><b>2.</b> the Win32s compatibility layer installed. Version 1.25 or 1.30c is recommended.
+<p><b>...and then you can run the IRC client.</b>
+<h2>Known issues</h2>
+<b>1. SSL not supported.</b>
+<p>Use the <a href="https://github.com/tinelix/irc-client">Python version (in repo)</a> for this, but it is not compatible with older versions of Windows.
+<p><b>2. Program crash when closing the "Profile Settings" window.</b>
+<p>The thing is that the CPropertySheet object does not work very well with multiple tabs in those versions where there is a standard interface (with the Start menu, etc.). We are trying to solve this problem, but so far not very unsuccessfully.
+<p><b>3. Standard encoding is system dependent.</b>
+<p>I haven't figured out how to add this yet, but note that Unicode (UTF-16) is not supported in Win32s.
+<p><b>4. <code>PARSER.DLL</code> does not work in Windows 3.1x.</b>
+<p>Sorry, but to develop a string handler (parser) inside the main project (without DLL), then I had random crashes due to the array of the <code>char*</code> object. And no matter how much I tried to write the DLL again, it may still not start on Windows 3.1x.
+
  
