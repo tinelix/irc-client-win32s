@@ -20,6 +20,7 @@ struct PARAMETERS
 {
 	char server[256];
 	char nickname[80];
+	char realname[80];
 	int port;
 	HWND hwnd;
 };
@@ -77,7 +78,7 @@ BOOL ConnectionManagerDialog::OnInitDialog()
 	}; 
 	ConnectionManagerDialog::delsymbs(exe_path, strlen(exe_path) - strlen(exe_name) - 1, strlen(exe_path) - strlen(exe_name) - 1); // deleting EXE filename
 
-	strcat(exe_path, "\\settings");	// add settings filename
+	strcat(exe_path, "\\settings.ini");	// add settings filename
 
 	char language_string[MAX_PATH] = {0};
 
@@ -202,7 +203,7 @@ void ConnectionManagerDialog::OnAddProfileClicked()
 	CListBox *profiles_cb = (CListBox*)GetDlgItem(IDC_PROFILELIST);
 	int selindex = profiles_cb->GetCurSel(); 
 	ConnectionManagerDialog::delsymbs(exe_path, strlen(exe_path) - strlen(exe_name) - 1, strlen(exe_path) - strlen(exe_name) - 1); // deleting EXE filename
-	strcat(exe_path, "\\settings");	// add settings filename
+	strcat(exe_path, "\\settings.ini");	// add settings filename
 	try 
 	{	
 		int profiles_count = profiles_cb->GetCount();
@@ -268,12 +269,16 @@ void ConnectionManagerDialog::OnConnectProfileClicked()
 	CListBox* profile_cb = (CListBox*)GetDlgItem(IDC_PROFILELIST);
 	int selindex = profile_cb->GetCurSel(); 
 	ConnectionManagerDialog::delsymbs(exe_path, strlen(exe_path) - strlen(exe_name) - 1, strlen(exe_path) - strlen(exe_name) - 1); // deleting EXE filename
-	strcat(exe_path, "\\settings");	// add settings filename
+	strcat(exe_path, "\\settings.ini");	// add settings filename
 	PARAMETERS params;
 	profile_cb->GetText(selindex, selitemtext);
 	GetPrivateProfileString(selitemtext, "Server", "", params.server, 256, exe_path);
 	GetPrivateProfileString(selitemtext, "Port", "", port, 5, exe_path);
 	GetPrivateProfileString(selitemtext, "Nicknames", "", params.nickname, 80, exe_path);
+	GetPrivateProfileString(selitemtext, "Realname", "", params.realname, 80, exe_path);
+	if(strlen(params.realname) == 0) {
+		sprintf(params.realname, "Member");
+	};
 	params.port = atoi(port);
 	GetDlgItem(IDC_CONNECT_PROFILE_BTN)->EnableWindow(FALSE);
 
@@ -295,7 +300,7 @@ void ConnectionManagerDialog::OnOK()
 	GetModuleFileName(NULL, exe_path, MAX_PATH);
 	GetModuleFileName(NULL, settings_path, MAX_PATH); 
 	ConnectionManagerDialog::delsymbs(settings_path, strlen(settings_path) - strlen(exe_name) - 1, strlen(settings_path) - strlen(exe_name) - 1); // deleting EXE filename
-	strcat(settings_path, "\\settings");	// add settings filename
+	strcat(settings_path, "\\settings.ini");	// add settings filename
 	if(GetFileAttributes(settings_path) == 1 && GetFileAttributes(exe_path) == 1) {
 		MessageBox("The disk may be write protected.", "Warning", MB_OK|MB_ICONEXCLAMATION); 
 	};
@@ -366,7 +371,7 @@ void ConnectionManagerDialog::OnChangeProfileBtn()
 
 	ConnectionManagerDialog::delsymbs(exe_path, strlen(exe_path) - strlen(exe_name) - 1, strlen(exe_path) - strlen(exe_name) - 1); // deleting EXE filename
 
-	strcat(exe_path, "\\settings");
+	strcat(exe_path, "\\settings.ini");
 
 	char language_string[MAX_PATH] = {0};
 	GetPrivateProfileString("Main", "Language", "English", language_string, MAX_PATH, exe_path);

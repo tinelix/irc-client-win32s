@@ -53,7 +53,7 @@ BOOL IRCClient::InitInstance()
 
 	delsymbs(settings_path, strlen(settings_path) - strlen(exe_name) - 1, strlen(settings_path) - strlen(exe_name) - 1); // deleting EXE filename
 
-	strcat(settings_path, "\\settings");	// add settings filename
+	strcat(settings_path, "\\settings.ini");	// add settings filename
 
 	GetPrivateProfileString("Main", "Language", "English", language_string, 80, exe_path);
 	CString language_string_2(language_string);

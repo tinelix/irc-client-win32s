@@ -15,6 +15,7 @@ public:
 	{
 		char server[256];
 		char nickname[80];
+		char realname[80];
 		int port;
 		HWND hwnd;
 	};

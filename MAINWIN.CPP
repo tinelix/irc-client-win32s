@@ -94,7 +94,7 @@ BOOL CAboutDlg::OnInitDialog()
 
 	CAboutDlg::delsymbs(exe_path, strlen(exe_path) - strlen(exe_name) - 1, strlen(exe_path) - strlen(exe_name) - 1); // deleting EXE filename
 
-	strcat(exe_path, "\\settings");	// add settings filename
+	strcat(exe_path, "\\settings.ini");	// add settings filename
 
 	TCHAR language_string[MAX_PATH] = {0};
 
@@ -249,7 +249,7 @@ BOOL MainWindow::OnInitDialog()
 	MainWindow::delsymbs(exe_path, strlen(exe_path) - strlen(exe_name) - 1, strlen(exe_path) - strlen(exe_name) - 1); // deleting EXE filename
 	MainWindow::delsymbs(dll_path, strlen(dll_path) - strlen(exe_name) - 1, strlen(dll_path) - strlen(exe_name) - 1); // deleting EXE filename
 
-	strcat(exe_path, "\\settings");	// add settings filename
+	strcat(exe_path, "\\settings.ini");	// add settings filename
 
 	strcat(dll_path, "\\parser.dll");
 
@@ -399,6 +399,8 @@ void ConnectionFunc(HWND hwnd, struct MainWindow::PARAMETERS params)
 	strcat(history_path, "\\history.txt");	// add settings filename
 	char server[256];
 	sprintf(server, "%s", params.server);
+	char realname[80];
+	sprintf(realname, "%s", params.realname);
 	char connecting_msgb[100];
 	int port = params.port;
 
@@ -475,7 +477,8 @@ void ConnectionFunc(HWND hwnd, struct MainWindow::PARAMETERS params)
 	int ident_sending_parts;
 	ident_sending_parts = sprintf(ident_sending, "USER %s ", params.nickname);
 	ident_sending_parts += sprintf(ident_sending + ident_sending_parts, "%s ", params.nickname);
-	ident_sending_parts += sprintf(ident_sending + ident_sending_parts, "%s :Member\r\n", params.nickname);
+	ident_sending_parts += sprintf(ident_sending + ident_sending_parts, "%s :", params.nickname);
+	ident_sending_parts += sprintf(ident_sending + ident_sending_parts, "%s\r\n", params.realname);
 	status = send(sock, ident_sending, strlen(ident_sending), 0);
 	char nick_sending[400];
 	int nick_sending_parts;
@@ -522,7 +525,7 @@ LRESULT MainWindow::WindowProc(UINT message, WPARAM wParam, LPARAM lParam)
 
 	MainWindow::delsymbs(exe_path, strlen(exe_path) - strlen(exe_name) - 1, strlen(exe_path) - strlen(exe_name) - 1); // deleting EXE filename
 
-	strcat(exe_path, "\\settings");	// add settings filename
+	strcat(exe_path, "\\settings.ini");	// add settings filename
 	
 	TCHAR language_string[MAX_PATH] = {0};
 	//try {
@@ -707,6 +710,28 @@ void MainWindow::OnChangeMsgText()
 
 void MainWindow::OnSendmsg() 
 {
+	
+	char exe_path[MAX_PATH] = {0};
+	char exe_name[MAX_PATH] = "TLX_IRC.EXE"; // EXE filename
+
+	GetModuleFileName(NULL, exe_path, MAX_PATH);  
+
+	MainWindow::delsymbs(exe_path, strlen(exe_path) - strlen(exe_name) - 1, strlen(exe_path) - strlen(exe_name) - 1); // deleting EXE filename
+
+	strcat(exe_path, "\\settings.ini");	// add settings filename
+
+	TCHAR language_string[MAX_PATH] = {0};
+	CMenu* mainmenu;
+	
+	WSADATA WSAData;
+	char szTemp[80];
+
+	int status = (WSAStartup(MAKEWORD(1,1), &WSAData));
+
+	GetPrivateProfileString("Main", "Language", "English", language_string, MAX_PATH, exe_path);
+
+	CString language_string_2(language_string);
+	
 	char msg_text[4096] = {0};
 	char socks_msg[32768] = {0};
 	GetDlgItem(IDC_SOCKMSGS)->GetWindowText(socks_msg, 32767);
@@ -747,48 +772,129 @@ void MainWindow::OnSendmsg()
 
 
 	if(spaces_splitter[0] == "/join" && first_symbol_in_args != "#") {
-		char join_msg[1024] = {0};
-		sprintf(join_msg, "JOIN #%s\r\n", spaces_splitter[1]);
-		sprintf(channel, "#%s", spaces_splitter[1]);
-		int status = send(sock, join_msg, strlen(join_msg), 0);
-	} if(spaces_splitter[0] == "/join" && first_symbol_in_args == "#") {
-		char join_msg[1024] = {0};
-		sprintf(join_msg, "JOIN %s\r\n", spaces_splitter[1]);
-		sprintf(channel, "%s", spaces_splitter[1]);
-		int status = send(sock, join_msg, strlen(join_msg), 0);	
-	} if(spaces_splitter[0] == "/part" && first_symbol_in_args != "#") {
-		char part_msg[1024] = {0};
-		sprintf(part_msg, "PART #%s\r\n", spaces_splitter[1]);
-		sprintf(channel, "#%s", spaces_splitter[1]);
-		int status = send(sock, part_msg, strlen(part_msg), 0);
-	} if(spaces_splitter[0] == "/part" && first_symbol_in_args == "#") {
-		char part_msg[1024] = {0};
-		sprintf(part_msg, "PART %s\r\n", spaces_splitter[1]);
-		sprintf(channel, "%s", spaces_splitter[1]);
-		int status = send(sock, part_msg, strlen(part_msg), 0);	
-	}  if(spaces_splitter[0] == "/whois" && first_symbol_in_args != "#") {
-		char whois_msg[1024] = {0};
-		sprintf(whois_msg, "WHOIS %s\r\n", spaces_splitter[1]);
-		int status = send(sock, whois_msg, strlen(whois_msg), 0);
-	} if(spaces_splitter[0] == "/ping" && first_symbol_in_args != "#") {
-		char ping_msg[1024] = {0};
-		sprintf(ping_msg, "PING %s\r\n", spaces_splitter[1]);
-		int status = send(sock, ping_msg, strlen(ping_msg), 0);
-	} if(slash == "/") {
-		char cmd_msg[1024] = {0};
-		int msg_index;
-		msg_index = sprintf(cmd_msg, "%s", spaces_splitter[0].Right(strlen(spaces_splitter[0]) - 1));
-		if(args != "") {
-			msg_index += sprintf(cmd_msg + msg_index, " %s\r\n", args);
+		if(spaces_splitter.GetSize() > 1) {
+			char join_msg[1024] = {0};
+			sprintf(join_msg, "JOIN #%s\r\n", spaces_splitter[1]);
+			sprintf(channel, "#%s", spaces_splitter[1]);
+			int status = send(sock, join_msg, strlen(join_msg), 0);
 		} else {
-			msg_index += sprintf(cmd_msg + msg_index, "\r\n");
+			if(language_string_2 == "Russian") {
+				MessageBox("Пожалуйста, укажите аргумент к данной команде.", "Ошибка", MB_OK | MB_ICONSTOP);
+			} else {
+				MessageBox("Please enter an argument for this command.", "Error", MB_OK | MB_ICONSTOP);
+			};
 		};
-		int status = send(sock, cmd_msg, strlen(cmd_msg), 0);	
+	} if(spaces_splitter[0] == "/join" && first_symbol_in_args == "#") {
+		if(spaces_splitter.GetSize() > 1) {
+            char join_msg[1024] = {0};
+            sprintf(join_msg, "JOIN %s\r\n", spaces_splitter[1]);
+            sprintf(channel, "%s", spaces_splitter[1]);
+            int status = send(sock, join_msg, strlen(join_msg), 0);
+        } else {
+			if(language_string_2 == "Russian") {
+				MessageBox("Пожалуйста, укажите аргумент к данной команде.", "Ошибка", MB_OK | MB_ICONSTOP);
+			} else {
+				MessageBox("Please enter an argument for this command.", "Error", MB_OK | MB_ICONSTOP);
+			};
+		};
+	} if(spaces_splitter[0] == "/part" && first_symbol_in_args != "#") {
+        if(spaces_splitter.GetSize() > 1) {
+            char part_msg[1024] = {0};
+            sprintf(part_msg, "PART #%s\r\n", spaces_splitter[1]);
+            sprintf(channel, "#%s", spaces_splitter[1]);
+            int status = send(sock, part_msg, strlen(part_msg), 0);
+        } else {
+			if(language_string_2 == "Russian") {
+				MessageBox("Пожалуйста, укажите аргумент к данной команде.", "Ошибка", MB_OK | MB_ICONSTOP);
+			} else {
+				MessageBox("Please enter an argument for this command.", "Error", MB_OK | MB_ICONSTOP);
+			};
+		};
+	} if(spaces_splitter[0] == "/part" && first_symbol_in_args == "#") {
+        if(spaces_splitter.GetSize() > 1) {
+            char part_msg[1024] = {0};
+            sprintf(part_msg, "PART %s\r\n", spaces_splitter[1]);
+            sprintf(channel, "%s", spaces_splitter[1]);
+            int status = send(sock, part_msg, strlen(part_msg), 0);
+        } else {
+            if(language_string_2 == "Russian") {
+				MessageBox("Пожалуйста, укажите аргумент к данной команде.", "Ошибка", MB_OK | MB_ICONSTOP);
+			} else {
+				MessageBox("Please enter an argument for this command.", "Error", MB_OK | MB_ICONSTOP);
+			};
+        };
+	}  if(spaces_splitter[0] == "/whois" && first_symbol_in_args != "#") {
+        if(spaces_splitter.GetSize() > 1) {
+            char whois_msg[1024] = {0};
+            sprintf(whois_msg, "WHOIS %s\r\n", spaces_splitter[1]);
+            int status = send(sock, whois_msg, strlen(whois_msg), 0);
+        } else {
+            if(language_string_2 == "Russian") {
+				MessageBox("Пожалуйста, укажите аргумент к данной команде.", "Ошибка", MB_OK | MB_ICONSTOP);
+			} else {
+				MessageBox("Please enter an argument for this command.", "Error", MB_OK | MB_ICONSTOP);
+			};
+        };
+	} if(spaces_splitter[0] == "/ping" && first_symbol_in_args != "#") {
+        if(spaces_splitter.GetSize() > 1) {
+            char ping_msg[1024] = {0};
+            sprintf(ping_msg, "PING %s\r\n", spaces_splitter[1]);
+            int status = send(sock, ping_msg, strlen(ping_msg), 0);
+        } else {
+            if(language_string_2 == "Russian") {
+				MessageBox("Пожалуйста, укажите аргумент к данной команде.", "Ошибка", MB_OK | MB_ICONSTOP);
+			} else {
+				MessageBox("Please enter an argument for this command.", "Error", MB_OK | MB_ICONSTOP);
+			};
+        };
+	} if(spaces_splitter[0] == "/privmsg") {
+		char cmd_msg[1024] = {0};
+		int msg_index = 0;
+		if(spaces_splitter.GetSize() > 2) {
+			msg_index = sprintf(cmd_msg, "PRIVMSG %s", spaces_splitter[1]);
+			for (int i = 2; i < spaces_splitter.GetSize(); i++) {
+				if(i == spaces_splitter.GetSize() - 1) {
+					msg_index += sprintf(cmd_msg + msg_index, " %s\r\n", spaces_splitter[i]);
+				} if (i < spaces_splitter.GetSize() - 1) {
+					msg_index += sprintf(cmd_msg + msg_index, " %s", spaces_splitter[i]);
+				};
+			};
+			int status = send(sock, cmd_msg, strlen(cmd_msg), 0);
+		};
+	} if(spaces_splitter[0] == "/msg") {
+		char cmd_msg[1024] = {0};
+		int msg_index = 0;
+		if(spaces_splitter.GetSize() > 2) {
+			msg_index = sprintf(cmd_msg, "PRIVMSG %s", spaces_splitter[1]);
+			for (int i = 2; i < spaces_splitter.GetSize(); i++) {
+				if(i == spaces_splitter.GetSize() - 1) {
+					msg_index += sprintf(cmd_msg + msg_index, " %s\r\n", spaces_splitter[i]);
+				} if (i < spaces_splitter.GetSize() - 1) {
+					msg_index += sprintf(cmd_msg + msg_index, " %s", spaces_splitter[i]);
+				};
+			};
+			int status = send(sock, cmd_msg, strlen(cmd_msg), 0);
+		};
+	} if(slash == "/") {
+		if (strlen(spaces_splitter[0]) > 1) {
+			if(spaces_splitter[0] != "/msg" && spaces_splitter[0] != "/privmsg" && spaces_splitter[0] != "/join"
+			&& spaces_splitter[0] != "/part" && spaces_splitter[0] != "/ping" && spaces_splitter[0] != "/whois") {
+				char cmd_msg[1024] = {0};
+				int msg_index;
+				msg_index = sprintf(cmd_msg, "%s", spaces_splitter[0].Right(strlen(spaces_splitter[0]) - 1));
+				if(args != "") {
+					msg_index += sprintf(cmd_msg + msg_index, " %s\r\n", args);
+				} else {
+					msg_index += sprintf(cmd_msg + msg_index, "\r\n");
+				};
+				int status = send(sock, cmd_msg, strlen(cmd_msg), 0);
+			};
+		};	
 	} else {
 	   	char msg[1024] = {0};
 		int msg_index;
 		if(channel) {
-	   		msg_index = sprintf(msg, "PRIVMSG %s ", channel);
+	   		msg_index = sprintf(msg, "PRIVMSG %s", channel);
 			msg_index += sprintf(msg + msg_index, "%s\r\n", msg_text);
 			int status = send(sock, msg, strlen(msg), 0);
 		};

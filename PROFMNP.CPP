@@ -80,7 +80,7 @@ BOOL ProfileMainPage::OnInitDialog()
 
 	ProfileMainPage::delsymbs(exe_path, strlen(exe_path) - strlen(exe_name) - 1, strlen(exe_path) - strlen(exe_name) - 1); // deleting EXE filename
 
-	strcat(exe_path, "\\settings");	// add settings filename
+	strcat(exe_path, "\\settings.ini");	// add settings filename
 
 	TCHAR language_string[MAX_PATH] = {0};
 

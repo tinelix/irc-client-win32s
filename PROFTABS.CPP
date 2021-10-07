@@ -60,7 +60,7 @@ int ProfileTabs::OnCreate(LPCREATESTRUCT lpCreateStruct)
 
 	ProfileTabs::delsymbs(exe_path, strlen(exe_path) - strlen(exe_name) - 1, strlen(exe_path) - strlen(exe_name) - 1); // deleting EXE filename
 
-	strcat(exe_path, "\\settings");	// add settings filename
+	strcat(exe_path, "\\settings.ini");	// add settings filename
 
 	TCHAR language_string[MAX_PATH] = {0};
 	
