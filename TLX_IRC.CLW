@@ -2,17 +2,17 @@
 
 [General Info]
 Version=1
-LastClass=ProfileMainPage
-LastTemplate=CPropertyPage
+LastClass=ConnectionManagerDialog
+LastTemplate=CDialog
 NewFileInclude1=#include "stdafx.h"
 NewFileInclude2=#include "TLX_IRC.h"
 
-ClassCount=8
+ClassCount=9
 Class1=IRCClient
 Class2=MainWindow
 Class3=CAboutDlg
 
-ResourceCount=7
+ResourceCount=8
 Resource1=IDR_MAINMENU
 Resource2=IDR_MAINFRAME
 Resource3=IDD_MAINWINDOW
@@ -25,6 +25,8 @@ Class6=ProfileMainPage
 Class7=ProfileTabs
 Class8=ProfileConnectionPage
 Resource7=IDD_ABOUTBOX
+Class9=SettingsDialog
+Resource8=IDD_SETTINGS
 
 [CLS:IRCClient]
 Type=0
@@ -53,7 +55,7 @@ Class=CAboutDlg
 ControlCount=10
 Control1=IDC_STATIC,static,1342177283
 Control2=IDOK,button,1342373889
-Control3=IDC_STATIC,static,1342308352
+Control3=IDC_PROGRAM_NAME,static,1342308352
 Control4=IDC_COPYRIGHT,static,1342308352
 Control5=IDC_WIN32S_EDITION,static,1342308352
 Control6=IDC_TECHINFO,button,1342177287
@@ -66,8 +68,9 @@ Control10=IDC_GITHUB_REPO_LINK,static,1342308354
 Type=1
 Command1=ID_FILE_CONNECT
 Command2=ID_FILE_QUIT
-Command3=ID_HELP_ABOUT
-CommandCount=3
+Command3=ID_VIEW_SETTINGS
+Command4=ID_HELP_ABOUT
+CommandCount=4
 
 [DLG:IDD_MAINWINDOW]
 Type=1
@@ -82,7 +85,7 @@ Type=0
 HeaderFile=cnmandlg.h
 ImplementationFile=cnmandlg.cpp
 Filter=D
-LastObject=IDC_CHANGE_PROFILE_BTN
+LastObject=IDC_DELETE_PROFILE_BTn
 VirtualFilter=dWC
 
 [DLG:IDD_CONNMAN]
@@ -144,4 +147,22 @@ HeaderFile=profcnp.h
 ImplementationFile=profcnp.cpp
 Filter=D
 LastObject=ProfileConnectionPage
+
+[DLG:IDD_SETTINGS]
+Type=1
+Class=SettingsDialog
+ControlCount=5
+Control1=IDOK,button,1342242817
+Control2=IDCANCEL,button,1342242816
+Control3=IDC_LANGLABEL,static,1342308352
+Control4=IDC_LANGCOMBO1,combobox,1344340227
+Control5=IDC_SAVE_MSG_HISTORY,button,1342242819
+
+[CLS:SettingsDialog]
+Type=0
+HeaderFile=setgdlg.h
+ImplementationFile=setgdlg.cpp
+Filter=D
+LastObject=IDOK
+VirtualFilter=dWC
 

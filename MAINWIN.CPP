@@ -5,6 +5,7 @@
 #include "TLX_IRC.h"
 #include "mainwin.h"
 #include "cnmandlg.h"
+#include "setgdlg.h"
 
 #include <stdio.h>
 #include <iostream.h>
@@ -195,6 +196,7 @@ BEGIN_MESSAGE_MAP(MainWindow, CDialog)
 	ON_EN_CHANGE(IDC_MSGTEXT, OnChangeMsgText)
 	ON_BN_CLICKED(IDC_SENDMSG, OnSendmsg)
 	ON_WM_CLOSE()
+	ON_COMMAND(ID_VIEW_SETTINGS, OnViewSettings)
 	//}}AFX_MSG_MAP
 END_MESSAGE_MAP()
 
@@ -239,7 +241,7 @@ BOOL MainWindow::OnInitDialog()
 	} else {
 		SetWindowText("Tinelix IRC Client");
 	};
-	char exe_path[MAX_PATH] = {0};
+
 	char dll_path[MAX_PATH] = {0};
 	char exe_name[MAX_PATH] = "TLX_IRC.EXE"; // EXE filename
 
@@ -266,9 +268,7 @@ BOOL MainWindow::OnInitDialog()
 	int status = (WSAStartup(MAKEWORD(1,1), &WSAData));
 
 	//try {
-		GetPrivateProfileString("Main", "Language", "English", language_string, MAX_PATH, exe_path);
-		CComboBox *language_combo = (CComboBox*)GetDlgItem(IDC_LANGCOMBO1);
-		language_combo->SelectString(NULL, language_string);
+		GetPrivateProfileString("Main", "Language", "", language_string, MAX_PATH, exe_path);
 
 		CString lng_selitemtext_2(language_string);
 		if (lng_selitemtext_2 == "Russian") {
@@ -290,12 +290,32 @@ BOOL MainWindow::OnInitDialog()
 			file_submenu->CreatePopupMenu();
 			file_submenu->AppendMenu(MF_STRING, ID_FILE_CONNECT, "Подключиться...");
 			file_submenu->AppendMenu(MF_STRING, ID_FILE_QUIT, "Выход");
-			CMenu* file_helpmenu = (CMenu*)malloc(sizeof(CMenu));
-			file_helpmenu->CreatePopupMenu();
-			file_helpmenu->AppendMenu(MF_STRING, ID_HELP_ABOUT, "О программе...");
+			CMenu* view_submenu = (CMenu*)malloc(sizeof(CMenu));
+			view_submenu->CreatePopupMenu();
+			view_submenu->AppendMenu(MF_STRING, ID_VIEW_SETTINGS, "Настройки");
+			CMenu* help_submenu = (CMenu*)malloc(sizeof(CMenu));
+			help_submenu->CreatePopupMenu();
+			help_submenu->AppendMenu(MF_STRING, ID_HELP_ABOUT, "О программе...");
 			mainmenu->AppendMenu(MF_STRING | MF_POPUP, (UINT)file_submenu->m_hMenu, "Файл");
-			mainmenu->AppendMenu(MF_STRING | MF_POPUP, (UINT)file_helpmenu->m_hMenu, "Справка");
+            mainmenu->AppendMenu(MF_STRING | MF_POPUP, (UINT)view_submenu->m_hMenu, "Вид");
+			mainmenu->AppendMenu(MF_STRING | MF_POPUP, (UINT)help_submenu->m_hMenu, "Справка");
 			SetMenu(mainmenu); 
+		} if (lng_selitemtext_2 == "English") {
+			GetDlgItem(IDC_SENDMSG)->SetWindowText("Send");
+			if (status == 0) {
+				TRACE("Winsock initialed.\r\n");
+    		}
+    		else {
+				MessageBox("WinSock cannot be initialed.", "Error", MB_OK|MB_ICONSTOP);
+    		};
+			if (parserLib == NULL) {
+				MessageBox("Cannot load \"PARSER.DLL\" library. Without it, the program may not work correctly.", "Error", MB_OK); 
+				FreeLibrary(parserLib);
+			};
+			setlocale(LC_ALL, "English");
+			mainmenu = (CMenu*)malloc(sizeof(CMenu));
+			mainmenu->LoadMenu(IDR_MAINMENU);
+			SetMenu(mainmenu);
 		} else {
 			GetDlgItem(IDC_SENDMSG)->SetWindowText("Send");
 			if (status == 0) {
@@ -312,8 +332,12 @@ BOOL MainWindow::OnInitDialog()
 			mainmenu = (CMenu*)malloc(sizeof(CMenu));
 			mainmenu->LoadMenu(IDR_MAINMENU);
 			SetMenu(mainmenu);
+			WritePrivateProfileString("Main", "Language", "English", exe_path);
+			WritePrivateProfileString("Main", "MsgHistory", "Enabled", exe_path);
 		};
+
 		MoveWindow(40, 40, 600, 360);
+		
 	//} 
 	//catch(...)
 	//{
@@ -390,19 +414,22 @@ void MainWindow::OnConnectClicked()
 void ConnectionFunc(HWND hwnd, struct MainWindow::PARAMETERS params) 
 {
 	TCHAR exe_path[MAX_PATH] = {0};
-	TCHAR history_path[MAX_PATH] = {0};
 	TCHAR* exe_name = "TLX_IRC.EXE"; // EXE filename
-	GetModuleFileName(NULL, exe_path, MAX_PATH);
-	GetModuleFileName(NULL, history_path, MAX_PATH); 
+	GetModuleFileName(NULL, exe_path, MAX_PATH); 
 	MainWindow* mainwin = (MainWindow*)AfxGetMainWnd();
-	mainwin->delsymbs(history_path, strlen(history_path) - strlen(exe_name) - 1, strlen(history_path) - strlen(exe_name) - 1); // deleting EXE filename
-	strcat(history_path, "\\history.txt");	// add settings filename
+	char msg_history_string[80];
+	GetPrivateProfileString("Main", "MsgHistory", "Enabled", msg_history_string, 80, exe_path);
+	CString msg_history_string2(msg_history_string);
+	TCHAR history_path[MAX_PATH] = {0};
 	char server[256];
 	sprintf(server, "%s", params.server);
 	char realname[80];
 	sprintf(realname, "%s", params.realname);
 	char connecting_msgb[100];
 	int port = params.port;
+	GetModuleFileName(NULL, history_path, MAX_PATH);
+	mainwin->delsymbs(history_path, strlen(history_path) - strlen(exe_name) - 1, strlen(history_path) - strlen(exe_name) - 1); // deleting EXE filename
+	strcat(history_path, "\\history");	// add histroy filename
 
 	if (server == NULL || server == "")
 	{
@@ -465,6 +492,33 @@ void ConnectionFunc(HWND hwnd, struct MainWindow::PARAMETERS params)
 
 	char window_title[384];
 	sprintf(window_title, "Tinelix IRC Client | %s", params.server);
+	GetModuleFileName(NULL, mainwin->history_path, MAX_PATH);
+	mainwin->delsymbs(mainwin->history_path, strlen(mainwin->history_path) - strlen(exe_name) - 1, strlen(mainwin->history_path) - strlen(exe_name) - 1); // deleting EXE filename
+	strcat(mainwin->history_path, "\\HISTORY");	// add history filename
+	GetModuleFileName(NULL, mainwin->history_path2, MAX_PATH);
+	mainwin->delsymbs(mainwin->history_path2, strlen(mainwin->history_path2) - strlen(exe_name), strlen(mainwin->history_path2) - strlen(exe_name) - 1); // deleting EXE filename
+	strcat(mainwin->history_path2, "HISTORY");	// add history filename
+	char current_time_ch[9];
+	mainwin->current_time = time(NULL);
+	strcat(mainwin->history_path2, "\\");
+	strftime(current_time_ch, 9, "%y-%m-%d", localtime(&mainwin->current_time));
+	strcat(mainwin->history_path2, current_time_ch);	// add history filename
+	if(msg_history_string2 == "Enabled") {
+		int create_dir_status = CreateDirectory(mainwin->history_path, NULL);
+		if(create_dir_status != 0 || GetLastError() == ERROR_ALREADY_EXISTS) {
+			int create_dir_status_2 = CreateDirectory(mainwin->history_path2, NULL);
+			if(create_dir_status_2 != 0 || GetLastError() == ERROR_ALREADY_EXISTS) {
+				strcat(mainwin->history_file, mainwin->history_path2);
+				strcat(mainwin->history_file, "\\");
+				time_t current_time = time(NULL);
+				strftime(current_time_ch, 9, "%H_%M_%S", localtime(&current_time));
+				strcat(mainwin->history_file, current_time_ch);
+				strcat(mainwin->history_file, ".txt");
+				TRACE(mainwin->history_file);					
+			};
+							
+		};
+	};
 
 	AfxGetApp()->GetMainWnd()->SetWindowText(window_title);
 
@@ -526,13 +580,16 @@ LRESULT MainWindow::WindowProc(UINT message, WPARAM wParam, LPARAM lParam)
 	MainWindow::delsymbs(exe_path, strlen(exe_path) - strlen(exe_name) - 1, strlen(exe_path) - strlen(exe_name) - 1); // deleting EXE filename
 
 	strcat(exe_path, "\\settings.ini");	// add settings filename
-	
+
 	TCHAR language_string[MAX_PATH] = {0};
+	TCHAR msg_history_string[MAX_PATH] = {0};
 	//try {
 		switch(message) {
 			case WM_SOCKET_MESSAGE:
 				GetPrivateProfileString("Main", "Language", "English", language_string, MAX_PATH, exe_path);
+				GetPrivateProfileString("Main", "MsgHistory", "Enabled", msg_history_string, MAX_PATH, exe_path);
 				CString lng_selitemtext(language_string);
+				CString msg_history_string2(msg_history_string);
 				int status;
 				char sock_buffer[32768] = {0};
 				status = recv((SOCKET)wParam, (char*) &sock_buffer, 32767, 0);
@@ -642,7 +699,24 @@ LRESULT MainWindow::WindowProc(UINT message, WPARAM wParam, LPARAM lParam)
 					};
 				};
 				if(pong == "") {
-					sp += sprintf(listing + sp, "%s",  parsed_msg_list);
+					TRACE("TEXT LENGTH: %d symbols\r\n", strlen(previous_listing) + strlen(parsed_msg_list));
+					if(strlen(previous_listing) + strlen(parsed_msg_list) < 32768) {
+						sp += sprintf(listing + sp, "%s",  parsed_msg_list);
+					} else {
+						sp = sprintf(listing, "%s",  parsed_msg_list);
+					};
+					if(msg_history_string2 == "Enabled") {
+						if(history_file_stdio.Open(history_file, CFile::modeReadWrite)) {
+							history_file_stdio.Write(listing, 32768);
+							history_file_stdio.Close();
+						} else {
+							if (history_file_stdio.Open(history_file, CFile::modeReadWrite | CFile::modeCreate)) {
+								history_file_stdio.Write(listing, 32768);
+								history_file_stdio.Close();
+							} else {
+							};
+						};
+					};
 					AfxGetApp()->GetMainWnd()->GetDlgItem(IDC_SOCKMSGS)->SetWindowText(listing);
 					CEdit* msg_box = (CEdit*)AfxGetApp()->GetMainWnd()->GetDlgItem(IDC_SOCKMSGS);
 					msg_box->SetSel(0, -1);
@@ -923,4 +997,11 @@ void MainWindow::OnOK()
 void MainWindow::OnCancel() 
 {	
 	CDialog::OnCancel();
+}
+
+void MainWindow::OnViewSettings() 
+{
+	SettingsDialog settingsdlg;
+	settingsdlg.DoModal();
+	
 }

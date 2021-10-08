@@ -20,6 +20,12 @@ public:
 		HWND hwnd;
 	};
 	char channel[256];
+	char exe_path[MAX_PATH];
+	TCHAR history_path[MAX_PATH];
+	TCHAR history_path2[MAX_PATH];
+	TCHAR history_file[MAX_PATH];
+	time_t current_time;
+	CStdioFile history_file_stdio;
 	BOOL IsConnected;
 	MainWindow(CWnd* pParent = NULL);	// standard constructor
 	void MainWindow::CreateConnectionThread(PARAMETERS params);
@@ -65,6 +71,7 @@ protected:
 	virtual void OnOK();
 	virtual void OnCancel();
 	afx_msg void OnClose();
+	afx_msg void OnViewSettings();
 	//}}AFX_MSG
 	DECLARE_MESSAGE_MAP()
 

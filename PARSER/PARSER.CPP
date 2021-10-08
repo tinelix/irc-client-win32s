@@ -23,8 +23,6 @@ extern "C" __declspec(dllexport) void ParseMessage(char* line, char* array[], ch
 		array[index++] = token;
 		token = strtok(NULL, " ");
 	};
-	
-	OutputDebugString("Parsing...\r\n");
 
 	for (int i = 0; i < index; i++) {
 		if(i < 2 && strlen(array[i]) < 4) {

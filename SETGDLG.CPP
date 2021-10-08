@@ -1,0 +1,190 @@
+// setgdlg.cpp : implementation file
+//
+
+#include "stdafx.h"
+#include "TLX_IRC.h"
+#include "setgdlg.h"
+#include <locale.h>
+#include <stdio.h>
+
+#ifdef _DEBUG
+#undef THIS_FILE
+static char BASED_CODE THIS_FILE[] = __FILE__;
+#endif
+
+/////////////////////////////////////////////////////////////////////////////
+// SettingsDialog dialog
+
+
+SettingsDialog::SettingsDialog(CWnd* pParent /*=NULL*/)
+	: CDialog(SettingsDialog::IDD, pParent)
+{
+	//{{AFX_DATA_INIT(SettingsDialog)
+		// NOTE: the ClassWizard will add member initialization here
+	//}}AFX_DATA_INIT
+}
+
+
+void SettingsDialog::DoDataExchange(CDataExchange* pDX)
+{
+	CDialog::DoDataExchange(pDX);
+	//{{AFX_DATA_MAP(SettingsDialog)
+		// NOTE: the ClassWizard will add DDX and DDV calls here
+	//}}AFX_DATA_MAP
+}
+
+
+BEGIN_MESSAGE_MAP(SettingsDialog, CDialog)
+	//{{AFX_MSG_MAP(SettingsDialog)
+	//}}AFX_MSG_MAP
+END_MESSAGE_MAP()
+
+
+/////////////////////////////////////////////////////////////////////////////
+// SettingsDialog message handlers
+
+void SettingsDialog::OnOK() 
+{
+	char selitemtext[80];
+	CComboBox* cb = (CComboBox*)GetDlgItem(IDC_LANGCOMBO1);
+	CButton* msg_history_checkbox = (CButton*)GetDlgItem(IDC_SAVE_MSG_HISTORY);
+	int selindex = cb->GetCurSel();
+	cb->GetLBText(selindex, selitemtext);
+	CString lng_selitemtext_2(selitemtext);
+	char language_string[80] = {0};
+	char msg_history[80] = {0};
+	char exe_path[MAX_PATH] = {0};
+	char settings_path[MAX_PATH] = {0};
+	char exe_name[MAX_PATH] = "TLX_IRC.EXE"; // EXE filename
+	GetModuleFileName(NULL, exe_path, MAX_PATH);
+	GetModuleFileName(NULL, settings_path, MAX_PATH); 
+	SettingsDialog::delsymbs(settings_path, strlen(settings_path) - strlen(exe_name) - 1, strlen(settings_path) - strlen(exe_name) - 1); // deleting EXE filename
+	strcat(settings_path, "\\settings.ini");	// add settings filename
+	if(GetFileAttributes(settings_path) == 1 && GetFileAttributes(exe_path) == 1) {
+		MessageBox("The disk may be write protected.", "Warning", MB_OK|MB_ICONEXCLAMATION); 
+	};
+
+	GetPrivateProfileString("Main", "Language", "English", language_string, MAX_PATH, settings_path);
+	CString lng_selitemtext_3(language_string);
+	CMenu *eng_mainmenu;
+	CMenu *rus_mainmenu;
+	CMenu *file_submenu;
+	CMenu *help_submenu;
+	CMenu *view_submenu;
+	eng_mainmenu = new CMenu;
+	rus_mainmenu = new CMenu;
+	file_submenu = new CMenu;
+	help_submenu = new CMenu;
+	view_submenu = new CMenu;
+
+	if(msg_history_checkbox->GetCheck() == 1) {
+		WritePrivateProfileString("Main", "MsgHistory", "Enabled", settings_path);
+	} else {
+		WritePrivateProfileString("Main", "MsgHistory", "Disabled", settings_path);
+	};
+
+	if(lng_selitemtext_2 == "Russian") {
+		if (lng_selitemtext_3 != "Russian") {
+			char msgboxtext[360];
+			int msgbox;
+			int text_parts;
+			text_parts = sprintf(msgboxtext, "Do you really want to change the language? Russian text may be incorrect on some Windows versions.\n\n");
+			text_parts+= sprintf(msgboxtext + text_parts, "Вы действительно хотите сменить язык? Текст на русском языке может быть некорректен на некоторых версиях Windows.");
+			msgbox = MessageBox((char*)msgboxtext, "Warning", MB_YESNO|MB_ICONEXCLAMATION);
+			if (msgbox == IDYES) {
+				WritePrivateProfileString("Main", "Language", "Russian", settings_path);
+			};
+
+			file_submenu->CreatePopupMenu();
+			file_submenu->AppendMenu(MF_STRING, ID_FILE_CONNECT, "Подключиться...");
+			file_submenu->AppendMenu(MF_STRING, ID_FILE_QUIT, "Выход");
+			view_submenu->CreatePopupMenu();
+			view_submenu->AppendMenu(MF_STRING, ID_VIEW_SETTINGS, "Настройки");
+			help_submenu->CreatePopupMenu();
+			help_submenu->AppendMenu(MF_STRING, ID_HELP_ABOUT, "О программе...");
+			rus_mainmenu->CreateMenu();
+			rus_mainmenu->AppendMenu(MF_STRING | MF_POPUP, (UINT)file_submenu->m_hMenu, "Файл");
+            rus_mainmenu->AppendMenu(MF_STRING | MF_POPUP, (UINT)view_submenu->m_hMenu, "Вид");
+			rus_mainmenu->AppendMenu(MF_STRING | MF_POPUP, (UINT)help_submenu->m_hMenu, "Справка");
+			GetParent()->SetMenu(rus_mainmenu);
+		} else {
+			
+		};
+		//WritePrivateProfileSection("Main", "Language=Russian", settings_path);
+	} else {
+		WritePrivateProfileString("Main", "Language", "English", settings_path);
+		setlocale(LC_ALL, "English");
+		eng_mainmenu->LoadMenu(IDR_MAINMENU);
+		GetParent()->SetMenu(eng_mainmenu);
+	};
+
+	delete(eng_mainmenu);
+	delete(rus_mainmenu);
+	delete(file_submenu);
+	delete(view_submenu);
+	delete(help_submenu);
+	
+	CDialog::OnOK();
+}
+
+void SettingsDialog::delsymbs(char *str, int begin, int lng)
+{
+	while(*(str + begin++) = (str + begin + lng)[MAX_PATH]);
+};
+
+BOOL SettingsDialog::OnInitDialog() 
+{
+	CDialog::OnInitDialog();
+	
+	char exe_path[MAX_PATH] = {0};
+	char exe_name[MAX_PATH] = "TLX_IRC.EXE"; // EXE filename
+
+	GetModuleFileName(NULL, exe_path, MAX_PATH);  
+
+	SettingsDialog::delsymbs(exe_path, strlen(exe_path) - strlen(exe_name) - 1, strlen(exe_path) - strlen(exe_name) - 1); // deleting EXE filename
+
+	strcat(exe_path, "\\settings.ini");	// add settings filename
+
+	TCHAR language_string[MAX_PATH] = {0};
+	TCHAR msg_history_string[MAX_PATH] = {0};
+	
+	try {
+		GetPrivateProfileString("Main", "Language", "English", language_string, MAX_PATH, exe_path);
+		GetPrivateProfileString("Main", "MsgHistory", "Enabled", msg_history_string, MAX_PATH, exe_path);
+		CComboBox *language_combo = (CComboBox*)GetDlgItem(IDC_LANGCOMBO1);
+		CButton* msg_history_checkbox = (CButton*)GetDlgItem(IDC_SAVE_MSG_HISTORY);
+		language_combo->SelectString(NULL, language_string);
+		mainfont.CreateFont(8, 0, 0, 0, FW_REGULAR, FALSE, FALSE, 0, DEFAULT_CHARSET, 0, 0, 
+		0, 0, "MS Sans Serif");
+		GetDlgItem(IDOK)->SetFont(&mainfont);
+		GetDlgItem(IDCANCEL)->SetFont(&mainfont);
+		GetDlgItem(IDC_LANGLABEL)->SetFont(&mainfont);
+		GetDlgItem(IDC_LANGCOMBO1)->SetFont(&mainfont);
+		GetDlgItem(IDC_SAVE_MSG_HISTORY)->SetFont(&mainfont);
+
+		CString lng_selitemtext_2(language_string);
+		CString msg_history_string2(msg_history_string);
+		
+		if (lng_selitemtext_2 == "Russian") {
+			GetDlgItem(IDCANCEL)->SetWindowText("Отмена");
+            GetDlgItem(IDC_LANGLABEL)->SetWindowText("Язык (Language):");
+            GetDlgItem(IDC_SAVE_MSG_HISTORY)->SetWindowText("Сохранять историю сообщений");
+            SetWindowText("Настройки");
+		} else {
+			GetDlgItem(IDCANCEL)->SetWindowText("Cancel");
+            GetDlgItem(IDC_LANGLABEL)->SetWindowText("Language:");
+            GetDlgItem(IDC_SAVE_MSG_HISTORY)->SetWindowText("Save messages history");
+            SetWindowText("Settings");
+		};
+		
+		if(msg_history_string2 == "Enabled") {
+			msg_history_checkbox->SetCheck(1);	
+		} else {
+			msg_history_checkbox->SetCheck(0);
+		};
+	} catch(...) {
+	
+	};	
+	return TRUE;  // return TRUE unless you set the focus to a control
+	              // EXCEPTION: OCX Property Pages should return FALSE
+}

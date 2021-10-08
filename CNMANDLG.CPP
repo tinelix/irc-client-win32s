@@ -49,6 +49,7 @@ BEGIN_MESSAGE_MAP(ConnectionManagerDialog, CDialog)
 	ON_BN_CLICKED(IDC_CONNECT_PROFILE_BTN, OnConnectProfileClicked)
 	ON_LBN_SELCHANGE(IDC_PROFILELIST, OnSelchangeProfilelist)
 	ON_BN_CLICKED(IDC_CHANGE_PROFILE_BTN, OnChangeProfileBtn)
+	ON_BN_CLICKED(IDC_DELETE_PROFILE_BTn, OnDeleteProfileBtn)
 	//}}AFX_MSG_MAP
 END_MESSAGE_MAP()
 
@@ -110,19 +111,14 @@ BOOL ConnectionManagerDialog::OnInitDialog()
 	try 
 	{	
 		CStdioFile settings_file;
-		try {
-			if(settings_file.Open(exe_path, CFile::modeReadWrite)) {
+		if(settings_file.Open(exe_path, CFile::modeReadWrite)) {
+			settings_file.Read(settings, 32767);
+		} else {
+			if (settings_file.Open(exe_path, CFile::modeReadWrite | CFile::modeCreate)) {
 				settings_file.Read(settings, 32767);
 			} else {
-				if (settings_file.Open(exe_path, CFile::modeReadWrite | CFile::modeCreate)) {
-					settings_file.Read(settings, 32767);
-				} else {
-					exit;
-				};
-			}
-		} catch(CFileException* cfe) {
-			language_combo->SelectString(NULL, "English");
-			exit;
+				exit;
+			};
 		};
 
 		CString settings_str(settings);
@@ -201,11 +197,13 @@ void ConnectionManagerDialog::OnAddProfileClicked()
 	char settings[32768] = {0};
 	GetModuleFileName(NULL, exe_path, MAX_PATH);
 	CListBox *profiles_cb = (CListBox*)GetDlgItem(IDC_PROFILELIST);
-	int selindex = profiles_cb->GetCurSel(); 
+	int selindex = profiles_cb->GetCurSel();
+	profiles_cb->GetText(selindex, selitemtext); 
 	ConnectionManagerDialog::delsymbs(exe_path, strlen(exe_path) - strlen(exe_name) - 1, strlen(exe_path) - strlen(exe_name) - 1); // deleting EXE filename
 	strcat(exe_path, "\\settings.ini");	// add settings filename
 	try 
 	{	
+		
 		int profiles_count = profiles_cb->GetCount();
 		for (int index = 0; index < profiles_count; index++) {
 		 	profiles_cb->DeleteString(index);
@@ -310,10 +308,12 @@ void ConnectionManagerDialog::OnOK()
 	CMenu *rus_mainmenu;
 	CMenu *file_submenu;
 	CMenu *help_submenu;
+	CMenu *view_submenu;
 	eng_mainmenu = new CMenu;
 	rus_mainmenu = new CMenu;
 	file_submenu = new CMenu;
 	help_submenu = new CMenu;
+	view_submenu = new CMenu;
 
 	if(lng_selitemtext_2 == "Russian") {
 		if (lng_selitemtext_3 != "Russian") {
@@ -324,23 +324,26 @@ void ConnectionManagerDialog::OnOK()
 			text_parts+= sprintf(msgboxtext + text_parts, "Вы действительно хотите сменить язык? Текст на русском языке может быть некорректен на некоторых версиях Windows.");
 			msgbox = MessageBox((char*)msgboxtext, "Warning", MB_YESNO|MB_ICONEXCLAMATION);
 			if (msgbox == IDYES) {
-				WritePrivateProfileSection("Main", "Language=Russian", settings_path);
+				WritePrivateProfileString("Main", "Language", "Russian", settings_path);
 			};
 
 			file_submenu->CreatePopupMenu();
 			file_submenu->AppendMenu(MF_STRING, ID_FILE_CONNECT, "Подключиться...");
 			file_submenu->AppendMenu(MF_STRING, ID_FILE_QUIT, "Выход");
+			view_submenu->CreatePopupMenu();
+			view_submenu->AppendMenu(MF_STRING, ID_VIEW_SETTINGS, "Настройки");
 			help_submenu->CreatePopupMenu();
 			help_submenu->AppendMenu(MF_STRING, ID_HELP_ABOUT, "О программе...");
 			rus_mainmenu->CreateMenu();
 			rus_mainmenu->AppendMenu(MF_STRING | MF_POPUP, (UINT)file_submenu->m_hMenu, "Файл");
+            rus_mainmenu->AppendMenu(MF_STRING | MF_POPUP, (UINT)view_submenu->m_hMenu, "Вид");
 			rus_mainmenu->AppendMenu(MF_STRING | MF_POPUP, (UINT)help_submenu->m_hMenu, "Справка");
 			GetParent()->SetMenu(rus_mainmenu);
 		} else {
-			WritePrivateProfileSection("Main", "Language=Russian", settings_path);
+			WritePrivateProfileString("Main", "Language", "Russian", settings_path);
 		};
 	} else {
-		WritePrivateProfileSection("Main", "Language=English", settings_path);
+		WritePrivateProfileString("Main", "Language", "English", settings_path);
 		setlocale(LC_ALL, "English");
 		eng_mainmenu->LoadMenu(IDR_MAINMENU);
 		GetParent()->SetMenu(eng_mainmenu);
@@ -349,6 +352,7 @@ void ConnectionManagerDialog::OnOK()
 	delete(eng_mainmenu);
 	delete(rus_mainmenu);
 	delete(file_submenu);
+	delete(view_submenu);
 	delete(help_submenu);
 
 	CDialog::OnOK();
@@ -359,6 +363,7 @@ void ConnectionManagerDialog::OnSelchangeProfilelist()
 	if (IsConnected == FALSE) {
 		GetDlgItem(IDC_CONNECT_PROFILE_BTN)->EnableWindow(TRUE);
 	};
+	GetDlgItem(IDC_DELETE_PROFILE_BTn)->EnableWindow(TRUE);
 	GetDlgItem(IDC_CHANGE_PROFILE_BTN)->EnableWindow(TRUE);	
 }
 
@@ -394,4 +399,74 @@ void ConnectionManagerDialog::OnChangeProfileBtn()
 void ConnectionManagerDialog::SetConnectionState(BOOL value) 
 {
 	IsConnected = value;
+}
+
+void ConnectionManagerDialog::OnDeleteProfileBtn() 
+{
+	char selitemtext[80];
+	char section[800];
+	char port[5];
+	char port_to_str[20];
+	char nicknames[80]; 
+	char exe_path[MAX_PATH] = {0};
+	char exe_name[MAX_PATH] = "TLX_IRC.EXE"; // EXE filename
+	char settings[32768] = {0};
+	GetModuleFileName(NULL, exe_path, MAX_PATH);
+	CListBox *profiles_cb = (CListBox*)GetDlgItem(IDC_PROFILELIST);
+	int selindex = profiles_cb->GetCurSel(); 
+	ConnectionManagerDialog::delsymbs(exe_path, strlen(exe_path) - strlen(exe_name) - 1, strlen(exe_path) - strlen(exe_name) - 1); // deleting EXE filename
+	strcat(exe_path, "\\settings.ini");	// add settings filename
+	try 
+	{	
+		profiles_cb->GetText(selindex, selitemtext);
+		CString prof_selitemtext_2(selitemtext);
+		WritePrivateProfileSection(prof_selitemtext_2, NULL, exe_path);
+		int profiles_count = profiles_cb->GetCount();
+		for (int index = 0; index < profiles_count; index++) {
+		 	profiles_cb->DeleteString(index);
+		};
+		CStdioFile settings_file;
+		try {
+			if(settings_file.Open(exe_path, CFile::modeReadWrite)) {
+				settings_file.Read(settings, 32767);
+			} else {
+				if (settings_file.Open(exe_path, CFile::modeReadWrite | CFile::modeCreate)) {
+					settings_file.Read(settings, 32767);
+				} else {
+					exit;
+				};
+			}
+		} catch(CFileException* cfe) {
+			exit;
+		};
+
+		CString settings_str(settings);
+
+		BOOL IsSection;
+		CString section;
+		
+		for(int i = 0; i < strlen(settings_str); i++)
+		{
+			CString settings_symbol(settings[i]);
+			settings_symbol.Right(i);
+			if (settings_symbol.Find("]") != -1) {
+				IsSection = FALSE;
+				if (section.IsEmpty() == FALSE && section != "Main") {
+					profiles_cb->AddString(section);
+				};
+				section = "";
+			};
+			if (IsSection == TRUE) {
+				section += settings_symbol;
+			};
+			if (settings_symbol.Find("[") != -1) {
+				IsSection = TRUE;
+			};	
+		};
+	}
+	catch(...)
+	{
+		TRACE("Error creating file");
+	};
+	
 }

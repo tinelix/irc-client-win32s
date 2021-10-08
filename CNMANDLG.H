@@ -37,6 +37,7 @@ protected:
 	virtual void OnOK();
 	afx_msg void OnSelchangeProfilelist();
 	afx_msg void OnChangeProfileBtn();
+	afx_msg void OnDeleteProfileBtn();
 	//}}AFX_MSG
 	DECLARE_MESSAGE_MAP()
 

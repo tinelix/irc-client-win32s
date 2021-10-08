@@ -15,6 +15,7 @@
 #define IDD_PROFMAINPAGE                135
 #define IDR_MENU1                       137
 #define IDR_RUS_MAINMENU                137
+#define IDD_SETTINGS                    141
 #define IDC_LANGCOMBO1                  1000
 #define IDC_SOCKMSGS                    1000
 #define IDC_EDIT2                       1001
@@ -39,18 +40,21 @@
 #define IDC_LICENSE_NOTIFICATION        1021
 #define IDC_COPYRIGHT                   1022
 #define IDC_GITHUB_REPO_LINK            1024
+#define IDC_SAVE_MSG_HISTORY            1025
+#define IDC_PROGRAM_NAME                1026
 #define ID_FILE_CONNECT                 32771
 #define ID_FILE_QUIT                    32772
 #define ID_HELP_ABOUT                   32773
+#define ID_VIEW_SETTINGS                32775
 
 // Next default values for new objects
 // 
 #ifdef APSTUDIO_INVOKED
 #ifndef APSTUDIO_READONLY_SYMBOLS
 #define _APS_3D_CONTROLS                     1
-#define _APS_NEXT_RESOURCE_VALUE        141
-#define _APS_NEXT_COMMAND_VALUE         32775
-#define _APS_NEXT_CONTROL_VALUE         1025
+#define _APS_NEXT_RESOURCE_VALUE        143
+#define _APS_NEXT_COMMAND_VALUE         32776
+#define _APS_NEXT_CONTROL_VALUE         1027
 #define _APS_NEXT_SYMED_VALUE           101
 #endif
 #endif
