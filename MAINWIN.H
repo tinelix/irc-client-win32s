@@ -21,9 +21,9 @@ public:
 	};
 	char channel[256];
 	char exe_path[MAX_PATH];
-	TCHAR history_path[MAX_PATH];
-	TCHAR history_path2[MAX_PATH];
-	TCHAR history_file[MAX_PATH];
+	char history_path[MAX_PATH];
+	char history_path2[MAX_PATH];
+	char history_file[MAX_PATH];
 	time_t current_time;
 	CStdioFile history_file_stdio;
 	BOOL IsConnected;

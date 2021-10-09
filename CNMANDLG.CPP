@@ -297,7 +297,7 @@ void ConnectionManagerDialog::OnOK()
 	char exe_name[MAX_PATH] = "TLX_IRC.EXE"; // EXE filename
 	GetModuleFileName(NULL, exe_path, MAX_PATH);
 	GetModuleFileName(NULL, settings_path, MAX_PATH); 
-	ConnectionManagerDialog::delsymbs(settings_path, strlen(settings_path) - strlen(exe_name) - 1, strlen(settings_path) - strlen(exe_name) - 1); // deleting EXE filename
+	ConnectionManagerDialog::delsymbs(settings_path, strlen(settings_path) - strlen(exe_name) - 1, MAX_PATH); // deleting EXE filename
 	strcat(settings_path, "\\settings.ini");	// add settings filename
 	if(GetFileAttributes(settings_path) == 1 && GetFileAttributes(exe_path) == 1) {
 		MessageBox("The disk may be write protected.", "Warning", MB_OK|MB_ICONEXCLAMATION); 

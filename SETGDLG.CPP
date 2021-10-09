@@ -56,15 +56,14 @@ void SettingsDialog::OnOK()
 	char exe_path[MAX_PATH] = {0};
 	char settings_path[MAX_PATH] = {0};
 	char exe_name[MAX_PATH] = "TLX_IRC.EXE"; // EXE filename
-	GetModuleFileName(NULL, exe_path, MAX_PATH);
 	GetModuleFileName(NULL, settings_path, MAX_PATH); 
-	SettingsDialog::delsymbs(settings_path, strlen(settings_path) - strlen(exe_name) - 1, strlen(settings_path) - strlen(exe_name) - 1); // deleting EXE filename
+	SettingsDialog::delsymbs(settings_path, strlen(settings_path) - strlen(exe_name) - 1, MAX_PATH); // deleting EXE filename
 	strcat(settings_path, "\\settings.ini");	// add settings filename
 	if(GetFileAttributes(settings_path) == 1 && GetFileAttributes(exe_path) == 1) {
 		MessageBox("The disk may be write protected.", "Warning", MB_OK|MB_ICONEXCLAMATION); 
 	};
 
-	GetPrivateProfileString("Main", "Language", "English", language_string, MAX_PATH, settings_path);
+	GetPrivateProfileString("Main", "Language", NULL, language_string, MAX_PATH, settings_path);
 	CString lng_selitemtext_3(language_string);
 	CMenu *eng_mainmenu;
 	CMenu *rus_mainmenu;
@@ -84,7 +83,7 @@ void SettingsDialog::OnOK()
 	};
 
 	if(lng_selitemtext_2 == "Russian") {
-		if (lng_selitemtext_3 != "Russian") {
+		if (lng_selitemtext_3 == "English") {
 			char msgboxtext[360];
 			int msgbox;
 			int text_parts;
@@ -110,7 +109,6 @@ void SettingsDialog::OnOK()
 		} else {
 			
 		};
-		//WritePrivateProfileSection("Main", "Language=Russian", settings_path);
 	} else {
 		WritePrivateProfileString("Main", "Language", "English", settings_path);
 		setlocale(LC_ALL, "English");
@@ -129,7 +127,7 @@ void SettingsDialog::OnOK()
 
 void SettingsDialog::delsymbs(char *str, int begin, int lng)
 {
-	while(*(str + begin++) = (str + begin + lng)[MAX_PATH]);
+		while(*(str + begin++) = (str + begin + lng)[MAX_PATH]);			
 };
 
 BOOL SettingsDialog::OnInitDialog() 

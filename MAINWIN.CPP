@@ -122,7 +122,8 @@ BOOL CAboutDlg::OnInitDialog()
 			GetDlgItem(IDC_LICENSE_NOTIFICATION)->SetWindowText("Это свободное программное обеспечение с"
 			" открытым исходным кодом, распространяемое с условиями GNU General Public License 3.0. Прочитайте"
 			" на сайте https://www.gnu.org/licenses/gnu-3.0-ru.html или смотрите файл LICENSE.TXT.\n\nБЕЗ КАКИХ-ЛИБО"
-			" ГАРАНТИЙ, ВКЛЮЧАЯ КОММЕРЧЕСКУЮ ЦЕННОСТЬ.");			
+			" ГАРАНТИЙ, ВКЛЮЧАЯ КОММЕРЧЕСКУЮ ЦЕННОСТЬ.");
+						
 		} else {
 			SetWindowText("About Tinelix IRC Client");
 			GetDlgItem(IDC_WIN32S_EDITION)->SetWindowText("for Win32s");
@@ -213,6 +214,9 @@ BOOL MainWindow::OnInitDialog()
 	CDialog::OnInitDialog();
 	CenterWindow();
 
+	TRACE("Tinelix IRC Client ver. 0.1.0 (2021-10-09)\r\nCopyright © 2021 Dmitry Tretyakov (aka. Tinelix)\r\n"
+	"https:/github.com/tinelix-irc-client-for-win32s\r\n\r\n");
+	
 	// Add "About..." menu item to system menu.
 
 	// IDM_ABOUTBOX must be in the system command range.
@@ -255,9 +259,13 @@ BOOL MainWindow::OnInitDialog()
 
 	strcat(dll_path, "\\parser.dll");
 
-	parserLib = (HINSTANCE)malloc(sizeof(HINSTANCE));
-
-	parserLib = LoadLibrary(dll_path);
+	if((GetVersion() & 0x80000000) == 0) {
+		parserLib = (HINSTANCE)malloc(sizeof(HINSTANCE));
+		parserLib = LoadLibrary(dll_path);
+		if(parserLib) {
+			TRACE("PARSER.DLL loaded.\r\n");
+		};
+	};
 
 	TCHAR language_string[MAX_PATH] = {0};
 	CMenu* mainmenu;
@@ -279,8 +287,9 @@ BOOL MainWindow::OnInitDialog()
     		else {
 				MessageBox("WinSock не может быть инициализирован.", "Ошибка", MB_OK|MB_ICONSTOP);
     		};
-			if (parserLib == NULL) {
-				MessageBox("Не удалось загрузить библотеку \"PARSER.DLL\". Без нее программа может работать некорректно.", "Ошибка", MB_OK); 
+			if ((GetVersion() & 0x80000000) < 0) {
+				MessageBox("Обработка строк через библиотеку \"PARSER.DLL\" работает только в Windows NT. Запуск "
+                "данной библотеки в Win32s может привести к вылету программы.", "Ошибка", MB_OK);
 				FreeLibrary(parserLib);
 			};
 			setlocale(LC_ALL, "Russian");
@@ -303,20 +312,21 @@ BOOL MainWindow::OnInitDialog()
 		} if (lng_selitemtext_2 == "English") {
 			GetDlgItem(IDC_SENDMSG)->SetWindowText("Send");
 			if (status == 0) {
-				TRACE("Winsock initialed.\r\n");
+				TRACE("WinSock initialed.\r\n");
     		}
     		else {
 				MessageBox("WinSock cannot be initialed.", "Error", MB_OK|MB_ICONSTOP);
     		};
-			if (parserLib == NULL) {
-				MessageBox("Cannot load \"PARSER.DLL\" library. Without it, the program may not work correctly.", "Error", MB_OK); 
+			if ((GetVersion() & 0x80000000) < 0) {
+				MessageBox("String parsing through the \"PARSER.DLL\" library works only in Windows NT. Running "
+                 "this library in Win32s may cause the program to crash.", "Error", MB_OK);
 				FreeLibrary(parserLib);
 			};
 			setlocale(LC_ALL, "English");
 			mainmenu = (CMenu*)malloc(sizeof(CMenu));
 			mainmenu->LoadMenu(IDR_MAINMENU);
 			SetMenu(mainmenu);
-		} else {
+		} if (lng_selitemtext_2 == "") {
 			GetDlgItem(IDC_SENDMSG)->SetWindowText("Send");
 			if (status == 0) {
 				TRACE("Winsock initialed.\r\n");
@@ -324,8 +334,9 @@ BOOL MainWindow::OnInitDialog()
     		else {
 				MessageBox("WinSock cannot be initialed.", "Error", MB_OK|MB_ICONSTOP);
     		};
-			if (parserLib == NULL) {
-				MessageBox("Cannot load \"PARSER.DLL\" library. Without it, the program may not work correctly.", "Error", MB_OK); 
+			if ((GetVersion() & 0x80000000) < 0) {
+				MessageBox("String parsing through the \"PARSER.DLL\" library works only in Windows NT. Running "
+                 "this library in Win32s may cause the program to crash.", "Error", MB_OK);
 				FreeLibrary(parserLib);
 			};
 			setlocale(LC_ALL, "English");
@@ -413,14 +424,22 @@ void MainWindow::OnConnectClicked()
 
 void ConnectionFunc(HWND hwnd, struct MainWindow::PARAMETERS params) 
 {
-	TCHAR exe_path[MAX_PATH] = {0};
-	TCHAR* exe_name = "TLX_IRC.EXE"; // EXE filename
-	GetModuleFileName(NULL, exe_path, MAX_PATH); 
+	char exe_path[MAX_PATH] = {0};
+	char h_pch[MAX_PATH] = {0};
+	char h_pch2[MAX_PATH] = {0};
+	char h_fch[MAX_PATH] = {0};
+	char exe_name[MAX_PATH] = "TLX_IRC.EXE"; // EXE filename
+	GetModuleFileName(NULL, exe_path, MAX_PATH);
 	MainWindow* mainwin = (MainWindow*)AfxGetMainWnd();
+	mainwin->delsymbs(exe_path, strlen(exe_path) - strlen(exe_name), strlen(exe_path) - strlen(exe_name)); // deleting EXE filename
+	strcat(exe_path, "settings.ini");
 	char msg_history_string[80];
+	char language_string[80];
 	GetPrivateProfileString("Main", "MsgHistory", "Enabled", msg_history_string, 80, exe_path);
+	GetPrivateProfileString("Main", "Language", "", language_string, 80, exe_path);
 	CString msg_history_string2(msg_history_string);
-	TCHAR history_path[MAX_PATH] = {0};
+	CString language_string2(language_string);
+	char history_path[MAX_PATH] = {0};
 	char server[256];
 	sprintf(server, "%s", params.server);
 	char realname[80];
@@ -429,18 +448,24 @@ void ConnectionFunc(HWND hwnd, struct MainWindow::PARAMETERS params)
 	int port = params.port;
 	GetModuleFileName(NULL, history_path, MAX_PATH);
 	mainwin->delsymbs(history_path, strlen(history_path) - strlen(exe_name) - 1, strlen(history_path) - strlen(exe_name) - 1); // deleting EXE filename
-	strcat(history_path, "\\history");	// add histroy filename
+	strcat(history_path, "\\history");	// add history filename
 
-	if (server == NULL || server == "")
+	if (server == NULL || server == "" || server == " ")
 	{
-	  	TRACE("[SERVER_IS_NULL_ERROR] Not specified server address.\n");
-		cout << "[SERVER_IS_NULL_ERROR] Not specified server address.\n" << endl << endl;
+	  	if(language_string2 == "Russian") {
+			MessageBox(NULL, "Не указан адрес сервера.", "Ошибка", MB_OK|MB_ICONSTOP);
+		} else {
+			MessageBox(NULL, "Not specified server address.", "Error", MB_OK|MB_ICONSTOP);
+		};
 		exit;
 	}; 
 	if (port == NULL || port == 0)
 	{
-		TRACE("[PORT_IS_NULL_ERROR] Not specified server port.\n");
-		cout << "[PORT_IS_NULL_ERROR] Not specified server port.\n" << endl << endl;
+		if(language_string2 == "Russian") {
+			MessageBox(NULL, "Не указан порт сервера.", "Ошибка", MB_OK|MB_ICONSTOP);
+		} else {
+			MessageBox(NULL, "Not specified server port.", "Error", MB_OK|MB_ICONSTOP);
+		};
 		exit;
 	};
 
@@ -451,9 +476,16 @@ void ConnectionFunc(HWND hwnd, struct MainWindow::PARAMETERS params)
 	SOCKADDR_IN client_param;
 	hostent* host;
 	if (sock == SOCKET_ERROR) {
-		char* error_msg;
-		error_msg = "[SOCKET_ERROR] Could not start WinSocket with error code: %d\n"; 
-		TRACE0(error_msg, WSAGetLastError());
+		if(language_string2 == "Russian") {
+			char* error_msg;
+			sprintf(error_msg, "Не удалось запустить WinSock с кодом ошибки: %d", WSAGetLastError());
+			MessageBox(NULL, error_msg, "Ошибка", MB_OK|MB_ICONSTOP);
+		} else {
+			char* error_msg;
+			sprintf(error_msg, "Could not start WinSock with error code: %d", WSAGetLastError());
+			MessageBox(NULL, error_msg, "Error", MB_OK|MB_ICONSTOP);
+		};
+		exit;
 	};
 
 	client_param.sin_family = AF_INET;
@@ -465,7 +497,11 @@ void ConnectionFunc(HWND hwnd, struct MainWindow::PARAMETERS params)
 	}									 
 	else 
 	{
-		TRACE("[NOHOST_ERROR] Could not calculate this hostname.\n");
+		if(language_string2 == "Russian") {
+			MessageBox(NULL, "Не удалось получить IP-адрес для этого имени хоста.", "Ошибка", MB_OK|MB_ICONSTOP);
+		} else {
+			MessageBox(NULL, "Failed to get the IP address for this hostname.", "Error", MB_OK|MB_ICONSTOP);
+		};
 		exit;
 	};
 	client_param.sin_port = htons(port);
@@ -474,9 +510,15 @@ void ConnectionFunc(HWND hwnd, struct MainWindow::PARAMETERS params)
 	int status;
 	status = connect(sock, (SOCKADDR*)&client_param, sizeof(client_param));
 	if (status == SOCKET_ERROR || status == INVALID_SOCKET) {
-		char error_msg[100];
-		wsprintf(error_msg, "[SOCKET_ERROR] Could not start WinSocket with error code: %d\n", WSAGetLastError()); 
-		TRACE0(error_msg, WSAGetLastError());
+		if(language_string2 == "Russian") {
+			char* error_msg;
+			sprintf(error_msg, "Не удалось запустить WinSock с кодом ошибки: %d", WSAGetLastError());
+			MessageBox(NULL, error_msg, "Ошибка", MB_OK|MB_ICONSTOP);
+		} else {
+			char* error_msg;
+			sprintf(error_msg, "Could not start WinSock with error code: %d", WSAGetLastError());
+			MessageBox(NULL, error_msg, "Error", MB_OK|MB_ICONSTOP);
+		};
 		exit;
 	};
 	try {
@@ -492,31 +534,95 @@ void ConnectionFunc(HWND hwnd, struct MainWindow::PARAMETERS params)
 
 	char window_title[384];
 	sprintf(window_title, "Tinelix IRC Client | %s", params.server);
-	GetModuleFileName(NULL, mainwin->history_path, MAX_PATH);
-	mainwin->delsymbs(mainwin->history_path, strlen(mainwin->history_path) - strlen(exe_name) - 1, strlen(mainwin->history_path) - strlen(exe_name) - 1); // deleting EXE filename
-	strcat(mainwin->history_path, "\\HISTORY");	// add history filename
-	GetModuleFileName(NULL, mainwin->history_path2, MAX_PATH);
-	mainwin->delsymbs(mainwin->history_path2, strlen(mainwin->history_path2) - strlen(exe_name), strlen(mainwin->history_path2) - strlen(exe_name) - 1); // deleting EXE filename
-	strcat(mainwin->history_path2, "HISTORY");	// add history filename
-	char current_time_ch[9];
-	mainwin->current_time = time(NULL);
-	strcat(mainwin->history_path2, "\\");
-	strftime(current_time_ch, 9, "%y-%m-%d", localtime(&mainwin->current_time));
-	strcat(mainwin->history_path2, current_time_ch);	// add history filename
 	if(msg_history_string2 == "Enabled") {
-		int create_dir_status = CreateDirectory(mainwin->history_path, NULL);
+		GetModuleFileName(NULL, h_pch, MAX_PATH);
+		mainwin->delsymbs(h_pch, strlen(h_pch) - strlen(exe_name) - 1, strlen(h_pch) - strlen(exe_name) - 1); // deleting EXE filename
+		DWORD winver = GetVersion();
+		//if ((GetVersion() & 0x80000000l) == 0) {
+		strcat(h_pch, "\\HISTORY");
+		//sprintf(mainwin->history_path, "\0C:\\HISTORY");
+		GetModuleFileName(NULL, h_pch2, MAX_PATH);
+		mainwin->delsymbs(h_pch2, strlen(h_pch2) - strlen(exe_name), strlen(h_pch2) - strlen(exe_name) - 1); // deleting EXE filename
+		strcat(h_pch2, "HISTORY");
+		char current_time_ch[9];
+		time_t current_time = time(NULL);
+		strftime(current_time_ch, 9, "%y_%m_%d", localtime(&current_time));
+		strcat(h_pch2, "\\");
+		strcat(h_pch2, current_time_ch);	// add history filename
+		sprintf(mainwin->history_path, "%s", h_pch);
+		sprintf(mainwin->history_path2, "%s", h_pch2);
+		char info_msg[120];
+		int create_dir_status = CreateDirectory(h_pch, NULL);
+		
 		if(create_dir_status != 0 || GetLastError() == ERROR_ALREADY_EXISTS) {
-			int create_dir_status_2 = CreateDirectory(mainwin->history_path2, NULL);
+			int create_dir_status_2 = CreateDirectory(h_pch2, NULL);
 			if(create_dir_status_2 != 0 || GetLastError() == ERROR_ALREADY_EXISTS) {
-				strcat(mainwin->history_file, mainwin->history_path2);
-				strcat(mainwin->history_file, "\\");
-				time_t current_time = time(NULL);
+				strcat(h_fch, h_pch2);
 				strftime(current_time_ch, 9, "%H_%M_%S", localtime(&current_time));
-				strcat(mainwin->history_file, current_time_ch);
-				strcat(mainwin->history_file, ".txt");
-				TRACE(mainwin->history_file);					
+				strcat(h_fch, "\\"); 
+				strcat(h_fch, current_time_ch);
+				strcat(h_fch, ".txt");
+				sprintf(mainwin->history_file, "%s", h_fch);					
+			} if(GetLastError() == ERROR_PATH_NOT_FOUND || GetLastError() == ERROR_ACCESS_DENIED
+				 || GetLastError() == ERROR_WRITE_PROTECT) {
+				if(language_string2 == "Russian") {
+                    char err_msg[8192];
+                    char err_description[320];
+                    if(GetLastError() == ERROR_PATH_NOT_FOUND) {
+                        sprintf(err_description, "Путь не найден");
+                    } if (GetLastError() == ERROR_ACCESS_DENIED) {
+                        sprintf(err_description, "Доступ запрещен");
+                    } if (GetLastError() == ERROR_WRITE_PROTECT) {
+                        sprintf(err_description, "Данные защищены от записи");
+                    };
+                    sprintf(err_msg,"Ошибка создании папки: %s\r\nКод ошибки: %d (%s)", mainwin->history_path2, GetLastError(),
+                            err_description);
+                    MessageBox(NULL, err_msg, "Ошибка", MB_OK|MB_ICONSTOP);
+                } else {
+                    char err_msg[4096];
+                    char err_description[320];
+                    if(GetLastError() == ERROR_PATH_NOT_FOUND) {
+                        sprintf(err_description, "Path not found");
+                    } if (GetLastError() == ERROR_ACCESS_DENIED) {
+                        sprintf(err_description, "Access denied");
+                    } if (GetLastError() == ERROR_WRITE_PROTECT) {
+                        sprintf(err_description, "Data is write-protected");
+                    };
+                    sprintf(err_msg,"Error creating folder: %s\r\nError code: %d (%s)", mainwin->history_path2, GetLastError(),
+                            err_description);
+                    MessageBox(NULL, err_msg, "Error", MB_OK|MB_ICONSTOP);
+                };
 			};
 							
+		} if(GetLastError() == ERROR_PATH_NOT_FOUND || GetLastError() == ERROR_ACCESS_DENIED
+			 || GetLastError() == ERROR_WRITE_PROTECT) {
+			if(language_string2 == "Russian") {
+                    char err_msg[8192];
+                    char err_description[320];
+                    if(GetLastError() == ERROR_PATH_NOT_FOUND) {
+                        sprintf(err_description, "Путь не найден");
+                    } if (GetLastError() == ERROR_ACCESS_DENIED) {
+                        sprintf(err_description, "Доступ запрещен");
+                    } if (GetLastError() == ERROR_WRITE_PROTECT) {
+                        sprintf(err_description, "Данные защищены от записи");
+                    };
+                    sprintf(err_msg,"Ошибка создании папки: %s\r\nКод ошибки: %d (%s)", mainwin->history_path, GetLastError(),
+                            err_description);
+                    MessageBox(NULL, err_msg, "Ошибка", MB_OK|MB_ICONSTOP);
+            } else {
+                    char err_msg[4096];
+                    char err_description[320];
+                    if(GetLastError() == ERROR_PATH_NOT_FOUND) {
+                        sprintf(err_description, "Path not found");
+                    } if (GetLastError() == ERROR_ACCESS_DENIED) {
+                        sprintf(err_description, "Access denied");
+                    } if (GetLastError() == ERROR_WRITE_PROTECT) {
+                        sprintf(err_description, "Data is write-protected");
+                    };
+                    sprintf(err_msg,"Error creating folder: %s\r\nError code: %d (%s)", mainwin->history_path, GetLastError(),
+                            err_description);
+                    MessageBox(NULL, err_msg, "Error", MB_OK|MB_ICONSTOP);
+                };
 		};
 	};
 
@@ -524,8 +630,15 @@ void ConnectionFunc(HWND hwnd, struct MainWindow::PARAMETERS params)
 
 	int WSAAsync = WSAAsyncSelect(sock, AfxGetApp()->GetMainWnd()->GetSafeHwnd(), WM_SOCKET_MESSAGE, FD_READ | FD_CLOSE);
 	if (WSAAsync > 0) {
-		char error_msg[100];
-		wsprintf(error_msg, "[SOCKET_ERROR] Could not start WinSocket with error code: %d\n", WSAGetLastError());
+		if(language_string2 == "Russian") {
+			char* error_msg;
+			sprintf(error_msg, "Не удалось запустить WinSock с кодом ошибки: %d", WSAGetLastError());
+			MessageBox(NULL, error_msg, "Ошибка", MB_OK|MB_ICONSTOP);
+		} else {
+			char* error_msg;
+			sprintf(error_msg, "Could not start WinSock with error code: %d", WSAGetLastError());
+			MessageBox(NULL, error_msg, "Error", MB_OK|MB_ICONSTOP);
+		};
 	};
 	char ident_sending[400];
 	int ident_sending_parts;
@@ -595,14 +708,14 @@ LRESULT MainWindow::WindowProc(UINT message, WPARAM wParam, LPARAM lParam)
 				status = recv((SOCKET)wParam, (char*) &sock_buffer, 32767, 0);
 				if (status == SOCKET_ERROR) {
 					char error_msg[100];
-					if(lng_selitemtext == "Russian") {
-						sprintf(error_msg, "Ошибка сокета: %d", WSAGetLastError());
-						MessageBox(error_msg, "Ошибка", MB_OK|MB_ICONSTOP);
-					} else {
-						sprintf(error_msg, "Socket error: %d", WSAGetLastError());
-						MessageBox(error_msg, "Error", MB_OK|MB_ICONSTOP);
-					};
 					try {
+						if(lng_selitemtext == "Russian") {
+							sprintf(error_msg, "Ошибка сокета: %d", WSAGetLastError());
+							MessageBox(error_msg, "Ошибка", MB_OK|MB_ICONSTOP);
+						} else {
+							sprintf(error_msg, "Socket error: %d", WSAGetLastError());
+							MessageBox(error_msg, "Error", MB_OK|MB_ICONSTOP);
+						};
 						if( GetVersion() & 0x80000000 && (GetVersion() & 0xFF) ==3) {
 							AfxGetApp()->GetMainWnd()->SetWindowText("Tinelix IRC Client (Win32s)");
 						} else {
@@ -619,6 +732,7 @@ LRESULT MainWindow::WindowProc(UINT message, WPARAM wParam, LPARAM lParam)
 					} else {
 						MessageBox("Connection lost.", "Information", MB_OK|MB_ICONINFORMATION);
 					};
+					IsConnected = FALSE;
 					closesocket(sock);
 					if( GetVersion() & 0x80000000 && (GetVersion() & 0xFF) ==3) {
 						AfxGetApp()->GetMainWnd()->SetWindowText("Tinelix IRC Client (Win32s)");
