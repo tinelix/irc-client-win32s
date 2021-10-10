@@ -76,4 +76,5 @@ protected:
 	DECLARE_MESSAGE_MAP()
 
 	friend class ConnectionManagerDialog;
+	friend class SettingsDialog;
 };

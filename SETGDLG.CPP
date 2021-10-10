@@ -4,6 +4,7 @@
 #include "stdafx.h"
 #include "TLX_IRC.h"
 #include "setgdlg.h"
+#include "mainwin.h"
 #include <locale.h>
 #include <stdio.h>
 
@@ -36,6 +37,7 @@ void SettingsDialog::DoDataExchange(CDataExchange* pDX)
 
 BEGIN_MESSAGE_MAP(SettingsDialog, CDialog)
 	//{{AFX_MSG_MAP(SettingsDialog)
+	ON_BN_CLICKED(IDC_CHANGE_MSG_FONT, OnChangeMsgFont)
 	//}}AFX_MSG_MAP
 END_MESSAGE_MAP()
 
@@ -159,6 +161,7 @@ BOOL SettingsDialog::OnInitDialog()
 		GetDlgItem(IDC_LANGLABEL)->SetFont(&mainfont);
 		GetDlgItem(IDC_LANGCOMBO1)->SetFont(&mainfont);
 		GetDlgItem(IDC_SAVE_MSG_HISTORY)->SetFont(&mainfont);
+		GetDlgItem(IDC_CHANGE_MSG_FONT)->SetFont(&mainfont);
 
 		CString lng_selitemtext_2(language_string);
 		CString msg_history_string2(msg_history_string);
@@ -167,11 +170,13 @@ BOOL SettingsDialog::OnInitDialog()
 			GetDlgItem(IDCANCEL)->SetWindowText("Отмена");
             GetDlgItem(IDC_LANGLABEL)->SetWindowText("Язык (Language):");
             GetDlgItem(IDC_SAVE_MSG_HISTORY)->SetWindowText("Сохранять историю сообщений");
+			GetDlgItem(IDC_CHANGE_MSG_FONT)->SetWindowText("Сменить шрифт...");
             SetWindowText("Настройки");
 		} else {
 			GetDlgItem(IDCANCEL)->SetWindowText("Cancel");
             GetDlgItem(IDC_LANGLABEL)->SetWindowText("Language:");
             GetDlgItem(IDC_SAVE_MSG_HISTORY)->SetWindowText("Save messages history");
+			GetDlgItem(IDC_CHANGE_MSG_FONT)->SetWindowText("Change font...");
             SetWindowText("Settings");
 		};
 		
@@ -185,4 +190,25 @@ BOOL SettingsDialog::OnInitDialog()
 	};	
 	return TRUE;  // return TRUE unless you set the focus to a control
 	              // EXCEPTION: OCX Property Pages should return FALSE
+}
+
+void SettingsDialog::OnChangeMsgFont() 
+{	
+	try {
+		LOGFONT logfont;
+		CFontDialog fontdlg(&logfont);
+		sprintf(logfont.lfFaceName, "Fixedsys");
+		logfont.lfHeight = 12;
+		logfont.lfItalic = FALSE;
+		logfont.lfStrikeOut = FALSE;
+		logfont.lfUnderline = FALSE;
+		int status = fontdlg.DoModal();
+		if(status == IDOK) {
+			// Soon you wan't have to change the same font every time.
+			msg_font.CreateFontIndirect(&logfont);
+			AfxGetApp()->GetMainWnd()->GetDlgItem(IDC_SOCKMSGS)->SetFont(&msg_font);
+		};
+	} catch(...) {
+	
+	};	
 }

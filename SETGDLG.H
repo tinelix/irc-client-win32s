@@ -26,15 +26,24 @@ public:
 
 // Implementation
 protected:
-
 	// Generated message map functions
 	//{{AFX_MSG(SettingsDialog)
 	virtual void OnOK();
 	virtual BOOL OnInitDialog();
+	afx_msg void OnChangeMsgFont();
 	//}}AFX_MSG
 	DECLARE_MESSAGE_MAP()
 
 public:
 	CFont mainfont;
+	char font_family[128];
+	int font_size;
+	int font_weight;
+	char font_key[160];
 	void delsymbs(char *str, int begin, int lng);
+
+private:
+	CFont msg_font;
+
+friend class MainWindow;
 };

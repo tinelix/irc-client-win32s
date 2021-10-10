@@ -232,7 +232,7 @@ BOOL MainWindow::OnInitDialog()
 		pSysMenu->AppendMenu(MF_SEPARATOR);
 		pSysMenu->AppendMenu(MF_STRING, IDM_ABOUTBOX, strAboutMenu);
 	};
-	font.CreateFont(10, 0, 0, 0, FW_REGULAR, FALSE, FALSE, 0, DEFAULT_CHARSET, 0, 0, 
+	font.CreateFont(9, 0, 0, 0, FW_REGULAR, FALSE, FALSE, 0, DEFAULT_CHARSET, 0, 0, 
 	0, 0, "Fixedsys");
 	mainfont.CreateFont(8, 0, 0, 0, FW_REGULAR, FALSE, FALSE, 0, DEFAULT_CHARSET, 0, 0, 
 	0, 0, "MS Sans Serif");
@@ -1064,16 +1064,18 @@ void MainWindow::OnSendmsg()
 			int status = send(sock, cmd_msg, strlen(cmd_msg), 0);
 		};
 	} if(slash == "/") {
-		if (strlen(spaces_splitter[0]) > 1) {
+		if (strlen(spaces_splitter[0]) >= 1) {
+			char cmd_msg[1024] = {0};
+			int msg_index = 0;
 			if(spaces_splitter[0] != "/msg" && spaces_splitter[0] != "/privmsg" && spaces_splitter[0] != "/join"
 			&& spaces_splitter[0] != "/part" && spaces_splitter[0] != "/ping" && spaces_splitter[0] != "/whois") {
-				char cmd_msg[1024] = {0};
-				int msg_index;
-				msg_index = sprintf(cmd_msg, "%s", spaces_splitter[0].Right(strlen(spaces_splitter[0]) - 1));
-				if(args != "") {
-					msg_index += sprintf(cmd_msg + msg_index, " %s\r\n", args);
-				} else {
-					msg_index += sprintf(cmd_msg + msg_index, "\r\n");
+				msg_index = sprintf(cmd_msg, "%s", spaces_splitter[0].Right(spaces_splitter[0].GetLength() - 1));
+				for (int i = 1; i < spaces_splitter.GetSize(); i++) {
+					if(i == spaces_splitter.GetSize() - 1) {
+						msg_index += sprintf(cmd_msg + msg_index, " %s\r\n", spaces_splitter[i]);
+					} if (i < spaces_splitter.GetSize() - 1) {
+						msg_index += sprintf(cmd_msg + msg_index, " %s", spaces_splitter[i]);
+					};
 				};
 				int status = send(sock, cmd_msg, strlen(cmd_msg), 0);
 			};
@@ -1116,6 +1118,6 @@ void MainWindow::OnCancel()
 void MainWindow::OnViewSettings() 
 {
 	SettingsDialog settingsdlg;
-	settingsdlg.DoModal();
+	int status = settingsdlg.DoModal();
 	
 }

@@ -24,6 +24,7 @@
 #define IDC_BUTTON1                     1002
 #define IDC_PROFILES_GROUP              1002
 #define IDC_SENDMSG                     1002
+#define IDC_CHANGE_MSG_FONT             1002
 #define IDC_PROFILELIST                 1003
 #define IDC_PROFNAME                    1003
 #define IDC_ADD_PROFILE_BTN             1004
@@ -42,7 +43,6 @@
 #define IDC_GITHUB_REPO_LINK            1024
 #define IDC_SAVE_MSG_HISTORY            1025
 #define IDC_PROGRAM_NAME                1026
-#define IDC_NARODWEB                    1027
 #define ID_FILE_CONNECT                 32771
 #define ID_FILE_QUIT                    32772
 #define ID_HELP_ABOUT                   32773

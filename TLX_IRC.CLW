@@ -2,7 +2,7 @@
 
 [General Info]
 Version=1
-LastClass=ConnectionManagerDialog
+LastClass=SettingsDialog
 LastTemplate=CDialog
 NewFileInclude1=#include "stdafx.h"
 NewFileInclude2=#include "TLX_IRC.h"
@@ -24,9 +24,9 @@ Class5=EnterTextDlg
 Class6=ProfileMainPage
 Class7=ProfileTabs
 Class8=ProfileConnectionPage
-Resource7=IDD_SETTINGS
+Resource7=IDD_ABOUTBOX
 Class9=SettingsDialog
-Resource8=IDD_ABOUTBOX
+Resource8=IDD_SETTINGS
 
 [CLS:IRCClient]
 Type=0
@@ -151,18 +151,19 @@ LastObject=ProfileConnectionPage
 [DLG:IDD_SETTINGS]
 Type=1
 Class=SettingsDialog
-ControlCount=5
+ControlCount=6
 Control1=IDOK,button,1342242817
 Control2=IDCANCEL,button,1342242816
 Control3=IDC_LANGLABEL,static,1342308352
 Control4=IDC_LANGCOMBO1,combobox,1344340227
 Control5=IDC_SAVE_MSG_HISTORY,button,1342242819
+Control6=IDC_CHANGE_MSG_FONT,button,1342242816
 
 [CLS:SettingsDialog]
 Type=0
 HeaderFile=setgdlg.h
 ImplementationFile=setgdlg.cpp
 Filter=D
-LastObject=IDOK
+LastObject=IDC_CHANGE_MSG_FONT
 VirtualFilter=dWC
 
