@@ -207,6 +207,8 @@ void SettingsDialog::OnChangeMsgFont()
 			// Soon you wan't have to change the same font every time.
 			msg_font.CreateFontIndirect(&logfont);
 			AfxGetApp()->GetMainWnd()->GetDlgItem(IDC_SOCKMSGS)->SetFont(&msg_font);
+			TRACE("%d", msg_font.m_hObject);
+			msg_font.Detach();
 		};
 	} catch(...) {
 	
