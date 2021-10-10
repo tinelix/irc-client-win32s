@@ -24,9 +24,9 @@ Class5=EnterTextDlg
 Class6=ProfileMainPage
 Class7=ProfileTabs
 Class8=ProfileConnectionPage
-Resource7=IDD_ABOUTBOX
+Resource7=IDD_SETTINGS
 Class9=SettingsDialog
-Resource8=IDD_SETTINGS
+Resource8=IDD_ABOUTBOX
 
 [CLS:IRCClient]
 Type=0

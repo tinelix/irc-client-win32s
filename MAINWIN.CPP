@@ -214,7 +214,7 @@ BOOL MainWindow::OnInitDialog()
 	CDialog::OnInitDialog();
 	CenterWindow();
 
-	TRACE("Tinelix IRC Client ver. 0.1.0 (2021-10-09)\r\nCopyright © 2021 Dmitry Tretyakov (aka. Tinelix)\r\n"
+	TRACE("Tinelix IRC Client ver. 0.1.2 (2021-10-10)\r\nCopyright © 2021 Dmitry Tretyakov (aka. Tinelix)\r\n"
 	"https:/github.com/tinelix-irc-client-for-win32s\r\n\r\n");
 	
 	// Add "About..." menu item to system menu.
@@ -457,6 +457,7 @@ void ConnectionFunc(HWND hwnd, struct MainWindow::PARAMETERS params)
 		} else {
 			MessageBox(NULL, "Not specified server address.", "Error", MB_OK|MB_ICONSTOP);
 		};
+		mainwin->IsConnected = FALSE;
 		exit;
 	}; 
 	if (port == NULL || port == 0)
@@ -466,6 +467,7 @@ void ConnectionFunc(HWND hwnd, struct MainWindow::PARAMETERS params)
 		} else {
 			MessageBox(NULL, "Not specified server port.", "Error", MB_OK|MB_ICONSTOP);
 		};
+		mainwin->IsConnected = FALSE;
 		exit;
 	};
 
@@ -485,6 +487,7 @@ void ConnectionFunc(HWND hwnd, struct MainWindow::PARAMETERS params)
 			sprintf(error_msg, "Could not start WinSock with error code: %d", WSAGetLastError());
 			MessageBox(NULL, error_msg, "Error", MB_OK|MB_ICONSTOP);
 		};
+		mainwin->IsConnected = FALSE;
 		exit;
 	};
 
@@ -502,6 +505,7 @@ void ConnectionFunc(HWND hwnd, struct MainWindow::PARAMETERS params)
 		} else {
 			MessageBox(NULL, "Failed to get the IP address for this hostname.", "Error", MB_OK|MB_ICONSTOP);
 		};
+		mainwin->IsConnected = FALSE;
 		exit;
 	};
 	client_param.sin_port = htons(port);
@@ -519,6 +523,7 @@ void ConnectionFunc(HWND hwnd, struct MainWindow::PARAMETERS params)
 			sprintf(error_msg, "Could not start WinSock with error code: %d", WSAGetLastError());
 			MessageBox(NULL, error_msg, "Error", MB_OK|MB_ICONSTOP);
 		};
+		mainwin->IsConnected = FALSE;
 		exit;
 	};
 	try {
