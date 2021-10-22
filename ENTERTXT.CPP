@@ -40,7 +40,9 @@ END_MESSAGE_MAP()
 
 void EnterTextDlg::delsymbs(char *str, int begin, int lng)
 {
-	while(*(str + begin++) = (str + begin + lng)[MAX_PATH]);
+	for(begin; begin < strlen(str); begin++) {
+		*(str + begin) = 0;	
+	};
 };
 
 void EnterTextDlg::SetSettingProfileState(BOOL value) 

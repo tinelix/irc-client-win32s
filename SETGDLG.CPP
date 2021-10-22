@@ -62,7 +62,8 @@ void SettingsDialog::OnOK()
 	SettingsDialog::delsymbs(settings_path, strlen(settings_path) - strlen(exe_name) - 1, MAX_PATH); // deleting EXE filename
 	strcat(settings_path, "\\settings.ini");	// add settings filename
 	if(GetFileAttributes(settings_path) == 1 && GetFileAttributes(exe_path) == 1) {
-		MessageBox("The disk may be write protected.", "Warning", MB_OK|MB_ICONEXCLAMATION); 
+		MessageBox("The disk may be write protected.", "Warning", MB_OK|MB_ICONEXCLAMATION);
+		exit; 
 	};
 
 	GetPrivateProfileString("Main", "Language", NULL, language_string, MAX_PATH, settings_path);
@@ -129,7 +130,9 @@ void SettingsDialog::OnOK()
 
 void SettingsDialog::delsymbs(char *str, int begin, int lng)
 {
-		while(*(str + begin++) = (str + begin + lng)[MAX_PATH]);			
+	for(begin; begin < strlen(str); begin++) {
+		*(str + begin) = 0;	
+	};			
 };
 
 BOOL SettingsDialog::OnInitDialog() 
@@ -207,7 +210,6 @@ void SettingsDialog::OnChangeMsgFont()
 			// Soon you wan't have to change the same font every time.
 			msg_font.CreateFontIndirect(&logfont);
 			AfxGetApp()->GetMainWnd()->GetDlgItem(IDC_SOCKMSGS)->SetFont(&msg_font);
-			TRACE("%d", msg_font.m_hObject);
 			msg_font.Detach();
 		};
 	} catch(...) {

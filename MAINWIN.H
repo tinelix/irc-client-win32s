@@ -11,15 +11,21 @@ class MainWindow : public CDialog
 {
 // Construction
 public:
-	struct PARAMETERS 
+	struct PARAMETERS
 	{
 		char server[256];
 		char nickname[80];
+		char realname[80];
 		int port;
 		HWND hwnd;
-		char realname[80];
 	};
 	char channel[256];
+	char exe_path[MAX_PATH];
+	char history_path[MAX_PATH];
+	char history_path2[MAX_PATH];
+	char history_file[MAX_PATH];
+	time_t current_time;
+	CStdioFile history_file_stdio;
 	BOOL IsConnected;
 	MainWindow(CWnd* pParent = NULL);	// standard constructor
 	void MainWindow::CreateConnectionThread(PARAMETERS params);
@@ -65,8 +71,10 @@ protected:
 	virtual void OnOK();
 	virtual void OnCancel();
 	afx_msg void OnClose();
+	afx_msg void OnViewSettings();
 	//}}AFX_MSG
 	DECLARE_MESSAGE_MAP()
 
 	friend class ConnectionManagerDialog;
+	friend class SettingsDialog;
 };

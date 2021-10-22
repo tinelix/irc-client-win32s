@@ -23,6 +23,8 @@ extern "C" __declspec(dllexport) void ParseMessage(char* line, char* array[], ch
 		array[index++] = token;
 		token = strtok(NULL, " ");
 	};
+	
+	OutputDebugString("Parsing...\r\n");
 
 	for (int i = 0; i < index; i++) {
 		if(i < 2 && strlen(array[i]) < 4) {
@@ -72,34 +74,13 @@ extern "C" __declspec(dllexport) void ParseMessage(char* line, char* array[], ch
 				OutputDebugString("\r\n");
 			};
 			string_index += sprintf(output + string_index, "%s channel.\r\n", array[i] + 1);
-		} if(i == 0 && strcmp(array[1], "QUIT") == 0) {
-			if (debug == TRUE) {
-				OutputDebugString("Code is QUIT.");
-				OutputDebugString("\r\n");
-			};
-			strtok(array[i], "!");
-			string_index += sprintf(output + string_index, "%s quited", array[i] + 1);
-		} if(index == 2 && strcmp(array[1], "QUIT") == 0) {
-			if (debug == TRUE) {
-				OutputDebugString("Code is QUIT.");
-				OutputDebugString("\r\n");
-			};
-			strtok(array[i], "!");
-			string_index += sprintf(output + string_index, ".");
-		} if(index >= 3 && i == 2 && strcmp(array[1], "QUIT") == 0) {
-			if (debug == TRUE) {
-				OutputDebugString("Code is QUIT.");
-				OutputDebugString("\r\n");
-			};
-			strtok(array[i], "!");
-			string_index += sprintf(output + string_index, " with the reason: %s", array[i] + 1);
 		} if(i < 3 && strlen(array[i]) < 4 && isdigit(code) != 0) {
 			if (debug == TRUE) {
 				OutputDebugString("Code is digit.");
 				OutputDebugString("\r\n");
 			};
 			string_index += sprintf(output + string_index, "Code %s:", array[i]);
-		} if (i > index - 2 && (strcmp(array[1], "JOIN") != 0)) {
+		} if (i > index - 2 && strcmp(array[1], "JOIN") != 0) {
 			if (debug == TRUE) {
 				OutputDebugString("Code isn't digit. (i > index - 2)");
 				OutputDebugString("\r\n");
@@ -120,15 +101,13 @@ extern "C" __declspec(dllexport) void ParseMessage(char* line, char* array[], ch
 				} if (strcmp(array[1], "PRIVMSG") == 0 && i >= 4) {
 					string_index += sprintf(output + string_index, " %s", array[i]);
 				} if (strcmp(array[1], "JOIN") == 0 && i >= 3) {
-				} if (strcmp(array[1], "QUIT") == 0 && i >= 3) {
-					string_index += sprintf(output + string_index, " %s", array[i]);
 				} if (isdigit(code) > 0 && i >= 3) {
 					string_index += sprintf(output + string_index, " %s", array[i]);
 				} if (i == 1 && isdigit(code) == 0 && strcmp(array[1], "PRIVMSG") != 0
-				  	  && strcmp(array[1], "JOIN") != 0 && strcmp(array[1], "QUIT") != 0) {
+				  	  && strcmp(array[1], "JOIN") != 0) {
 					string_index += sprintf(output + string_index, "%s", array[i]);
 				} if (i > 1 && isdigit(code) == 0 && strcmp(array[1], "PRIVMSG") != 0 
-				  	  && strcmp(array[1], "JOIN") != 0 && strcmp(array[1], "QUIT") != 0) {
+				  	  && strcmp(array[1], "JOIN") != 0) {
 					string_index += sprintf(output + string_index, " %s", array[i]);
 				};		
 			};

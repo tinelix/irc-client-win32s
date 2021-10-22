@@ -49,14 +49,15 @@ BEGIN_MESSAGE_MAP(ConnectionManagerDialog, CDialog)
 	ON_BN_CLICKED(IDC_CONNECT_PROFILE_BTN, OnConnectProfileClicked)
 	ON_LBN_SELCHANGE(IDC_PROFILELIST, OnSelchangeProfilelist)
 	ON_BN_CLICKED(IDC_CHANGE_PROFILE_BTN, OnChangeProfileBtn)
-	ON_BN_CLICKED(IDC_DELETE_PROFILE_BTn, OnDeleteProfileBtn)
 	//}}AFX_MSG_MAP
 END_MESSAGE_MAP()
 
 
 void ConnectionManagerDialog::delsymbs(char *str, int begin, int lng)
 {
-	while(*(str + begin++) = (str + begin + lng)[MAX_PATH]);
+	for(begin; begin < strlen(str); begin++) {
+		*(str + begin) = 0;	
+	};
 };
 
 INT ConnectionManagerDialog::GetCountLines(LPCSTR str)
@@ -111,14 +112,19 @@ BOOL ConnectionManagerDialog::OnInitDialog()
 	try 
 	{	
 		CStdioFile settings_file;
-		if(settings_file.Open(exe_path, CFile::modeReadWrite)) {
-			settings_file.Read(settings, 32767);
-		} else {
-			if (settings_file.Open(exe_path, CFile::modeReadWrite | CFile::modeCreate)) {
+		try {
+			if(settings_file.Open(exe_path, CFile::modeReadWrite)) {
 				settings_file.Read(settings, 32767);
 			} else {
-				exit;
-			};
+				if (settings_file.Open(exe_path, CFile::modeReadWrite | CFile::modeCreate)) {
+					settings_file.Read(settings, 32767);
+				} else {
+					exit;
+				};
+			}
+		} catch(CFileException* cfe) {
+			language_combo->SelectString(NULL, "English");
+			exit;
 		};
 
 		CString settings_str(settings);
@@ -197,13 +203,11 @@ void ConnectionManagerDialog::OnAddProfileClicked()
 	char settings[32768] = {0};
 	GetModuleFileName(NULL, exe_path, MAX_PATH);
 	CListBox *profiles_cb = (CListBox*)GetDlgItem(IDC_PROFILELIST);
-	int selindex = profiles_cb->GetCurSel();
-	profiles_cb->GetText(selindex, selitemtext); 
+	int selindex = profiles_cb->GetCurSel(); 
 	ConnectionManagerDialog::delsymbs(exe_path, strlen(exe_path) - strlen(exe_name) - 1, strlen(exe_path) - strlen(exe_name) - 1); // deleting EXE filename
 	strcat(exe_path, "\\settings.ini");	// add settings filename
 	try 
 	{	
-		
 		int profiles_count = profiles_cb->GetCount();
 		for (int index = 0; index < profiles_count; index++) {
 		 	profiles_cb->DeleteString(index);
@@ -296,11 +300,11 @@ void ConnectionManagerDialog::OnOK()
 	char settings_path[MAX_PATH] = {0};
 	char exe_name[MAX_PATH] = "TLX_IRC.EXE"; // EXE filename
 	GetModuleFileName(NULL, exe_path, MAX_PATH);
-	GetModuleFileName(NULL, settings_path, MAX_PATH); 
+	GetModuleFileName(NULL, settings_path, MAX_PATH);
 	ConnectionManagerDialog::delsymbs(settings_path, strlen(settings_path) - strlen(exe_name) - 1, MAX_PATH); // deleting EXE filename
 	strcat(settings_path, "\\settings.ini");	// add settings filename
 	if(GetFileAttributes(settings_path) == 1 && GetFileAttributes(exe_path) == 1) {
-		MessageBox("The disk may be write protected.", "Warning", MB_OK|MB_ICONEXCLAMATION); 
+		MessageBox("The disk may be write protected.", "Warning", MB_OK|MB_ICONEXCLAMATION);
 	};
 	GetPrivateProfileString("Main", "Language", "English", language_string, MAX_PATH, settings_path);
 	CString lng_selitemtext_3(language_string);
@@ -363,7 +367,6 @@ void ConnectionManagerDialog::OnSelchangeProfilelist()
 	if (IsConnected == FALSE) {
 		GetDlgItem(IDC_CONNECT_PROFILE_BTN)->EnableWindow(TRUE);
 	};
-	GetDlgItem(IDC_DELETE_PROFILE_BTn)->EnableWindow(TRUE);
 	GetDlgItem(IDC_CHANGE_PROFILE_BTN)->EnableWindow(TRUE);	
 }
 
@@ -399,74 +402,4 @@ void ConnectionManagerDialog::OnChangeProfileBtn()
 void ConnectionManagerDialog::SetConnectionState(BOOL value) 
 {
 	IsConnected = value;
-}
-
-void ConnectionManagerDialog::OnDeleteProfileBtn() 
-{
-	char selitemtext[80];
-	char section[800];
-	char port[5];
-	char port_to_str[20];
-	char nicknames[80]; 
-	char exe_path[MAX_PATH] = {0};
-	char exe_name[MAX_PATH] = "TLX_IRC.EXE"; // EXE filename
-	char settings[32768] = {0};
-	GetModuleFileName(NULL, exe_path, MAX_PATH);
-	CListBox *profiles_cb = (CListBox*)GetDlgItem(IDC_PROFILELIST);
-	int selindex = profiles_cb->GetCurSel(); 
-	ConnectionManagerDialog::delsymbs(exe_path, strlen(exe_path) - strlen(exe_name) - 1, strlen(exe_path) - strlen(exe_name) - 1); // deleting EXE filename
-	strcat(exe_path, "\\settings.ini");	// add settings filename
-	try 
-	{	
-		profiles_cb->GetText(selindex, selitemtext);
-		CString prof_selitemtext_2(selitemtext);
-		WritePrivateProfileSection(prof_selitemtext_2, NULL, exe_path);
-		int profiles_count = profiles_cb->GetCount();
-		for (int index = 0; index < profiles_count; index++) {
-		 	profiles_cb->DeleteString(index);
-		};
-		CStdioFile settings_file;
-		try {
-			if(settings_file.Open(exe_path, CFile::modeReadWrite)) {
-				settings_file.Read(settings, 32767);
-			} else {
-				if (settings_file.Open(exe_path, CFile::modeReadWrite | CFile::modeCreate)) {
-					settings_file.Read(settings, 32767);
-				} else {
-					exit;
-				};
-			}
-		} catch(CFileException* cfe) {
-			exit;
-		};
-
-		CString settings_str(settings);
-
-		BOOL IsSection;
-		CString section;
-		
-		for(int i = 0; i < strlen(settings_str); i++)
-		{
-			CString settings_symbol(settings[i]);
-			settings_symbol.Right(i);
-			if (settings_symbol.Find("]") != -1) {
-				IsSection = FALSE;
-				if (section.IsEmpty() == FALSE && section != "Main") {
-					profiles_cb->AddString(section);
-				};
-				section = "";
-			};
-			if (IsSection == TRUE) {
-				section += settings_symbol;
-			};
-			if (settings_symbol.Find("[") != -1) {
-				IsSection = TRUE;
-			};	
-		};
-	}
-	catch(...)
-	{
-		TRACE("Error creating file");
-	};
-	
 }

@@ -420,7 +420,8 @@ SOURCE=.\SETGDLG.CPP
 DEP_SETGD=\
 	.\STDAFX.H\
 	.\TLX_IRC.H\
-	.\setgdlg.h
+	.\setgdlg.h\
+	.\MAINWIN.H
 
 !IF  "$(CFG)" == "Win32 Debug"
 

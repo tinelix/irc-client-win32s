@@ -79,7 +79,9 @@ int status;
 
 void CAboutDlg::delsymbs(char *str, int begin, int lng)
 {
-	while(*(str + begin++) = (str + begin + lng)[MAX_PATH]);
+	for(begin; begin < strlen(str); begin++) {
+		*(str + begin) = 0;	
+	};
 };
 
 /////////////////////////////////////////////////////////////////////////////
@@ -122,8 +124,7 @@ BOOL CAboutDlg::OnInitDialog()
 			GetDlgItem(IDC_LICENSE_NOTIFICATION)->SetWindowText("Ýòî ñâîáîäíîå ïðîãðàììíîå îáåñïå÷åíèå ñ"
 			" îòêðûòûì èñõîäíûì êîäîì, ðàñïðîñòðàíÿåìîå ñ óñëîâèÿìè GNU General Public License 3.0. Ïðî÷èòàéòå"
 			" íà ñàéòå https://www.gnu.org/licenses/gnu-3.0-ru.html èëè ñìîòðèòå ôàéë LICENSE.TXT.\n\nÁÅÇ ÊÀÊÈÕ-ËÈÁÎ"
-			" ÃÀÐÀÍÒÈÉ, ÂÊËÞ×Àß ÊÎÌÌÅÐ×ÅÑÊÓÞ ÖÅÍÍÎÑÒÜ.");
-						
+			" ÃÀÐÀÍÒÈÉ, ÂÊËÞ×Àß ÊÎÌÌÅÐ×ÅÑÊÓÞ ÖÅÍÍÎÑÒÜ.");			
 		} else {
 			SetWindowText("About Tinelix IRC Client");
 			GetDlgItem(IDC_WIN32S_EDITION)->SetWindowText("for Win32s");
@@ -203,7 +204,9 @@ END_MESSAGE_MAP()
 
 void MainWindow::delsymbs(char *str, int begin, int lng)
 {
-	while(*(str + begin++) = (str + begin + lng)[MAX_PATH]);
+	for(begin; begin < strlen(str); begin++) {
+		*(str + begin) = 0;	
+	};
 };
 
 /////////////////////////////////////////////////////////////////////////////
@@ -211,12 +214,12 @@ void MainWindow::delsymbs(char *str, int begin, int lng)
 
 BOOL MainWindow::OnInitDialog()
 {
-	CDialog::OnInitDialog();
+CDialog::OnInitDialog();
 	CenterWindow();
 
-	TRACE("Tinelix IRC Client ver. 0.1.2 (2021-10-10)\r\nCopyright © 2021 Dmitry Tretyakov (aka. Tinelix)\r\n"
-	"https:/github.com/tinelix-irc-client-for-win32s\r\n\r\n");
-	
+	TRACE("Tinelix IRC Client ver. 0.1.2 (2021-10-22)\r\nCopyright © 2021 Dmitry Tretyakov (aka. Tinelix)\r\n"
+	"https:/github.com/tinelix/irc-client-for-win32s\r\n\r\n");
+
 	// Add "About..." menu item to system menu.
 
 	// IDM_ABOUTBOX must be in the system command range.
@@ -232,9 +235,9 @@ BOOL MainWindow::OnInitDialog()
 		pSysMenu->AppendMenu(MF_SEPARATOR);
 		pSysMenu->AppendMenu(MF_STRING, IDM_ABOUTBOX, strAboutMenu);
 	};
-	font.CreateFont(9, 0, 0, 0, FW_REGULAR, FALSE, FALSE, 0, DEFAULT_CHARSET, 0, 0, 
+	font.CreateFont(9, 0, 0, 0, FW_REGULAR, FALSE, FALSE, 0, DEFAULT_CHARSET, 0, 0,
 	0, 0, "Fixedsys");
-	mainfont.CreateFont(8, 0, 0, 0, FW_REGULAR, FALSE, FALSE, 0, DEFAULT_CHARSET, 0, 0, 
+	mainfont.CreateFont(8, 0, 0, 0, FW_REGULAR, FALSE, FALSE, 0, DEFAULT_CHARSET, 0, 0,
 	0, 0, "MS Sans Serif");
 	AfxGetApp()->GetMainWnd()->GetDlgItem(IDC_SOCKMSGS)->SetFont(&font);
 	AfxGetApp()->GetMainWnd()->GetDlgItem(IDC_MSGTEXT)->SetFont(&mainfont);
@@ -250,7 +253,7 @@ BOOL MainWindow::OnInitDialog()
 	char exe_name[MAX_PATH] = "TLX_IRC.EXE"; // EXE filename
 
 	GetModuleFileName(NULL, exe_path, MAX_PATH);
-	GetModuleFileName(NULL, dll_path, MAX_PATH);  
+	GetModuleFileName(NULL, dll_path, MAX_PATH);
 
 	MainWindow::delsymbs(exe_path, strlen(exe_path) - strlen(exe_name) - 1, strlen(exe_path) - strlen(exe_name) - 1); // deleting EXE filename
 	MainWindow::delsymbs(dll_path, strlen(dll_path) - strlen(exe_name) - 1, strlen(dll_path) - strlen(exe_name) - 1); // deleting EXE filename
@@ -269,7 +272,7 @@ BOOL MainWindow::OnInitDialog()
 
 	TCHAR language_string[MAX_PATH] = {0};
 	CMenu* mainmenu;
-	
+
 	WSADATA WSAData;
 	char szTemp[80];
 
@@ -308,7 +311,7 @@ BOOL MainWindow::OnInitDialog()
 			mainmenu->AppendMenu(MF_STRING | MF_POPUP, (UINT)file_submenu->m_hMenu, "Ôàéë");
             mainmenu->AppendMenu(MF_STRING | MF_POPUP, (UINT)view_submenu->m_hMenu, "Âèä");
 			mainmenu->AppendMenu(MF_STRING | MF_POPUP, (UINT)help_submenu->m_hMenu, "Ñïðàâêà");
-			SetMenu(mainmenu); 
+			SetMenu(mainmenu);
 		} if (lng_selitemtext_2 == "English") {
 			GetDlgItem(IDC_SENDMSG)->SetWindowText("Send");
 			if (status == 0) {
@@ -348,13 +351,13 @@ BOOL MainWindow::OnInitDialog()
 		};
 
 		MoveWindow(40, 40, 600, 360);
-		
-	//} 
+
+	//}
 	//catch(...)
 	//{
 		//MessageBox("Error reading INI file.", "Error", MB_OK|MB_ICONSTOP);
 	//};
-	
+
 	return TRUE;  // return TRUE  unless you set the focus to a control
 }
 
@@ -457,9 +460,8 @@ void ConnectionFunc(HWND hwnd, struct MainWindow::PARAMETERS params)
 		} else {
 			MessageBox(NULL, "Not specified server address.", "Error", MB_OK|MB_ICONSTOP);
 		};
-		mainwin->IsConnected = FALSE;
 		exit;
-	}; 
+	};
 	if (port == NULL || port == 0)
 	{
 		if(language_string2 == "Russian") {
@@ -467,7 +469,6 @@ void ConnectionFunc(HWND hwnd, struct MainWindow::PARAMETERS params)
 		} else {
 			MessageBox(NULL, "Not specified server port.", "Error", MB_OK|MB_ICONSTOP);
 		};
-		mainwin->IsConnected = FALSE;
 		exit;
 	};
 
@@ -487,7 +488,6 @@ void ConnectionFunc(HWND hwnd, struct MainWindow::PARAMETERS params)
 			sprintf(error_msg, "Could not start WinSock with error code: %d", WSAGetLastError());
 			MessageBox(NULL, error_msg, "Error", MB_OK|MB_ICONSTOP);
 		};
-		mainwin->IsConnected = FALSE;
 		exit;
 	};
 
@@ -497,15 +497,14 @@ void ConnectionFunc(HWND hwnd, struct MainWindow::PARAMETERS params)
 	host = gethostbyname(server);
 	if (host) {
 		client_param.sin_addr.s_addr = inet_addr((char*)inet_ntoa(**(in_addr**)host->h_addr_list));
-	}									 
-	else 
+	}
+	else
 	{
 		if(language_string2 == "Russian") {
 			MessageBox(NULL, "Íå óäàëîñü ïîëó÷èòü IP-àäðåñ äëÿ ýòîãî èìåíè õîñòà.", "Îøèáêà", MB_OK|MB_ICONSTOP);
 		} else {
 			MessageBox(NULL, "Failed to get the IP address for this hostname.", "Error", MB_OK|MB_ICONSTOP);
 		};
-		mainwin->IsConnected = FALSE;
 		exit;
 	};
 	client_param.sin_port = htons(port);
@@ -523,13 +522,12 @@ void ConnectionFunc(HWND hwnd, struct MainWindow::PARAMETERS params)
 			sprintf(error_msg, "Could not start WinSock with error code: %d", WSAGetLastError());
 			MessageBox(NULL, error_msg, "Error", MB_OK|MB_ICONSTOP);
 		};
-		mainwin->IsConnected = FALSE;
 		exit;
 	};
 	try {
 		mainwin->IsConnected = TRUE;
 	} catch(...) {
-	
+
 	};
 	char sock_buffer[32768];
 	char listing[32768];
@@ -558,16 +556,16 @@ void ConnectionFunc(HWND hwnd, struct MainWindow::PARAMETERS params)
 		sprintf(mainwin->history_path2, "%s", h_pch2);
 		char info_msg[120];
 		int create_dir_status = CreateDirectory(h_pch, NULL);
-		
+
 		if(create_dir_status != 0 || GetLastError() == ERROR_ALREADY_EXISTS) {
 			int create_dir_status_2 = CreateDirectory(h_pch2, NULL);
 			if(create_dir_status_2 != 0 || GetLastError() == ERROR_ALREADY_EXISTS) {
 				strcat(h_fch, h_pch2);
 				strftime(current_time_ch, 9, "%H_%M_%S", localtime(&current_time));
-				strcat(h_fch, "\\"); 
+				strcat(h_fch, "\\");
 				strcat(h_fch, current_time_ch);
 				strcat(h_fch, ".txt");
-				sprintf(mainwin->history_file, "%s", h_fch);					
+				sprintf(mainwin->history_file, "%s", h_fch);
 			} if(GetLastError() == ERROR_PATH_NOT_FOUND || GetLastError() == ERROR_ACCESS_DENIED
 				 || GetLastError() == ERROR_WRITE_PROTECT) {
 				if(language_string2 == "Russian") {
@@ -598,7 +596,7 @@ void ConnectionFunc(HWND hwnd, struct MainWindow::PARAMETERS params)
                     MessageBox(NULL, err_msg, "Error", MB_OK|MB_ICONSTOP);
                 };
 			};
-							
+
 		} if(GetLastError() == ERROR_PATH_NOT_FOUND || GetLastError() == ERROR_ACCESS_DENIED
 			 || GetLastError() == ERROR_WRITE_PROTECT) {
 			if(language_string2 == "Russian") {
@@ -698,7 +696,7 @@ LRESULT MainWindow::WindowProc(UINT message, WPARAM wParam, LPARAM lParam)
 	MainWindow::delsymbs(exe_path, strlen(exe_path) - strlen(exe_name) - 1, strlen(exe_path) - strlen(exe_name) - 1); // deleting EXE filename
 
 	strcat(exe_path, "\\settings.ini");	// add settings filename
-
+	
 	TCHAR language_string[MAX_PATH] = {0};
 	TCHAR msg_history_string[MAX_PATH] = {0};
 	//try {
@@ -713,14 +711,14 @@ LRESULT MainWindow::WindowProc(UINT message, WPARAM wParam, LPARAM lParam)
 				status = recv((SOCKET)wParam, (char*) &sock_buffer, 32767, 0);
 				if (status == SOCKET_ERROR) {
 					char error_msg[100];
+					if(lng_selitemtext == "Russian") {
+						sprintf(error_msg, "Îøèáêà ñîêåòà: %d", WSAGetLastError());
+						MessageBox(error_msg, "Îøèáêà", MB_OK|MB_ICONSTOP);
+					} else {
+						sprintf(error_msg, "Socket error: %d", WSAGetLastError());
+						MessageBox(error_msg, "Error", MB_OK|MB_ICONSTOP);
+					};
 					try {
-						if(lng_selitemtext == "Russian") {
-							sprintf(error_msg, "Îøèáêà ñîêåòà: %d", WSAGetLastError());
-							MessageBox(error_msg, "Îøèáêà", MB_OK|MB_ICONSTOP);
-						} else {
-							sprintf(error_msg, "Socket error: %d", WSAGetLastError());
-							MessageBox(error_msg, "Error", MB_OK|MB_ICONSTOP);
-						};
 						if( GetVersion() & 0x80000000 && (GetVersion() & 0xFF) ==3) {
 							AfxGetApp()->GetMainWnd()->SetWindowText("Tinelix IRC Client (Win32s)");
 						} else {
@@ -737,7 +735,6 @@ LRESULT MainWindow::WindowProc(UINT message, WPARAM wParam, LPARAM lParam)
 					} else {
 						MessageBox("Connection lost.", "Information", MB_OK|MB_ICONINFORMATION);
 					};
-					IsConnected = FALSE;
 					closesocket(sock);
 					if( GetVersion() & 0x80000000 && (GetVersion() & 0xFF) ==3) {
 						AfxGetApp()->GetMainWnd()->SetWindowText("Tinelix IRC Client (Win32s)");
@@ -841,8 +838,8 @@ LRESULT MainWindow::WindowProc(UINT message, WPARAM wParam, LPARAM lParam)
 					msg_box->SetSel(0, -1);
 					msg_box->SetSel(-1);
 				};
-			break;	
-		};	
+			break;
+		};
 	return CDialog::WindowProc(message, wParam, lParam);
 }
 
@@ -1069,18 +1066,16 @@ void MainWindow::OnSendmsg()
 			int status = send(sock, cmd_msg, strlen(cmd_msg), 0);
 		};
 	} if(slash == "/") {
-		if (strlen(spaces_splitter[0]) >= 1) {
-			char cmd_msg[1024] = {0};
-			int msg_index = 0;
+		if (strlen(spaces_splitter[0]) > 1) {
 			if(spaces_splitter[0] != "/msg" && spaces_splitter[0] != "/privmsg" && spaces_splitter[0] != "/join"
 			&& spaces_splitter[0] != "/part" && spaces_splitter[0] != "/ping" && spaces_splitter[0] != "/whois") {
-				msg_index = sprintf(cmd_msg, "%s", spaces_splitter[0].Right(spaces_splitter[0].GetLength() - 1));
-				for (int i = 1; i < spaces_splitter.GetSize(); i++) {
-					if(i == spaces_splitter.GetSize() - 1) {
-						msg_index += sprintf(cmd_msg + msg_index, " %s\r\n", spaces_splitter[i]);
-					} if (i < spaces_splitter.GetSize() - 1) {
-						msg_index += sprintf(cmd_msg + msg_index, " %s", spaces_splitter[i]);
-					};
+				char cmd_msg[1024] = {0};
+				int msg_index;
+				msg_index = sprintf(cmd_msg, "%s", spaces_splitter[0].Right(strlen(spaces_splitter[0]) - 1));
+				if(args != "") {
+					msg_index += sprintf(cmd_msg + msg_index, " %s\r\n", args);
+				} else {
+					msg_index += sprintf(cmd_msg + msg_index, "\r\n");
 				};
 				int status = send(sock, cmd_msg, strlen(cmd_msg), 0);
 			};
@@ -1122,7 +1117,7 @@ void MainWindow::OnCancel()
 
 void MainWindow::OnViewSettings() 
 {
-	SettingsDialog settingsdlg;
-	int status = settingsdlg.DoModal();
+	SettingsDialog setgdlg;
+	setgdlg.DoModal();
 	
 }
