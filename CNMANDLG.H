@@ -10,7 +10,6 @@ class ConnectionManagerDialog : public CDialog
 public:
 	ConnectionManagerDialog(CWnd* pParent = NULL);   // standard constructor
 	void ConnectionManagerDialog::delsymbs(char *str, int begin, int lng);
-	BOOL IsConnected;
 
 // Dialog Data
 	//{{AFX_DATA(ConnectionManagerDialog)
@@ -36,12 +35,12 @@ protected:
 	afx_msg void OnConnectProfileClicked();
 	virtual void OnOK();
 	afx_msg void OnSelchangeProfilelist();
-	afx_msg void OnChangeProfileBtn();
-	afx_msg void OnDeleteProfileBtn();
+	afx_msg void ConnectionManagerDialog::OnChangeProfileBtn();
 	//}}AFX_MSG
 	DECLARE_MESSAGE_MAP()
 
 public:
 	INT ConnectionManagerDialog::GetCountLines(LPCSTR str);
 	void SetConnectionState(BOOL value);
+	BOOL IsConnected;
 };
