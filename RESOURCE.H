@@ -2,6 +2,8 @@
 // Microsoft Visual C++ generated include file.
 // Used by TLX_IRC.RC
 //
+// source code synchronization attempt #3
+
 #define IDM_ABOUTBOX                    0x0010
 #define IDD_ABOUTBOX                    100
 #define IDS_ABOUTBOX                    101
