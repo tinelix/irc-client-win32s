@@ -19,4 +19,3 @@ Tinelix IRC <i>(Internet Relay Chat protocol)</i> client written on Microsoft Vi
 <p>I haven't figured out how to add this yet, but note that Unicode (UTF-16) is not supported in Win32s.
 <p><b>4. <code>PARSER.DLL</code> does not work in Windows 3.1x.</b>
 <p>Sorry, but to develop a string handler (parser) inside the main project (without DLL), then I had random crashes due to the array of the <code>char*</code> object. And no matter how much I tried to write the DLL again, it may still not start on Windows 3.1x.
-<p>p. s. github codeberg, what a setup, I had sources 0.1.3 and 0.1.4 erased
