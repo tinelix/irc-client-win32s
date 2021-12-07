@@ -2,7 +2,7 @@
 
 [General Info]
 Version=1
-LastClass=SettingsDialog
+LastClass=MainWindow
 LastTemplate=CPropertyPage
 NewFileInclude1=#include "stdafx.h"
 NewFileInclude2=#include "TLX_IRC.h"
@@ -15,7 +15,7 @@ Class3=CAboutDlg
 ResourceCount=9
 Resource1=IDR_MAINMENU
 Resource2=IDR_MAINFRAME
-Resource3=IDD_MAINWINDOW
+Resource3=IDD_SETTINGS
 Resource4=IDR_MENU1
 Class4=ConnectionManagerDialog
 Resource5=IDD_CONNMAN
@@ -25,9 +25,9 @@ Class6=ProfileMainPage
 Class7=ProfileTabs
 Class8=ProfileConnectionPage
 Resource7=IDR_RUS_MAINMENU
-Resource8=IDD_ABOUTBOX
-Resource9=IDD_SETTINGS
+Resource8=IDD_MAINWINDOW
 Class9=SettingsDialog
+Resource9=IDD_ABOUTBOX
 
 [CLS:IRCClient]
 Type=0
@@ -40,7 +40,7 @@ Type=0
 HeaderFile=mainwin.h
 ImplementationFile=mainwin.cpp
 Filter=D
-LastObject=ID_VIEW_SETTINGS
+LastObject=IDC_JOINED_CHANNELS
 VirtualFilter=dWC
 
 [CLS:CAboutDlg]
@@ -56,7 +56,7 @@ Class=CAboutDlg
 ControlCount=10
 Control1=IDC_STATIC,static,1342177283
 Control2=IDOK,button,1342373889
-Control3=IDC_STATIC,static,1342308352
+Control3=IDC_APPNAME,static,1342308352
 Control4=IDC_COPYRIGHT,static,1342308352
 Control5=IDC_WIN32S_EDITION,static,1342308352
 Control6=IDC_TECHINFO,button,1342177287
@@ -76,10 +76,11 @@ CommandCount=4
 [DLG:IDD_MAINWINDOW]
 Type=1
 Class=MainWindow
-ControlCount=3
+ControlCount=4
 Control1=IDC_SOCKMSGS,edit,1352730692
 Control2=IDC_MSGTEXT,edit,1484849280
 Control3=IDC_SENDMSG,button,1476460544
+Control4=IDC_JOINED_CHANNELS,combobox,1478558979
 
 [CLS:ConnectionManagerDialog]
 Type=0

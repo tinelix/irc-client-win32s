@@ -22,6 +22,8 @@ public:
 	//{{AFX_VIRTUAL(IRCClient)
 	public:
 	virtual BOOL InitInstance();
+	char app_version[20];
+	char release_date[10];
 	//}}AFX_VIRTUAL
 
 // Implementation
@@ -34,6 +36,8 @@ protected:
 	CFont mainfont;
 
 	friend class ConnectionManagerDialog;
+	friend class MainWindow;
+	friend class CAboutDlg;
 };
 
 

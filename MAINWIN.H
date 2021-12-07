@@ -20,6 +20,9 @@ public:
 		HWND hwnd;
 	};
 	char channel[256];
+	char left_ch[256];
+	char app_version[20];
+	char release_date[10];
 	char exe_path[MAX_PATH];
 	char history_path[MAX_PATH];
 	char history_path2[MAX_PATH];
@@ -72,9 +75,11 @@ protected:
 	virtual void OnCancel();
 	afx_msg void OnClose();
 	afx_msg void OnViewSettings();
+	afx_msg void OnSelchangeJoinedChannels();
 	//}}AFX_MSG
 	DECLARE_MESSAGE_MAP()
 
 	friend class ConnectionManagerDialog;
 	friend class SettingsDialog;
+	friend class IRCClient;
 };

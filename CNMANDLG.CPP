@@ -330,27 +330,34 @@ void ConnectionManagerDialog::OnOK()
 			if (msgbox == IDYES) {
 				WritePrivateProfileString("Main", "Language", "Russian", settings_path);
 			};
+			if( GetVersion() & 0x80000000 && (GetVersion() & 0xFF) ==3) {
 
-			file_submenu->CreatePopupMenu();
-			file_submenu->AppendMenu(MF_STRING, ID_FILE_CONNECT, "Подключиться...");
-			file_submenu->AppendMenu(MF_STRING, ID_FILE_QUIT, "Выход");
-			view_submenu->CreatePopupMenu();
-			view_submenu->AppendMenu(MF_STRING, ID_VIEW_SETTINGS, "Настройки");
-			help_submenu->CreatePopupMenu();
-			help_submenu->AppendMenu(MF_STRING, ID_HELP_ABOUT, "О программе...");
-			rus_mainmenu->CreateMenu();
-			rus_mainmenu->AppendMenu(MF_STRING | MF_POPUP, (UINT)file_submenu->m_hMenu, "Файл");
-            rus_mainmenu->AppendMenu(MF_STRING | MF_POPUP, (UINT)view_submenu->m_hMenu, "Вид");
-			rus_mainmenu->AppendMenu(MF_STRING | MF_POPUP, (UINT)help_submenu->m_hMenu, "Справка");
-			GetParent()->SetMenu(rus_mainmenu);
+			} else {
+				file_submenu->CreatePopupMenu();
+				file_submenu->AppendMenu(MF_STRING, ID_FILE_CONNECT, "Подключиться...");
+				file_submenu->AppendMenu(MF_STRING, ID_FILE_QUIT, "Выход");
+				view_submenu->CreatePopupMenu();
+				view_submenu->AppendMenu(MF_STRING, ID_VIEW_SETTINGS, "Настройки");
+				help_submenu->CreatePopupMenu();
+				help_submenu->AppendMenu(MF_STRING, ID_HELP_ABOUT, "О программе...");
+				rus_mainmenu->CreateMenu();
+				rus_mainmenu->AppendMenu(MF_STRING | MF_POPUP, (UINT)file_submenu->m_hMenu, "Файл");
+            	rus_mainmenu->AppendMenu(MF_STRING | MF_POPUP, (UINT)view_submenu->m_hMenu, "Вид");
+				rus_mainmenu->AppendMenu(MF_STRING | MF_POPUP, (UINT)help_submenu->m_hMenu, "Справка");
+				GetParent()->SetMenu(rus_mainmenu);
+			};
 		} else {
 			WritePrivateProfileString("Main", "Language", "Russian", settings_path);
 		};
 	} else {
 		WritePrivateProfileString("Main", "Language", "English", settings_path);
 		setlocale(LC_ALL, "English");
-		eng_mainmenu->LoadMenu(IDR_MAINMENU);
-		GetParent()->SetMenu(eng_mainmenu);
+		if( GetVersion() & 0x80000000 && (GetVersion() & 0xFF) ==3) {
+
+		} else {
+			eng_mainmenu->LoadMenu(IDR_MAINMENU);
+			GetParent()->SetMenu(eng_mainmenu);
+		};
 	};
 
 	delete(eng_mainmenu);

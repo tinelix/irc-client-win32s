@@ -1,6 +1,6 @@
 //{{NO_DEPENDENCIES}}
 // Microsoft Visual C++ generated include file.
-// Used by parser.rc
+// Used by PARSER.RC
 //
 
 // Next default values for new objects

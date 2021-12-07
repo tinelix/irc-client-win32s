@@ -199,6 +199,7 @@ BEGIN_MESSAGE_MAP(MainWindow, CDialog)
 	ON_BN_CLICKED(IDC_SENDMSG, OnSendmsg)
 	ON_WM_CLOSE()
 	ON_COMMAND(ID_VIEW_SETTINGS, OnViewSettings)
+	ON_CBN_SELCHANGE(IDC_JOINED_CHANNELS, OnSelchangeJoinedChannels)
 	//}}AFX_MSG_MAP
 END_MESSAGE_MAP()
 
@@ -217,6 +218,8 @@ BOOL MainWindow::OnInitDialog()
 CDialog::OnInitDialog();
 	CenterWindow();
 
+	sprintf(channel, "(None)");
+
 	char dll_path[MAX_PATH] = {0};
 	char exe_name[MAX_PATH] = "TLX_IRC.EXE"; // EXE filename
 
@@ -230,8 +233,9 @@ CDialog::OnInitDialog();
 
 	strcat(dll_path, "\\parser.dll");
 
-	TRACE("Tinelix IRC Client ver. 0.1.3 (2021-12-02)\r\nCopyright © 2021 Dmitry Tretyakov (aka. Tinelix)\r\n"
-	"https:/github.com/tinelix/irc-client-for-win32s\r\n\r\n");
+
+	TRACE("Tinelix IRC Client ver. %s (%s)\r\nCopyright © 2021 Dmitry Tretyakov (aka. Tinelix)\r\n"
+	"https:/github.com/tinelix/irc-client-for-win32s\r\n\r\n", app_version, release_date);
 
 	// Add "About..." menu item to system menu.
 
@@ -461,7 +465,6 @@ void ConnectionFunc(HWND hwnd, struct MainWindow::PARAMETERS params)
 	GetModuleFileName(NULL, history_path, MAX_PATH);
 	mainwin->delsymbs(history_path, strlen(history_path) - strlen(exe_name) - 1, strlen(history_path) - strlen(exe_name) - 1); // deleting EXE filename
 	strcat(history_path, "\\history");	// add history filename
-
 	if (server == NULL || server == "" || server == " ")
 	{
 	  	if(language_string2 == "Russian") {
@@ -816,7 +819,6 @@ LRESULT MainWindow::WindowProc(UINT message, WPARAM wParam, LPARAM lParam)
 								CString p_msg(parsed_msg);
 								//TRACE("OUTPUT: %s\r\n", parsed_msg);
 								parsed_msg_index += sprintf(parsed_msg_list + parsed_msg_index, "%s", p_msg);
-								
 							} catch(...) {
 
 							};
@@ -883,8 +885,9 @@ void MainWindow::OnSize(UINT nType, int cx, int cy)
 
 	CRect rect;
 	
-	GetDlgItem(IDC_SOCKMSGS)->MoveWindow(2, 2, cx - 4, cy - 28);
-	GetDlgItem(IDC_MSGTEXT)->MoveWindow(2, cy - 24, cx - 72, 22);
+	GetDlgItem(IDC_SOCKMSGS)->MoveWindow(3, 2, cx - 6, cy - 28);
+	GetDlgItem(IDC_JOINED_CHANNELS)->MoveWindow(3, cy - 23, 88, 90);
+	GetDlgItem(IDC_MSGTEXT)->MoveWindow(93, cy - 23, cx - 163, 20);
 	GetDlgItem(IDC_SENDMSG)->MoveWindow(cx - 68, cy - 24, 66, 22);
 	CEdit* msg_box = (CEdit*)GetDlgItem(IDC_SOCKMSGS); 	
 }
@@ -976,6 +979,9 @@ void MainWindow::OnSendmsg()
 			sprintf(join_msg, "JOIN #%s\r\n", spaces_splitter[1]);
 			sprintf(channel, "#%s", spaces_splitter[1]);
 			int status = send(sock, join_msg, strlen(join_msg), 0);
+			CComboBox* joined_chs = (CComboBox*)GetDlgItem(IDC_JOINED_CHANNELS);
+			joined_chs->EnableWindow(TRUE);
+			joined_chs->AddString(channel);
 		} else {
 			if(language_string_2 == "Russian") {
 				MessageBox("Пожалуйста, укажите аргумент к данной команде.", "Ошибка", MB_OK | MB_ICONSTOP);
@@ -989,6 +995,10 @@ void MainWindow::OnSendmsg()
             sprintf(join_msg, "JOIN %s\r\n", spaces_splitter[1]);
             sprintf(channel, "%s", spaces_splitter[1]);
             int status = send(sock, join_msg, strlen(join_msg), 0);
+			CComboBox* joined_chs = (CComboBox*)GetDlgItem(IDC_JOINED_CHANNELS);
+			joined_chs->EnableWindow(TRUE);
+			joined_chs->AddString(channel);
+			joined_chs->SelectString(NULL, channel);
         } else {
 			if(language_string_2 == "Russian") {
 				MessageBox("Пожалуйста, укажите аргумент к данной команде.", "Ошибка", MB_OK | MB_ICONSTOP);
@@ -1000,28 +1010,41 @@ void MainWindow::OnSendmsg()
         if(spaces_splitter.GetSize() > 1) {
             char part_msg[1024] = {0};
             sprintf(part_msg, "PART #%s\r\n", spaces_splitter[1]);
-            sprintf(channel, "#%s", spaces_splitter[1]);
+            sprintf(left_ch, "#%s", spaces_splitter[1]);
             int status = send(sock, part_msg, strlen(part_msg), 0);
-        } else {
-			if(language_string_2 == "Russian") {
-				MessageBox("Пожалуйста, укажите аргумент к данной команде.", "Ошибка", MB_OK | MB_ICONSTOP);
-			} else {
-				MessageBox("Please enter an argument for this command.", "Error", MB_OK | MB_ICONSTOP);
+			CComboBox* joined_chs = (CComboBox*)GetDlgItem(IDC_JOINED_CHANNELS);
+			int ch_index = 0;
+			ch_index = joined_chs->FindString(ch_index, channel);
+			if(ch_index != CB_ERR) {
+				joined_chs->DeleteString(ch_index);
 			};
-		};
+        };
 	} if(spaces_splitter[0] == "/part" && first_symbol_in_args == "#") {
         if(spaces_splitter.GetSize() > 1) {
             char part_msg[1024] = {0};
             sprintf(part_msg, "PART %s\r\n", spaces_splitter[1]);
-            sprintf(channel, "%s", spaces_splitter[1]);
+            sprintf(left_ch, "%s", spaces_splitter[1]);
             int status = send(sock, part_msg, strlen(part_msg), 0);
-        } else {
-            if(language_string_2 == "Russian") {
-				MessageBox("Пожалуйста, укажите аргумент к данной команде.", "Ошибка", MB_OK | MB_ICONSTOP);
-			} else {
-				MessageBox("Please enter an argument for this command.", "Error", MB_OK | MB_ICONSTOP);
+			CComboBox* joined_chs = (CComboBox*)GetDlgItem(IDC_JOINED_CHANNELS);
+			int ch_index = 0;
+			ch_index = joined_chs->FindString(ch_index, channel);
+			if(ch_index != CB_ERR) {
+				joined_chs->DeleteString(ch_index);
 			};
         };
+	}  if(spaces_splitter[0] == "/part") {
+		if(spaces_splitter.GetSize() == 1) {
+			char part_msg[1024] = {0};
+			CComboBox* joined_chs = (CComboBox*)GetDlgItem(IDC_JOINED_CHANNELS);
+        	joined_chs->GetLBText(joined_chs->GetCurSel(), left_ch);
+			sprintf(part_msg, "PART %s\r\n", left_ch);
+        	int status = send(sock, part_msg, strlen(part_msg), 0);
+			int ch_index = 0;
+			ch_index = joined_chs->FindString(ch_index, channel);
+			if(ch_index != CB_ERR) {
+				joined_chs->DeleteString(ch_index);
+			};
+		};
 	}  if(spaces_splitter[0] == "/whois" && first_symbol_in_args != "#") {
         if(spaces_splitter.GetSize() > 1) {
             char whois_msg[1024] = {0};
@@ -1088,11 +1111,17 @@ void MainWindow::OnSendmsg()
 				};
 				int status = send(sock, cmd_msg, strlen(cmd_msg), 0);
 			};
-		};	
+		};
+		
+	 } if(spaces_splitter[0] == "/quit") {
+		char cmd_msg[1024] = {0};
+		int msg_index = 0;
+		msg_index = sprintf(cmd_msg, "QUIT Tinelix IRC Client for Win32s ver. %s (%s)", app_version, release_date);
+		int status = send(sock, cmd_msg, strlen(cmd_msg), 0);	
 	} else {
 	   	char msg[1024] = {0};
 		int msg_index;
-		if(channel) {
+		if(strcmp(channel, "(None)") != 0) {
 	   		msg_index = sprintf(msg, "PRIVMSG %s", channel);
 			msg_index += sprintf(msg + msg_index, " %s\r\n", msg_text);
 			TRACE("[%s]", msg);
@@ -1100,7 +1129,11 @@ void MainWindow::OnSendmsg()
 		};
 	};
 	char listing[32768] = {0};
-	sprintf(listing, "%sYou: %s\r\n", socks_msg, msg_text);
+	if(strcmp(channel, "(None)") != 0) {
+		sprintf(listing, "%sYou (%s): %s\r\n", socks_msg, channel, msg_text);
+	} else {
+		sprintf(listing, "%sYou: %s\r\n", socks_msg, msg_text);
+	};
 	CString listing_2(listing);
 	GetDlgItem(IDC_SOCKMSGS)->SetWindowText(listing_2);
 	GetDlgItem(IDC_MSGTEXT)->SetWindowText("");
@@ -1128,5 +1161,12 @@ void MainWindow::OnViewSettings()
 {
 	SettingsDialog setgdlg;
 	setgdlg.DoModal();
+	
+}
+
+void MainWindow::OnSelchangeJoinedChannels() 
+{
+	CComboBox* joined_chs = (CComboBox*)GetDlgItem(IDC_JOINED_CHANNELS);
+    joined_chs->GetLBText(joined_chs->GetCurSel(), channel);
 	
 }

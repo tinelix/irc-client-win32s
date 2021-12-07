@@ -54,7 +54,7 @@ FONT 8, "MS Sans Serif"
 BEGIN
     ICON            IDI_MAINFRAME,IDC_STATIC,7,7,18,20
     DEFPUSHBUTTON   "OK",IDOK,175,164,37,14,WS_GROUP
-    LTEXT           "Tinelix IRC Client 0.1.3 Beta",IDC_STATIC,30,8,105,8
+    LTEXT           "Tinelix IRC Client 0.1.4 Beta",IDC_APPNAME,30,8,105,8
     LTEXT           "Copyright \251 2021 Dmitry Tretyakov (aka. Tinelix)",
                     IDC_COPYRIGHT,7,167,164,8
     LTEXT           "for Win32s",IDC_WIN32S_EDITION,31,18,44,9
@@ -72,10 +72,13 @@ STYLE WS_MINIMIZEBOX | WS_MAXIMIZEBOX | WS_VISIBLE | WS_CAPTION | WS_SYSMENU |
 CAPTION "Tinelix IRC Client"
 FONT 8, "MS Sans Serif"
 BEGIN
-    EDITTEXT        IDC_SOCKMSGS,0,0,248,121,ES_MULTILINE | ES_AUTOVSCROLL | 
+    EDITTEXT        IDC_SOCKMSGS,0,0,246,121,ES_MULTILINE | ES_AUTOVSCROLL | 
                     ES_READONLY | WS_VSCROLL
-    EDITTEXT        IDC_MSGTEXT,0,122,213,14,ES_AUTOHSCROLL | WS_DISABLED
+    EDITTEXT        IDC_MSGTEXT,52,123,161,12,ES_AUTOHSCROLL | WS_DISABLED
     PUSHBUTTON      "Send",IDC_SENDMSG,214,122,33,14,WS_DISABLED
+    COMBOBOX        IDC_JOINED_CHANNELS,1,123,50,43,CBS_DROPDOWNLIST | 
+                    CBS_SORT | CBS_NOINTEGRALHEIGHT | WS_DISABLED | 
+                    WS_VSCROLL | WS_TABSTOP
 END
 
 IDD_CONNMAN DIALOG DISCARDABLE  0, 0, 209, 157
@@ -133,8 +136,8 @@ END
 //
 
 VS_VERSION_INFO VERSIONINFO
- FILEVERSION 0,1,3,0
- PRODUCTVERSION 0,1,3,0
+ FILEVERSION 0,1,4,0
+ PRODUCTVERSION 0,1,4,0
  FILEFLAGSMASK 0x3fL
 #ifdef _DEBUG
  FILEFLAGS 0x23L
@@ -149,16 +152,16 @@ BEGIN
     BEGIN
         BLOCK "040904b0"
         BEGIN
-            VALUE "Comments", "Tinelix IRC Client for Win32s (for Windows NT / 9x / 3.1x). Version 0.1.3 Beta (2021-12-02)\0"
+            VALUE "Comments", "Tinelix IRC Client for Win32s (for Windows NT / 9x / 3.1x). Version 0.1.4 Beta (2021-12-06)\0"
             VALUE "CompanyName", "\0"
             VALUE "FileDescription", "Tinelix IRC Client for Win32s\0"
-            VALUE "FileVersion", "0, 1, 3, 0\0"
+            VALUE "FileVersion", "0, 1, 4, 0\0"
             VALUE "InternalName", "Tinelix IRC Client\0"
             VALUE "LegalCopyright", "Copyright \251 2021 Dmitry Tretyakov (aka. Tinelix)\0"
             VALUE "OriginalFilename", "TLX_IRC.EXE\0"
             VALUE "ProductName", "Tinelix IRC Client\0"
-            VALUE "ProductVersion", "0, 1, 3, 0\0"
-            VALUE "SpecialBuild", "0.1.3 Beta (2021-12-02). Repository link: https://github.com/tinelix/irc-client-for-win32s (GNU GPL 3.0)\0"
+            VALUE "ProductVersion", "0, 1, 4, 0\0"
+            VALUE "SpecialBuild", "0.1.4 Beta (2021-12-06). Repository link: https://github.com/tinelix/irc-client-for-win32s (GNU GPL 3.0)\0"
         END
     END
     BLOCK "VarFileInfo"
