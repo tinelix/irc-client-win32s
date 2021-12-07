@@ -158,6 +158,7 @@ CommandCount=3
 
 [DLG:IDD_SETTINGS]
 Type=1
+Class=SettingsDialog
 ControlCount=6
 Control1=IDOK,button,1342242817
 Control2=IDCANCEL,button,1342242816
@@ -165,7 +166,6 @@ Control3=IDC_LANGLABEL,static,1342308352
 Control4=IDC_LANGCOMBO1,combobox,1344340226
 Control5=IDC_SAVE_MSG_HISTORY,button,1342242819
 Control6=IDC_CHANGE_MSG_FONT,button,1342242816
-Class=SettingsDialog
 
 [CLS:SettingsDialog]
 Type=0

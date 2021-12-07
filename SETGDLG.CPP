@@ -112,6 +112,7 @@ void SettingsDialog::OnOK()
 		} else {
 			
 		};
+
 	} else {
 		WritePrivateProfileString("Main", "Language", "English", settings_path);
 		setlocale(LC_ALL, "English");
@@ -198,6 +199,12 @@ BOOL SettingsDialog::OnInitDialog()
 void SettingsDialog::OnChangeMsgFont() 
 {	
 	try {
+
+		char exe_path[MAX_PATH] = {0};
+		char exe_name[MAX_PATH] = "TLX_IRC.EXE"; // EXE filename
+		GetModuleFileName(NULL, exe_path, MAX_PATH);  
+		SettingsDialog::delsymbs(exe_path, strlen(exe_path) - strlen(exe_name) - 1, strlen(exe_path) - strlen(exe_name) - 1); // deleting EXE filename
+		strcat(exe_path, "\\settings.ini");
 		LOGFONT logfont;
 		CFontDialog fontdlg(&logfont);
 		sprintf(logfont.lfFaceName, "Fixedsys");
@@ -211,6 +218,20 @@ void SettingsDialog::OnChangeMsgFont()
 			msg_font.CreateFontIndirect(&logfont);
 			AfxGetApp()->GetMainWnd()->GetDlgItem(IDC_SOCKMSGS)->SetFont(&msg_font);
 			msg_font.Detach();
+			char font_value[48] = {0};
+			int font_vl_numb = 0;
+			font_vl_numb = sprintf(font_value, logfont.lfFaceName);
+			HDC hDC = ::GetDC(NULL);
+			int font_size = 0;
+			font_size = -MulDiv(logfont.lfHeight, 72, GetDeviceCaps(hDC, LOGPIXELSY));
+			font_size = (font_size < 0) ? - font_size : font_size;
+			::ReleaseDC(NULL, hDC);
+			char font_size_str[3] = {0};
+			sprintf(font_size_str, "%d", font_size);
+			//font_vl_numb += sprintf(font_value + font_vl_numb, ", ");
+			//font_vl_numb += sprintf(font_value + font_vl_numb, "%d", font_size);
+			WritePrivateProfileString("Main", "MsgFont", font_value, exe_path);
+			WritePrivateProfileString("Main", "MsgFontSize", font_size_str, exe_path);
 		};
 	} catch(...) {
 	

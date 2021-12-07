@@ -217,7 +217,20 @@ BOOL MainWindow::OnInitDialog()
 CDialog::OnInitDialog();
 	CenterWindow();
 
-	TRACE("Tinelix IRC Client ver. 0.1.2 (2021-10-22)\r\nCopyright © 2021 Dmitry Tretyakov (aka. Tinelix)\r\n"
+	char dll_path[MAX_PATH] = {0};
+	char exe_name[MAX_PATH] = "TLX_IRC.EXE"; // EXE filename
+
+	GetModuleFileName(NULL, exe_path, MAX_PATH);
+	GetModuleFileName(NULL, dll_path, MAX_PATH);
+
+	MainWindow::delsymbs(exe_path, strlen(exe_path) - strlen(exe_name) - 1, strlen(exe_path) - strlen(exe_name) - 1); // deleting EXE filename
+	MainWindow::delsymbs(dll_path, strlen(dll_path) - strlen(exe_name) - 1, strlen(dll_path) - strlen(exe_name) - 1); // deleting EXE filename
+
+	strcat(exe_path, "\\settings.ini");	// add settings filename
+
+	strcat(dll_path, "\\parser.dll");
+
+	TRACE("Tinelix IRC Client ver. 0.1.3 (2021-12-02)\r\nCopyright © 2021 Dmitry Tretyakov (aka. Tinelix)\r\n"
 	"https:/github.com/tinelix/irc-client-for-win32s\r\n\r\n");
 
 	// Add "About..." menu item to system menu.
@@ -235,8 +248,15 @@ CDialog::OnInitDialog();
 		pSysMenu->AppendMenu(MF_SEPARATOR);
 		pSysMenu->AppendMenu(MF_STRING, IDM_ABOUTBOX, strAboutMenu);
 	};
-	font.CreateFont(9, 0, 0, 0, FW_REGULAR, FALSE, FALSE, 0, DEFAULT_CHARSET, 0, 0,
-	0, 0, "Fixedsys");
+	char font_string[48] = {0};
+	int font_size = 9;
+	HDC hDC = ::GetDC(NULL);
+	GetPrivateProfileString("Main", "MsgFont", "Fixedsys", font_string, 48, exe_path);
+	font_size = GetPrivateProfileInt("Main", "MsgFontSize", 8, exe_path);
+	int font_height = 0;
+	font_height = -MulDiv(font_size, GetDeviceCaps(hDC, LOGPIXELSY), 72);
+	font.CreateFont(font_height, 0, 0, 0, FW_REGULAR, FALSE, FALSE, 0, DEFAULT_CHARSET, 0, 0,
+	0, 0, font_string);
 	mainfont.CreateFont(8, 0, 0, 0, FW_REGULAR, FALSE, FALSE, 0, DEFAULT_CHARSET, 0, 0,
 	0, 0, "MS Sans Serif");
 	AfxGetApp()->GetMainWnd()->GetDlgItem(IDC_SOCKMSGS)->SetFont(&font);
@@ -249,20 +269,9 @@ CDialog::OnInitDialog();
 		SetWindowText("Tinelix IRC Client");
 	};
 
-	char dll_path[MAX_PATH] = {0};
-	char exe_name[MAX_PATH] = "TLX_IRC.EXE"; // EXE filename
+	
 
-	GetModuleFileName(NULL, exe_path, MAX_PATH);
-	GetModuleFileName(NULL, dll_path, MAX_PATH);
-
-	MainWindow::delsymbs(exe_path, strlen(exe_path) - strlen(exe_name) - 1, strlen(exe_path) - strlen(exe_name) - 1); // deleting EXE filename
-	MainWindow::delsymbs(dll_path, strlen(dll_path) - strlen(exe_name) - 1, strlen(dll_path) - strlen(exe_name) - 1); // deleting EXE filename
-
-	strcat(exe_path, "\\settings.ini");	// add settings filename
-
-	strcat(dll_path, "\\parser.dll");
-
-	if((GetVersion() & 0x80000000) == 0) {
+	if(!(GetVersion() & 0x80000000 && (GetVersion() & 0xFF) ==3)) {
 		parserLib = (HINSTANCE)malloc(sizeof(HINSTANCE));
 		parserLib = LoadLibrary(dll_path);
 		if(parserLib) {
@@ -290,8 +299,8 @@ CDialog::OnInitDialog();
     		else {
 				MessageBox("WinSock не может быть инициализирован.", "Ошибка", MB_OK|MB_ICONSTOP);
     		};
-			if ((GetVersion() & 0x80000000) < 0) {
-				MessageBox("Обработка строк через библиотеку \"PARSER.DLL\" работает только в Windows NT. Запуск "
+			if (GetVersion() & 0x80000000 && (GetVersion() & 0xFF) ==3) {
+				MessageBox("Обработка строк через библиотеку \"PARSER.DLL\" работает только в Windows NT/9x. Запуск "
                 "данной библотеки в Win32s может привести к вылету программы.", "Ошибка", MB_OK);
 				FreeLibrary(parserLib);
 			};
@@ -320,8 +329,8 @@ CDialog::OnInitDialog();
     		else {
 				MessageBox("WinSock cannot be initialed.", "Error", MB_OK|MB_ICONSTOP);
     		};
-			if ((GetVersion() & 0x80000000) < 0) {
-				MessageBox("String parsing through the \"PARSER.DLL\" library works only in Windows NT. Running "
+			if (GetVersion() & 0x80000000 && (GetVersion() & 0xFF) ==3) {
+				MessageBox("String parsing through the \"PARSER.DLL\" library works only in Windows NT or 9x. Running "
                  "this library in Win32s may cause the program to crash.", "Error", MB_OK);
 				FreeLibrary(parserLib);
 			};
@@ -337,8 +346,8 @@ CDialog::OnInitDialog();
     		else {
 				MessageBox("WinSock cannot be initialed.", "Error", MB_OK|MB_ICONSTOP);
     		};
-			if ((GetVersion() & 0x80000000) < 0) {
-				MessageBox("String parsing through the \"PARSER.DLL\" library works only in Windows NT. Running "
+			if (GetVersion() & 0x80000000 && (GetVersion() & 0xFF) ==3) {
+				MessageBox("String parsing through the \"PARSER.DLL\" library works only in Windows NT or 9x. Running "
                  "this library in Win32s may cause the program to crash.", "Error", MB_OK);
 				FreeLibrary(parserLib);
 			};
