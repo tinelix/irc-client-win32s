@@ -19,8 +19,8 @@
 //
 
 VS_VERSION_INFO VERSIONINFO
- FILEVERSION 0,0,3,0
- PRODUCTVERSION 0,0,3,0
+ FILEVERSION 0,0,5,0
+ PRODUCTVERSION 0,0,5,0
  FILEFLAGSMASK 0x3fL
 #ifdef _DEBUG
  FILEFLAGS 0x3L
@@ -35,15 +35,15 @@ BEGIN
     BEGIN
         BLOCK "040904e4"
         BEGIN
-            VALUE "Comments", "Version 0.0.4 (2021-12-06)\0"
+            VALUE "Comments", "Version 0.0.5 (2021-12-10)\0"
             VALUE "CompanyName", "\0"
             VALUE "FileDescription", "Tinelix IRC Parser\0"
-            VALUE "FileVersion", "0, 0,4, 0\0"
+            VALUE "FileVersion", "0, 0, 5, 0\0"
             VALUE "InternalName", "PARSER\0"
             VALUE "LegalCopyright", "Copyright \251 2021 Dmitry Tretyakov (aka. Tinelix)\0"
             VALUE "OriginalFilename", "PARSER.DLL\0"
             VALUE "ProductName", "Tinelix IRC Parser\0"
-            VALUE "ProductVersion", "0, 0, 4, 0\0"
+            VALUE "ProductVersion", "0, 0, 5, 0\0"
         END
     END
     BLOCK "VarFileInfo"
