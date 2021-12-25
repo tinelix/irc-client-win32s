@@ -28,6 +28,7 @@ HINSTANCE parserLib;
 
 typedef void (WINAPI *cfunc) ();
 typedef void (WINAPI *ParseMessage)(char*, char*[], char*, BOOL);
+typedef void (WINAPI *ParseNamesMessage)(char*, char*[], char*[], char*[], char*[], BOOL);
 
 /////////////////////////////////////////////////////////////////////////////
 // CAboutDlg dialog used for App About
@@ -804,21 +805,36 @@ LRESULT MainWindow::WindowProc(UINT message, WPARAM wParam, LPARAM lParam)
 							};
 						} else {	
 							char* unparsed_msg;
+							char* unparsed_names_msg;
 							char** parsing_array;
+							char** owners_array;
+							char** operators_array;
+							char** members_array;
 							unparsed_msg = (char*)calloc(sizeof(char), 32768 + 1);
+							unparsed_names_msg = (char*)calloc(sizeof(char), 32768 + 1);
 							parsed_msg = (char*)calloc(sizeof(char), 32768 + 1);
 							parsing_array = (char**)calloc(sizeof(char*), 32768 + 1);
 							for (int array_index = 0; array_index < sizeof(parsing_array); array_index++) {
 								parsing_array[array_index] = (char*)calloc(sizeof(char), 32768 + 1);
 							};
 							sprintf(unparsed_msg, "%s", new_line_splitter[i]);
+							sprintf(unparsed_names_msg, "%s", new_line_splitter[i]);
 							ParseMessage ParseMsg;
+							ParseNamesMessage ParseNamesMsg;
 							ParseMsg = (ParseMessage)GetProcAddress((HMODULE)parserLib, "ParseMessage");
+							ParseNamesMsg = (ParseNamesMessage)GetProcAddress((HMODULE)parserLib, "ParseNamesMessage");
 							try {
 								ParseMsg(unparsed_msg, parsing_array, parsed_msg, FALSE);
 								CString p_msg(parsed_msg);
-								//TRACE("OUTPUT: %s\r\n", parsed_msg);
-								parsed_msg_index += sprintf(parsed_msg_list + parsed_msg_index, "%s", p_msg);
+								if(strcmp(parsing_array[1], "353") == 0) {
+									owners_array = (char**)calloc(sizeof(char*), 32768 + 1);
+									operators_array = (char**)calloc(sizeof(char*), 32768 + 1);
+									members_array = (char**)calloc(sizeof(char*), 32768 + 1);
+									parsed_msg_index += sprintf(parsed_msg_list + parsed_msg_index, "");
+									ParseNamesMsg(unparsed_names_msg, parsing_array, owners_array, operators_array, members_array, TRUE);
+								} else {
+									parsed_msg_index += sprintf(parsed_msg_list + parsed_msg_index, "%s", p_msg);
+								};
 							} catch(...) {
 
 							};
@@ -1121,10 +1137,9 @@ void MainWindow::OnSendmsg()
 	} else {
 	   	char msg[1024] = {0};
 		int msg_index;
-		if(strcmp(channel, "(None)") != 0) {
+		if(strcmp(channel, "(None)") != 0 && spaces_splitter[0][0] != '/') {
 	   		msg_index = sprintf(msg, "PRIVMSG %s", channel);
 			msg_index += sprintf(msg + msg_index, " %s\r\n", msg_text);
-			TRACE("[%s]", msg);
 			int status = send(sock, msg, strlen(msg), 0);
 		};
 	};
