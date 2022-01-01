@@ -6,6 +6,9 @@
 
 #define WM_SOCKET_MESSAGE 0xAFFF
 #define WM_SOCKET_TIMER 1;
+#define WM_UPDATING_STATISTICS 0xAFFC
+
+#include "statsdlg.h"
 
 class MainWindow : public CDialog
 {
@@ -16,9 +19,16 @@ public:
 		char server[256];
 		char nickname[80];
 		char realname[80];
+		char quit_msg[256];
 		int port;
 		HWND hwnd;
 	};
+	struct IRC_STATS 
+	{
+		int sended_bytes;
+		int recieved_bytes;
+	};
+	PARAMETERS params;
 	char channel[256];
 	char left_ch[256];
 	char app_version[20];
@@ -28,11 +38,14 @@ public:
 	char history_path2[MAX_PATH];
 	char history_file[MAX_PATH];
 	time_t current_time;
+	int sended_bytes_count;
+	int recieved_bytes_count;
 	CStdioFile history_file_stdio;
 	BOOL IsConnected;
 	MainWindow(CWnd* pParent = NULL);	// standard constructor
 	void MainWindow::CreateConnectionThread(PARAMETERS params);
 	void MainWindow::delsymbs(char *str, int begin, int lng);
+	void MainWindow::ConnectionFunc(HWND hwnd, struct PARAMETERS params);
 
 
 // Dialog Data
@@ -54,6 +67,7 @@ protected:
 	HICON m_hIcon;
 	CFont font;
 	CFont mainfont;
+	StatisticsDialog* stats_dlg;
 
 	// Generated message map functions
 	//{{AFX_MSG(MainWindow)
@@ -76,6 +90,8 @@ protected:
 	afx_msg void OnClose();
 	afx_msg void OnViewSettings();
 	afx_msg void OnSelchangeJoinedChannels();
+	afx_msg void OnFileStatistics();
+	afx_msg void OnDestroy();
 	//}}AFX_MSG
 	DECLARE_MESSAGE_MAP()
 

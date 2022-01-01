@@ -101,7 +101,7 @@ BOOL CAboutDlg::OnInitDialog()
 	strcat(exe_path, "\\settings.ini");	// add settings filename
 
 	TCHAR language_string[MAX_PATH] = {0};
-
+	
 	mainfont.CreateFont(8, 0, 0, 0, FW_REGULAR, FALSE, FALSE, 0, DEFAULT_CHARSET, 0, 0, 
 	0, 0, "MS Sans Serif");
 	GetDlgItem(IDC_WIN32S_EDITION)->SetFont(&mainfont);
@@ -112,6 +112,10 @@ BOOL CAboutDlg::OnInitDialog()
 	GetDlgItem(IDC_COPYRIGHT)->SetFont(&mainfont);
 	GetDlgItem(IDOK)->SetFont(&mainfont);
 	GetDlgItem(IDC_GITHUB_REPO_LINK)->SetFont(&mainfont);
+	IRCClient* application = (IRCClient*)AfxGetApp();
+	char app_name[32768];
+	sprintf(app_name, "Tinelix IRC Client %s", application->app_version);
+	GetDlgItem(IDC_APPNAME)->SetWindowText(app_name);
 
 	try {
 		GetPrivateProfileString("Main", "Language", "English", language_string, MAX_PATH, exe_path);
@@ -201,6 +205,8 @@ BEGIN_MESSAGE_MAP(MainWindow, CDialog)
 	ON_WM_CLOSE()
 	ON_COMMAND(ID_VIEW_SETTINGS, OnViewSettings)
 	ON_CBN_SELCHANGE(IDC_JOINED_CHANNELS, OnSelchangeJoinedChannels)
+	ON_COMMAND(ID_FILE_STATISTICS, OnFileStatistics)
+	ON_WM_DESTROY()
 	//}}AFX_MSG_MAP
 END_MESSAGE_MAP()
 
@@ -211,6 +217,8 @@ void MainWindow::delsymbs(char *str, int begin, int lng)
 	};
 };
 
+
+
 /////////////////////////////////////////////////////////////////////////////
 // MainWindow message handlers
 
@@ -219,7 +227,15 @@ BOOL MainWindow::OnInitDialog()
 CDialog::OnInitDialog();
 	CenterWindow();
 
+	sended_bytes_count = 0;
+	recieved_bytes_count = 0;
+	
+	stats_dlg = new StatisticsDialog;
+	stats_dlg->Create(StatisticsDialog::IDD, this);
+
 	sprintf(channel, "(None)");
+
+	IRCClient* application = (IRCClient*)AfxGetApp();
 
 	char dll_path[MAX_PATH] = {0};
 	char exe_name[MAX_PATH] = "TLX_IRC.EXE"; // EXE filename
@@ -235,8 +251,8 @@ CDialog::OnInitDialog();
 	strcat(dll_path, "\\parser.dll");
 
 
-	TRACE("Tinelix IRC Client ver. %s (%s)\r\nCopyright © 2021 Dmitry Tretyakov (aka. Tinelix)\r\n"
-	"https:/github.com/tinelix/irc-client-for-win32s\r\n\r\n", app_version, release_date);
+	TRACE("Tinelix IRC Client ver. %s (%s)\r\nCopyright © 2021-2022 Dmitry Tretyakov (aka. Tinelix)\r\n"
+	"https:/github.com/tinelix/irc-client-for-win32s\r\n\r\n", application->app_version, application->release_date);
 
 	// Add "About..." menu item to system menu.
 
@@ -267,6 +283,7 @@ CDialog::OnInitDialog();
 	AfxGetApp()->GetMainWnd()->GetDlgItem(IDC_SOCKMSGS)->SetFont(&font);
 	AfxGetApp()->GetMainWnd()->GetDlgItem(IDC_MSGTEXT)->SetFont(&mainfont);
 	AfxGetApp()->GetMainWnd()->GetDlgItem(IDC_SENDMSG)->SetFont(&mainfont);
+	AfxGetApp()->GetMainWnd()->GetDlgItem(IDC_JOINED_CHANNELS)->SetFont(&mainfont);
 	IsConnected = FALSE;
 	if( GetVersion() & 0x80000000 && (GetVersion() & 0xFF) ==3) {
 		SetWindowText("Tinelix IRC Client (Win32s)");
@@ -311,15 +328,22 @@ CDialog::OnInitDialog();
 			};
 			setlocale(LC_ALL, "Russian");
 			mainmenu = (CMenu*)malloc(sizeof(CMenu));
+			mainmenu->m_hMenu = NULL;
 			mainmenu->CreateMenu();
 			CMenu* file_submenu = (CMenu*)malloc(sizeof(CMenu));
+			file_submenu->m_hMenu = NULL;
 			file_submenu->CreatePopupMenu();
 			file_submenu->AppendMenu(MF_STRING, ID_FILE_CONNECT, "Подключиться...");
+			file_submenu->AppendMenu(MF_SEPARATOR);
+			file_submenu->AppendMenu(MF_STRING, ID_FILE_STATISTICS, "Статистика");
+			file_submenu->AppendMenu(MF_SEPARATOR);
 			file_submenu->AppendMenu(MF_STRING, ID_FILE_QUIT, "Выход");
 			CMenu* view_submenu = (CMenu*)malloc(sizeof(CMenu));
+			view_submenu->m_hMenu = NULL;
 			view_submenu->CreatePopupMenu();
 			view_submenu->AppendMenu(MF_STRING, ID_VIEW_SETTINGS, "Настройки");
 			CMenu* help_submenu = (CMenu*)malloc(sizeof(CMenu));
+			help_submenu->m_hMenu = NULL;
 			help_submenu->CreatePopupMenu();
 			help_submenu->AppendMenu(MF_STRING, ID_HELP_ABOUT, "О программе...");
 			mainmenu->AppendMenu(MF_STRING | MF_POPUP, (UINT)file_submenu->m_hMenu, "Файл");
@@ -435,11 +459,17 @@ void MainWindow::OnConnectClicked()
 {
 	ConnectionManagerDialog connman;
 	connman.SetConnectionState(IsConnected);
-	connman.DoModal();
+	int connman_modal = connman.DoModal();
+	if(connman_modal =- IDOK) {
+		IRC_STATS irc_stats;
+		irc_stats.sended_bytes = sended_bytes_count;
+		irc_stats.recieved_bytes = recieved_bytes_count;
+		stats_dlg->SendMessage(WM_UPDATING_STATISTICS, NULL, (LPARAM)&irc_stats);
+	};
 	
 }
 
-void ConnectionFunc(HWND hwnd, struct MainWindow::PARAMETERS params) 
+void MainWindow::ConnectionFunc(HWND hwnd, struct MainWindow::PARAMETERS params) 
 {
 	char exe_path[MAX_PATH] = {0};
 	char h_pch[MAX_PATH] = {0};
@@ -447,7 +477,7 @@ void ConnectionFunc(HWND hwnd, struct MainWindow::PARAMETERS params)
 	char h_fch[MAX_PATH] = {0};
 	char exe_name[MAX_PATH] = "TLX_IRC.EXE"; // EXE filename
 	GetModuleFileName(NULL, exe_path, MAX_PATH);
-	MainWindow* mainwin = (MainWindow*)AfxGetMainWnd();
+	MainWindow* mainwin = (MainWindow*)AfxGetApp()->GetMainWnd();
 	mainwin->delsymbs(exe_path, strlen(exe_path) - strlen(exe_name), strlen(exe_path) - strlen(exe_name)); // deleting EXE filename
 	strcat(exe_path, "settings.ini");
 	char msg_history_string[80];
@@ -469,20 +499,20 @@ void ConnectionFunc(HWND hwnd, struct MainWindow::PARAMETERS params)
 	if (server == NULL || server == "" || server == " ")
 	{
 	  	if(language_string2 == "Russian") {
-			MessageBox(NULL, "Не указан адрес сервера.", "Ошибка", MB_OK|MB_ICONSTOP);
+			MessageBox("Не указан адрес сервера.", "Ошибка", MB_OK|MB_ICONSTOP);
 		} else {
-			MessageBox(NULL, "Not specified server address.", "Error", MB_OK|MB_ICONSTOP);
+			MessageBox("Not specified server address.", "Error", MB_OK|MB_ICONSTOP);
 		};
-		exit;
+		return;
 	};
 	if (port == NULL || port == 0)
 	{
 		if(language_string2 == "Russian") {
-			MessageBox(NULL, "Не указан порт сервера.", "Ошибка", MB_OK|MB_ICONSTOP);
+			MessageBox("Не указан порт сервера.", "Ошибка", MB_OK|MB_ICONSTOP);
 		} else {
-			MessageBox(NULL, "Not specified server port.", "Error", MB_OK|MB_ICONSTOP);
+			MessageBox("Not specified server port.", "Error", MB_OK|MB_ICONSTOP);
 		};
-		exit;
+		return;
 	};
 
 	char* connecting_msg;
@@ -493,15 +523,15 @@ void ConnectionFunc(HWND hwnd, struct MainWindow::PARAMETERS params)
 	hostent* host;
 	if (sock == SOCKET_ERROR) {
 		if(language_string2 == "Russian") {
-			char* error_msg;
+			char error_msg[32768];
 			sprintf(error_msg, "Не удалось запустить WinSock с кодом ошибки: %d", WSAGetLastError());
-			MessageBox(NULL, error_msg, "Ошибка", MB_OK|MB_ICONSTOP);
+			MessageBox(error_msg, "Ошибка", MB_OK|MB_ICONSTOP);
 		} else {
-			char* error_msg;
+			char error_msg[32768];
 			sprintf(error_msg, "Could not start WinSock with error code: %d", WSAGetLastError());
-			MessageBox(NULL, error_msg, "Error", MB_OK|MB_ICONSTOP);
+			MessageBox(error_msg, "Error", MB_OK|MB_ICONSTOP);
 		};
-		exit;
+		return;
 	};
 
 	client_param.sin_family = AF_INET;
@@ -514,11 +544,11 @@ void ConnectionFunc(HWND hwnd, struct MainWindow::PARAMETERS params)
 	else
 	{
 		if(language_string2 == "Russian") {
-			MessageBox(NULL, "Не удалось получить IP-адрес для этого имени хоста.", "Ошибка", MB_OK|MB_ICONSTOP);
+			MessageBox("Не удалось получить IP-адрес для этого имени хоста.", "Ошибка", MB_OK|MB_ICONSTOP);
 		} else {
-			MessageBox(NULL, "Failed to get the IP address for this hostname.", "Error", MB_OK|MB_ICONSTOP);
+			MessageBox("Failed to get the IP address for this hostname.", "Error", MB_OK|MB_ICONSTOP);
 		};
-		exit;
+		return;
 	};
 	client_param.sin_port = htons(port);
 	connecting_msg = "Connecting...\n";
@@ -527,15 +557,15 @@ void ConnectionFunc(HWND hwnd, struct MainWindow::PARAMETERS params)
 	status = connect(sock, (SOCKADDR*)&client_param, sizeof(client_param));
 	if (status == SOCKET_ERROR || status == INVALID_SOCKET) {
 		if(language_string2 == "Russian") {
-			char* error_msg;
+			char error_msg[32768];
 			sprintf(error_msg, "Не удалось запустить WinSock с кодом ошибки: %d", WSAGetLastError());
-			MessageBox(NULL, error_msg, "Ошибка", MB_OK|MB_ICONSTOP);
+			MessageBox(error_msg, "Ошибка", MB_OK|MB_ICONSTOP);
 		} else {
-			char* error_msg;
+			char error_msg[32768];
 			sprintf(error_msg, "Could not start WinSock with error code: %d", WSAGetLastError());
-			MessageBox(NULL, error_msg, "Error", MB_OK|MB_ICONSTOP);
+			MessageBox( error_msg, "Error", MB_OK|MB_ICONSTOP);
 		};
-		exit;
+		return;
 	};
 	try {
 		mainwin->IsConnected = TRUE;
@@ -554,9 +584,7 @@ void ConnectionFunc(HWND hwnd, struct MainWindow::PARAMETERS params)
 		GetModuleFileName(NULL, h_pch, MAX_PATH);
 		mainwin->delsymbs(h_pch, strlen(h_pch) - strlen(exe_name) - 1, strlen(h_pch) - strlen(exe_name) - 1); // deleting EXE filename
 		DWORD winver = GetVersion();
-		//if ((GetVersion() & 0x80000000l) == 0) {
 		strcat(h_pch, "\\HISTORY");
-		//sprintf(mainwin->history_path, "\0C:\\HISTORY");
 		GetModuleFileName(NULL, h_pch2, MAX_PATH);
 		mainwin->delsymbs(h_pch2, strlen(h_pch2) - strlen(exe_name), strlen(h_pch2) - strlen(exe_name) - 1); // deleting EXE filename
 		strcat(h_pch2, "HISTORY");
@@ -593,7 +621,7 @@ void ConnectionFunc(HWND hwnd, struct MainWindow::PARAMETERS params)
                     };
                     sprintf(err_msg,"Ошибка создании папки: %s\r\nКод ошибки: %d (%s)", mainwin->history_path2, GetLastError(),
                             err_description);
-                    MessageBox(NULL, err_msg, "Ошибка", MB_OK|MB_ICONSTOP);
+                    MessageBox(err_msg, "Ошибка", MB_OK|MB_ICONSTOP);
                 } else {
                     char err_msg[4096];
                     char err_description[320];
@@ -606,7 +634,7 @@ void ConnectionFunc(HWND hwnd, struct MainWindow::PARAMETERS params)
                     };
                     sprintf(err_msg,"Error creating folder: %s\r\nError code: %d (%s)", mainwin->history_path2, GetLastError(),
                             err_description);
-                    MessageBox(NULL, err_msg, "Error", MB_OK|MB_ICONSTOP);
+                    MessageBox( err_msg, "Error", MB_OK|MB_ICONSTOP);
                 };
 			};
 
@@ -624,7 +652,7 @@ void ConnectionFunc(HWND hwnd, struct MainWindow::PARAMETERS params)
                     };
                     sprintf(err_msg,"Ошибка создании папки: %s\r\nКод ошибки: %d (%s)", mainwin->history_path, GetLastError(),
                             err_description);
-                    MessageBox(NULL, err_msg, "Ошибка", MB_OK|MB_ICONSTOP);
+                    MessageBox(err_msg, "Ошибка", MB_OK|MB_ICONSTOP);
             } else {
                     char err_msg[4096];
                     char err_description[320];
@@ -637,7 +665,7 @@ void ConnectionFunc(HWND hwnd, struct MainWindow::PARAMETERS params)
                     };
                     sprintf(err_msg,"Error creating folder: %s\r\nError code: %d (%s)", mainwin->history_path, GetLastError(),
                             err_description);
-                    MessageBox(NULL, err_msg, "Error", MB_OK|MB_ICONSTOP);
+                    MessageBox(err_msg, "Error", MB_OK|MB_ICONSTOP);
                 };
 		};
 	};
@@ -647,14 +675,15 @@ void ConnectionFunc(HWND hwnd, struct MainWindow::PARAMETERS params)
 	int WSAAsync = WSAAsyncSelect(sock, AfxGetApp()->GetMainWnd()->GetSafeHwnd(), WM_SOCKET_MESSAGE, FD_READ | FD_CLOSE);
 	if (WSAAsync > 0) {
 		if(language_string2 == "Russian") {
-			char* error_msg;
+			char error_msg[32768];
 			sprintf(error_msg, "Не удалось запустить WinSock с кодом ошибки: %d", WSAGetLastError());
-			MessageBox(NULL, error_msg, "Ошибка", MB_OK|MB_ICONSTOP);
+			MessageBox(error_msg, "Ошибка", MB_OK|MB_ICONSTOP);
 		} else {
-			char* error_msg;
+			char error_msg[32768];
 			sprintf(error_msg, "Could not start WinSock with error code: %d", WSAGetLastError());
-			MessageBox(NULL, error_msg, "Error", MB_OK|MB_ICONSTOP);
+			MessageBox(error_msg, "Error", MB_OK|MB_ICONSTOP);
 		};
+		return;
 	};
 	char ident_sending[400];
 	int ident_sending_parts;
@@ -663,21 +692,34 @@ void ConnectionFunc(HWND hwnd, struct MainWindow::PARAMETERS params)
 	ident_sending_parts += sprintf(ident_sending + ident_sending_parts, "%s :", params.nickname);
 	ident_sending_parts += sprintf(ident_sending + ident_sending_parts, "%s\r\n", params.realname);
 	status = send(sock, ident_sending, strlen(ident_sending), 0);
+	IRC_STATS irc_stats;
+	sended_bytes_count = sended_bytes_count + status;
+	irc_stats.sended_bytes = sended_bytes_count;
+	irc_stats.recieved_bytes = recieved_bytes_count;
+	mainwin->stats_dlg->SendMessage(WM_UPDATING_STATISTICS, NULL, (LPARAM)&irc_stats);
 	char nick_sending[400];
 	int nick_sending_parts;
 	nick_sending_parts = sprintf(nick_sending, "NICK %s\n", params.nickname);
-	mainwin = (MainWindow*)hwnd;
 	AfxGetMainWnd()->GetDlgItem(IDC_MSGTEXT)->EnableWindow(TRUE);
 	status = send(sock, nick_sending, strlen(nick_sending), 0);
+	mainwin->sended_bytes_count = mainwin->sended_bytes_count + status;
+	irc_stats.sended_bytes = sended_bytes_count;
+	irc_stats.recieved_bytes = recieved_bytes_count;
+	mainwin->stats_dlg->SendMessage(WM_UPDATING_STATISTICS, NULL, (LPARAM)&irc_stats);
 
 }
 
-void MainWindow::CreateConnectionThread(PARAMETERS params) 
+void MainWindow::CreateConnectionThread(PARAMETERS profile_params) 
 {
 	HWND hwnd;
 	hwnd = m_hWnd;
 	char change_font[100];
-	ConnectionFunc(hwnd, params);
+	sprintf(params.server, "%s", profile_params.server);
+	sprintf(params.nickname, "%s", profile_params.nickname);
+	sprintf(params.server, "%s", profile_params.server);
+	sprintf(params.quit_msg, "%s", profile_params.quit_msg);
+	params.port = profile_params.port;
+	ConnectionFunc(hwnd, profile_params);
 
 }
 
@@ -713,8 +755,7 @@ LRESULT MainWindow::WindowProc(UINT message, WPARAM wParam, LPARAM lParam)
 	TCHAR language_string[MAX_PATH] = {0};
 	TCHAR msg_history_string[MAX_PATH] = {0};
 	//try {
-		switch(message) {
-			case WM_SOCKET_MESSAGE:
+		if(message == WM_SOCKET_MESSAGE) {
 				GetPrivateProfileString("Main", "Language", "English", language_string, MAX_PATH, exe_path);
 				GetPrivateProfileString("Main", "MsgHistory", "Enabled", msg_history_string, MAX_PATH, exe_path);
 				CString lng_selitemtext(language_string);
@@ -737,11 +778,17 @@ LRESULT MainWindow::WindowProc(UINT message, WPARAM wParam, LPARAM lParam)
 						} else {
 							AfxGetApp()->GetMainWnd()->SetWindowText("Tinelix IRC Client");
 						};
+						IsConnected = FALSE;
 					} catch(...) {
 
 					};
 					exit;
 				};
+				IRC_STATS irc_stats;
+				recieved_bytes_count = recieved_bytes_count + status;
+				irc_stats.sended_bytes = sended_bytes_count;
+				irc_stats.recieved_bytes = recieved_bytes_count;
+				stats_dlg->SendMessage(WM_UPDATING_STATISTICS, NULL, (LPARAM)&irc_stats);
 				if (status == 0) {
 					if(lng_selitemtext == "Russian") {
 						MessageBox("Соединение потеряно.", "Информация", MB_OK|MB_ICONINFORMATION);
@@ -754,6 +801,7 @@ LRESULT MainWindow::WindowProc(UINT message, WPARAM wParam, LPARAM lParam)
 					} else {
 						AfxGetApp()->GetMainWnd()->SetWindowText("Tinelix IRC Client");
 					};
+					IsConnected = FALSE;
 					exit;
 				};
 				char listing[32768] = {0};
@@ -831,7 +879,7 @@ LRESULT MainWindow::WindowProc(UINT message, WPARAM wParam, LPARAM lParam)
 									operators_array = (char**)calloc(sizeof(char*), 32768 + 1);
 									members_array = (char**)calloc(sizeof(char*), 32768 + 1);
 									parsed_msg_index += sprintf(parsed_msg_list + parsed_msg_index, "");
-									ParseNamesMsg(unparsed_names_msg, parsing_array, owners_array, operators_array, members_array, TRUE);
+									ParseNamesMsg(unparsed_names_msg, parsing_array, owners_array, operators_array, members_array, FALSE);
 								} else {
 									parsed_msg_index += sprintf(parsed_msg_list + parsed_msg_index, "%s", p_msg);
 								};
@@ -842,7 +890,6 @@ LRESULT MainWindow::WindowProc(UINT message, WPARAM wParam, LPARAM lParam)
 					};
 				};
 				if(pong == "") {
-					TRACE("TEXT LENGTH: %d symbols\r\n", strlen(previous_listing) + strlen(parsed_msg_list));
 					if(strlen(previous_listing) + strlen(parsed_msg_list) < 32768) {
 						sp += sprintf(listing + sp, "%s",  parsed_msg_list);
 					} else {
@@ -865,7 +912,6 @@ LRESULT MainWindow::WindowProc(UINT message, WPARAM wParam, LPARAM lParam)
 					msg_box->SetSel(0, -1);
 					msg_box->SetSel(-1);
 				};
-			break;
 		};
 	return CDialog::WindowProc(message, wParam, lParam);
 }
@@ -886,6 +932,7 @@ void MainWindow::OnFileQuitClicked()
 
 BOOL MainWindow::DestroyWindow() 
 {		
+	
 	return CDialog::DestroyWindow();
 }
 
@@ -995,6 +1042,11 @@ void MainWindow::OnSendmsg()
 			sprintf(join_msg, "JOIN #%s\r\n", spaces_splitter[1]);
 			sprintf(channel, "#%s", spaces_splitter[1]);
 			int status = send(sock, join_msg, strlen(join_msg), 0);
+			IRC_STATS irc_stats;
+			sended_bytes_count = sended_bytes_count + status;
+			irc_stats.sended_bytes = sended_bytes_count;
+			irc_stats.recieved_bytes = recieved_bytes_count;
+			stats_dlg->SendMessage(WM_UPDATING_STATISTICS, NULL, (LPARAM)&irc_stats);
 			CComboBox* joined_chs = (CComboBox*)GetDlgItem(IDC_JOINED_CHANNELS);
 			joined_chs->EnableWindow(TRUE);
 			joined_chs->AddString(channel);
@@ -1005,12 +1057,17 @@ void MainWindow::OnSendmsg()
 				MessageBox("Please enter an argument for this command.", "Error", MB_OK | MB_ICONSTOP);
 			};
 		};
-	} if(spaces_splitter[0] == "/join" && first_symbol_in_args == "#") {
+	} else if(spaces_splitter[0] == "/join" && first_symbol_in_args == "#") {
 		if(spaces_splitter.GetSize() > 1) {
             char join_msg[1024] = {0};
             sprintf(join_msg, "JOIN %s\r\n", spaces_splitter[1]);
             sprintf(channel, "%s", spaces_splitter[1]);
             int status = send(sock, join_msg, strlen(join_msg), 0);
+			IRC_STATS irc_stats;
+			sended_bytes_count = sended_bytes_count + status;
+			irc_stats.sended_bytes = sended_bytes_count;
+			irc_stats.recieved_bytes = recieved_bytes_count;
+			stats_dlg->SendMessage(WM_UPDATING_STATISTICS, NULL, (LPARAM)&irc_stats);;
 			CComboBox* joined_chs = (CComboBox*)GetDlgItem(IDC_JOINED_CHANNELS);
 			joined_chs->EnableWindow(TRUE);
 			joined_chs->AddString(channel);
@@ -1022,12 +1079,17 @@ void MainWindow::OnSendmsg()
 				MessageBox("Please enter an argument for this command.", "Error", MB_OK | MB_ICONSTOP);
 			};
 		};
-	} if(spaces_splitter[0] == "/part" && first_symbol_in_args != "#") {
+	} else if(spaces_splitter[0] == "/part" && first_symbol_in_args != "#") {
         if(spaces_splitter.GetSize() > 1) {
             char part_msg[1024] = {0};
             sprintf(part_msg, "PART #%s\r\n", spaces_splitter[1]);
             sprintf(left_ch, "#%s", spaces_splitter[1]);
             int status = send(sock, part_msg, strlen(part_msg), 0);
+			IRC_STATS irc_stats;
+			sended_bytes_count = sended_bytes_count + status;
+			irc_stats.sended_bytes = sended_bytes_count;
+			irc_stats.recieved_bytes = recieved_bytes_count;
+			stats_dlg->SendMessage(WM_UPDATING_STATISTICS, NULL, (LPARAM)&irc_stats);
 			CComboBox* joined_chs = (CComboBox*)GetDlgItem(IDC_JOINED_CHANNELS);
 			int ch_index = 0;
 			ch_index = joined_chs->FindString(ch_index, channel);
@@ -1035,12 +1097,17 @@ void MainWindow::OnSendmsg()
 				joined_chs->DeleteString(ch_index);
 			};
         };
-	} if(spaces_splitter[0] == "/part" && first_symbol_in_args == "#") {
+	} else if(spaces_splitter[0] == "/part" && first_symbol_in_args == "#") {
         if(spaces_splitter.GetSize() > 1) {
             char part_msg[1024] = {0};
             sprintf(part_msg, "PART %s\r\n", spaces_splitter[1]);
             sprintf(left_ch, "%s", spaces_splitter[1]);
             int status = send(sock, part_msg, strlen(part_msg), 0);
+			IRC_STATS irc_stats;
+			sended_bytes_count = sended_bytes_count + status;
+			irc_stats.sended_bytes = sended_bytes_count;
+			irc_stats.recieved_bytes = recieved_bytes_count;
+			stats_dlg->SendMessage(WM_UPDATING_STATISTICS, NULL, (LPARAM)&irc_stats);
 			CComboBox* joined_chs = (CComboBox*)GetDlgItem(IDC_JOINED_CHANNELS);
 			int ch_index = 0;
 			ch_index = joined_chs->FindString(ch_index, channel);
@@ -1048,24 +1115,34 @@ void MainWindow::OnSendmsg()
 				joined_chs->DeleteString(ch_index);
 			};
         };
-	}  if(spaces_splitter[0] == "/part") {
+	} else if(spaces_splitter[0] == "/part") {
 		if(spaces_splitter.GetSize() == 1) {
 			char part_msg[1024] = {0};
 			CComboBox* joined_chs = (CComboBox*)GetDlgItem(IDC_JOINED_CHANNELS);
         	joined_chs->GetLBText(joined_chs->GetCurSel(), left_ch);
 			sprintf(part_msg, "PART %s\r\n", left_ch);
         	int status = send(sock, part_msg, strlen(part_msg), 0);
+			IRC_STATS irc_stats;
+			sended_bytes_count = sended_bytes_count + status;
+			irc_stats.sended_bytes = sended_bytes_count;
+			irc_stats.recieved_bytes = recieved_bytes_count;
+			stats_dlg->SendMessage(WM_UPDATING_STATISTICS, NULL, (LPARAM)&irc_stats);
 			int ch_index = 0;
 			ch_index = joined_chs->FindString(ch_index, channel);
 			if(ch_index != CB_ERR) {
 				joined_chs->DeleteString(ch_index);
 			};
 		};
-	}  if(spaces_splitter[0] == "/whois" && first_symbol_in_args != "#") {
+	} else if(spaces_splitter[0] == "/whois" && first_symbol_in_args != "#") {
         if(spaces_splitter.GetSize() > 1) {
             char whois_msg[1024] = {0};
             sprintf(whois_msg, "WHOIS %s\r\n", spaces_splitter[1]);
             int status = send(sock, whois_msg, strlen(whois_msg), 0);
+			IRC_STATS irc_stats;
+			sended_bytes_count = sended_bytes_count + status;
+			irc_stats.sended_bytes = sended_bytes_count;
+			irc_stats.recieved_bytes = recieved_bytes_count;
+			stats_dlg->SendMessage(WM_UPDATING_STATISTICS, NULL, (LPARAM)&irc_stats);
         } else {
             if(language_string_2 == "Russian") {
 				MessageBox("Пожалуйста, укажите аргумент к данной команде.", "Ошибка", MB_OK | MB_ICONSTOP);
@@ -1073,11 +1150,16 @@ void MainWindow::OnSendmsg()
 				MessageBox("Please enter an argument for this command.", "Error", MB_OK | MB_ICONSTOP);
 			};
         };
-	} if(spaces_splitter[0] == "/ping" && first_symbol_in_args != "#") {
+	} else if(spaces_splitter[0] == "/ping" && first_symbol_in_args != "#") {
         if(spaces_splitter.GetSize() > 1) {
             char ping_msg[1024] = {0};
             sprintf(ping_msg, "PING %s\r\n", spaces_splitter[1]);
             int status = send(sock, ping_msg, strlen(ping_msg), 0);
+			IRC_STATS irc_stats;
+			sended_bytes_count = sended_bytes_count + status;
+			irc_stats.sended_bytes = sended_bytes_count;
+			irc_stats.recieved_bytes = recieved_bytes_count;
+			stats_dlg->SendMessage(WM_UPDATING_STATISTICS, NULL, (LPARAM)&irc_stats);
         } else {
             if(language_string_2 == "Russian") {
 				MessageBox("Пожалуйста, укажите аргумент к данной команде.", "Ошибка", MB_OK | MB_ICONSTOP);
@@ -1085,7 +1167,7 @@ void MainWindow::OnSendmsg()
 				MessageBox("Please enter an argument for this command.", "Error", MB_OK | MB_ICONSTOP);
 			};
         };
-	} if(spaces_splitter[0] == "/privmsg") {
+	} else if(spaces_splitter[0] == "/privmsg") {
 		char cmd_msg[1024] = {0};
 		int msg_index = 0;
 		if(spaces_splitter.GetSize() > 2) {
@@ -1098,8 +1180,61 @@ void MainWindow::OnSendmsg()
 				};
 			};
 			int status = send(sock, cmd_msg, strlen(cmd_msg), 0);
+			IRC_STATS irc_stats;
+			sended_bytes_count = sended_bytes_count + status;
+			irc_stats.sended_bytes = sended_bytes_count;
+			irc_stats.recieved_bytes = recieved_bytes_count;
+			stats_dlg->SendMessage(WM_UPDATING_STATISTICS, NULL, (LPARAM)&irc_stats);
 		};
-	} if(spaces_splitter[0] == "/msg") {
+	} else if(spaces_splitter[0] == "/nickserv" && first_symbol_in_args != "#") {
+		char cmd_msg[1024] = {0};
+		int msg_index = 0;
+		if(spaces_splitter.GetSize() > 2) {
+			msg_index = sprintf(cmd_msg, "NICKSERV", spaces_splitter[1]);
+			for (int i = 1; i < spaces_splitter.GetSize(); i++) {
+				msg_index += sprintf(cmd_msg + msg_index, " %s", spaces_splitter[i]);
+			};
+			msg_index += sprintf(cmd_msg + msg_index, "\r\n");
+			int status = send(sock, cmd_msg, strlen(cmd_msg), 0);
+			IRC_STATS irc_stats;
+			sended_bytes_count = sended_bytes_count + status;
+			irc_stats.sended_bytes = sended_bytes_count;
+			irc_stats.recieved_bytes = recieved_bytes_count;
+			stats_dlg->SendMessage(WM_UPDATING_STATISTICS, NULL, (LPARAM)&irc_stats);
+		};
+	} else if(spaces_splitter[0] == "/nick" && first_symbol_in_args != "#") {
+		char cmd_msg[1024] = {0};
+		int msg_index = 0;
+		if(spaces_splitter.GetSize() >= 2) {
+			msg_index = sprintf(cmd_msg, "NICK");	
+			for (int i = 1; i < spaces_splitter.GetSize(); i++) {
+				msg_index += sprintf(cmd_msg + msg_index, " %s", spaces_splitter[i]);
+			};
+			msg_index += sprintf(cmd_msg + msg_index, "\r\n");
+			int status = send(sock, cmd_msg, strlen(cmd_msg), 0);
+			IRC_STATS irc_stats;
+			sended_bytes_count = sended_bytes_count + status;
+			irc_stats.sended_bytes = sended_bytes_count;
+			irc_stats.recieved_bytes = recieved_bytes_count;
+			stats_dlg->SendMessage(WM_UPDATING_STATISTICS, NULL, (LPARAM)&irc_stats);
+		};
+	} else if(spaces_splitter[0] == "/mode" && first_symbol_in_args != "#") {
+		char cmd_msg[1024] = {0};
+		int msg_index = 0;
+		if(spaces_splitter.GetSize() >= 2) {
+			msg_index = sprintf(cmd_msg, "MODE");	
+			for (int i = 1; i < spaces_splitter.GetSize(); i++) {
+				msg_index += sprintf(cmd_msg + msg_index, " %s", spaces_splitter[i]);
+			};
+			msg_index += sprintf(cmd_msg + msg_index, "\r\n");
+			int status = send(sock, cmd_msg, strlen(cmd_msg), 0);
+			IRC_STATS irc_stats;
+			sended_bytes_count = sended_bytes_count + status;
+			irc_stats.sended_bytes = sended_bytes_count;
+			irc_stats.recieved_bytes = recieved_bytes_count;
+			stats_dlg->SendMessage(WM_UPDATING_STATISTICS, NULL, (LPARAM)&irc_stats);
+		};
+	} else if(spaces_splitter[0] == "/msg") {
 		char cmd_msg[1024] = {0};
 		int msg_index = 0;
 		if(spaces_splitter.GetSize() > 2) {
@@ -1112,28 +1247,40 @@ void MainWindow::OnSendmsg()
 				};
 			};
 			int status = send(sock, cmd_msg, strlen(cmd_msg), 0);
+			IRC_STATS irc_stats;
+			sended_bytes_count = sended_bytes_count + status;
+			irc_stats.sended_bytes = sended_bytes_count;
+			irc_stats.recieved_bytes = recieved_bytes_count;
+			stats_dlg->SendMessage(WM_UPDATING_STATISTICS, NULL, (LPARAM)&irc_stats);
 		};
-	} if(slash == "/") {
+	} else if(spaces_splitter[0] == "/quit") {
+		char cmd_msg[1024] = {0};
+		int msg_index;
+		msg_index = sprintf(cmd_msg, "QUIT %s\r\n", params.quit_msg);
+		int status = send(sock, cmd_msg, strlen(cmd_msg), 0);
+		IRC_STATS irc_stats;
+		sended_bytes_count = sended_bytes_count + status;
+		irc_stats.sended_bytes = sended_bytes_count;
+		irc_stats.recieved_bytes = recieved_bytes_count;
+		stats_dlg->SendMessage(WM_UPDATING_STATISTICS, NULL, (LPARAM)&irc_stats);	
+	} else if(slash == "/") {
 		if (strlen(spaces_splitter[0]) > 1) {
-			if(spaces_splitter[0] != "/msg" && spaces_splitter[0] != "/privmsg" && spaces_splitter[0] != "/join"
-			&& spaces_splitter[0] != "/part" && spaces_splitter[0] != "/ping" && spaces_splitter[0] != "/whois") {
-				char cmd_msg[1024] = {0};
-				int msg_index;
-				msg_index = sprintf(cmd_msg, "%s", spaces_splitter[0].Right(strlen(spaces_splitter[0]) - 1));
-				if(args != "") {
-					msg_index += sprintf(cmd_msg + msg_index, " %s\r\n", args);
-				} else {
-					msg_index += sprintf(cmd_msg + msg_index, "\r\n");
-				};
-				int status = send(sock, cmd_msg, strlen(cmd_msg), 0);
+			char cmd_msg[1024] = {0};
+			int msg_index;
+			msg_index = sprintf(cmd_msg, "%s", spaces_splitter[0].Right(strlen(spaces_splitter[0]) - 1));
+			if(args != "") {
+				msg_index += sprintf(cmd_msg + msg_index, " %s\r\n", args);
+			} else {
+				msg_index += sprintf(cmd_msg + msg_index, "\r\n");
 			};
+			int status = send(sock, cmd_msg, strlen(cmd_msg), 0);
+			IRC_STATS irc_stats;
+			sended_bytes_count = sended_bytes_count + status;
+			irc_stats.sended_bytes = sended_bytes_count;
+			irc_stats.recieved_bytes = recieved_bytes_count;
+			stats_dlg->SendMessage(WM_UPDATING_STATISTICS, NULL, (LPARAM)&irc_stats);
 		};
 		
-	 } if(spaces_splitter[0] == "/quit") {
-		char cmd_msg[1024] = {0};
-		int msg_index = 0;
-		msg_index = sprintf(cmd_msg, "QUIT Tinelix IRC Client for Win32s ver. %s (%s)", app_version, release_date);
-		int status = send(sock, cmd_msg, strlen(cmd_msg), 0);	
 	} else {
 	   	char msg[1024] = {0};
 		int msg_index;
@@ -1141,6 +1288,11 @@ void MainWindow::OnSendmsg()
 	   		msg_index = sprintf(msg, "PRIVMSG %s", channel);
 			msg_index += sprintf(msg + msg_index, " %s\r\n", msg_text);
 			int status = send(sock, msg, strlen(msg), 0);
+			IRC_STATS irc_stats;
+			sended_bytes_count = sended_bytes_count + status;
+			irc_stats.sended_bytes = sended_bytes_count;
+			irc_stats.recieved_bytes = recieved_bytes_count;
+			stats_dlg->SendMessage(WM_UPDATING_STATISTICS, NULL, (LPARAM)&irc_stats);
 		};
 	};
 	char listing[32768] = {0};
@@ -1175,7 +1327,13 @@ void MainWindow::OnCancel()
 void MainWindow::OnViewSettings() 
 {
 	SettingsDialog setgdlg;
-	setgdlg.DoModal();
+	int settings_modal = setgdlg.DoModal();
+	if(settings_modal == IDOK) {
+		IRC_STATS irc_stats;
+		irc_stats.sended_bytes = sended_bytes_count;
+		irc_stats.recieved_bytes = recieved_bytes_count;
+		stats_dlg->SendMessage(WM_UPDATING_STATISTICS, NULL, (LPARAM)&irc_stats);
+	};
 	
 }
 
@@ -1184,4 +1342,18 @@ void MainWindow::OnSelchangeJoinedChannels()
 	CComboBox* joined_chs = (CComboBox*)GetDlgItem(IDC_JOINED_CHANNELS);
     joined_chs->GetLBText(joined_chs->GetCurSel(), channel);
 	
+}
+
+void MainWindow::OnFileStatistics() 
+{
+	stats_dlg->CenterWindow();
+	stats_dlg->ShowWindow(SW_SHOW);
+	
+}
+
+void MainWindow::OnDestroy() 
+{
+	CDialog::OnDestroy();
+	
+	delete stats_dlg;	
 }

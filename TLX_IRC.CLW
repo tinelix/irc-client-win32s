@@ -2,20 +2,20 @@
 
 [General Info]
 Version=1
-LastClass=MainWindow
-LastTemplate=CPropertyPage
+LastClass=StatisticsDialog
+LastTemplate=CDialog
 NewFileInclude1=#include "stdafx.h"
 NewFileInclude2=#include "TLX_IRC.h"
 
-ClassCount=9
+ClassCount=10
 Class1=IRCClient
 Class2=MainWindow
 Class3=CAboutDlg
 
-ResourceCount=9
+ResourceCount=10
 Resource1=IDR_MAINMENU
 Resource2=IDR_MAINFRAME
-Resource3=IDD_SETTINGS
+Resource3=IDD_ABOUTBOX
 Resource4=IDR_MENU1
 Class4=ConnectionManagerDialog
 Resource5=IDD_CONNMAN
@@ -27,7 +27,9 @@ Class8=ProfileConnectionPage
 Resource7=IDR_RUS_MAINMENU
 Resource8=IDD_MAINWINDOW
 Class9=SettingsDialog
-Resource9=IDD_ABOUTBOX
+Resource9=IDD_SETTINGS
+Class10=StatisticsDialog
+Resource10=IDD_STATISTICS
 
 [CLS:IRCClient]
 Type=0
@@ -40,7 +42,7 @@ Type=0
 HeaderFile=mainwin.h
 ImplementationFile=mainwin.cpp
 Filter=D
-LastObject=IDC_JOINED_CHANNELS
+LastObject=MainWindow
 VirtualFilter=dWC
 
 [CLS:CAboutDlg]
@@ -68,10 +70,11 @@ Control10=IDC_GITHUB_REPO_LINK,static,1342308354
 [MNU:IDR_MAINMENU]
 Type=1
 Command1=ID_FILE_CONNECT
-Command2=ID_FILE_QUIT
-Command3=ID_VIEW_SETTINGS
-Command4=ID_HELP_ABOUT
-CommandCount=4
+Command2=ID_FILE_STATISTICS
+Command3=ID_FILE_QUIT
+Command4=ID_VIEW_SETTINGS
+Command5=ID_HELP_ABOUT
+CommandCount=5
 
 [DLG:IDD_MAINWINDOW]
 Type=1
@@ -164,7 +167,7 @@ ControlCount=6
 Control1=IDOK,button,1342242817
 Control2=IDCANCEL,button,1342242816
 Control3=IDC_LANGLABEL,static,1342308352
-Control4=IDC_LANGCOMBO1,combobox,1344340226
+Control4=IDC_LANGCOMBO1,combobox,1344340227
 Control5=IDC_SAVE_MSG_HISTORY,button,1342242819
 Control6=IDC_CHANGE_MSG_FONT,button,1342242816
 
@@ -173,4 +176,25 @@ Type=0
 HeaderFile=setgdlg.h
 ImplementationFile=setgdlg.cpp
 LastObject=IDC_CHANGE_MSG_FONT
+
+[DLG:IDD_STATISTICS]
+Type=1
+Class=StatisticsDialog
+ControlCount=8
+Control1=IDOK,button,1342242817
+Control2=IDC_TRAFFIC_GROUP,button,1342177287
+Control3=IDC_SENDED_LABEL,static,1342308352
+Control4=IDC_SENDED_LABEL2,static,1342308352
+Control5=IDC_RECIEVED_LABEL,static,1342308352
+Control6=IDC_RECIEVED_LABEL2,static,1342308352
+Control7=IDC_TOTAL_LABEL,static,1342308352
+Control8=IDC_TOTAL_LABEL2,static,1342308352
+
+[CLS:StatisticsDialog]
+Type=0
+HeaderFile=statsdlg.h
+ImplementationFile=statsdlg.cpp
+Filter=D
+LastObject=StatisticsDialog
+VirtualFilter=dWC
 

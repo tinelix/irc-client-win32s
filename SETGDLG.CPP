@@ -101,6 +101,9 @@ void SettingsDialog::OnOK()
 			} else {
 				file_submenu->CreatePopupMenu();
 				file_submenu->AppendMenu(MF_STRING, ID_FILE_CONNECT, "Подключиться...");
+				file_submenu->AppendMenu(MF_SEPARATOR);
+				file_submenu->AppendMenu(MF_STRING, ID_FILE_STATISTICS, "Статистика");
+				file_submenu->AppendMenu(MF_SEPARATOR);
 				file_submenu->AppendMenu(MF_STRING, ID_FILE_QUIT, "Выход");
 				view_submenu->CreatePopupMenu();
 				view_submenu->AppendMenu(MF_STRING, ID_VIEW_SETTINGS, "Настройки");

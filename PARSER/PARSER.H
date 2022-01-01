@@ -6,8 +6,6 @@
 #include <windows.h>
 #include <conio.h>
 
-
-extern "C" BOOL WINAPI DllMain(HINSTANCE const instance, DWORD const reason, LPVOID const reserved);
 extern "C" __declspec(dllexport) void ParseMessage(char* line, char* array[], char* output, BOOL debug);
 extern "C" __declspec(dllexport) void ParseNamesMessage(char* line, char* array[], char* owners_array[], 
 char* operators_array[], char* members_array[], BOOL debug);

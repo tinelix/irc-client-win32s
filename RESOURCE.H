@@ -17,6 +17,7 @@
 #define IDR_RUS_MAINMENU                137
 #define IDD_PROFCONNPAGE                138
 #define IDD_SETTINGS                    141
+#define IDD_STATISTICS                  143
 #define IDC_LANGCOMBO1                  1000
 #define IDC_SOCKMSGS                    1000
 #define IDC_EDIT2                       1001
@@ -58,19 +59,27 @@
 #define IDC_SAVE_MSG_HISTORY            1025
 #define IDC_JOINED_CHANNELS             1026
 #define IDC_APPNAME                     1029
+#define IDC_TRAFFIC_GROUP               1030
+#define IDC_SENDED_LABEL                1031
+#define IDC_SENDED_LABEL2               1032
+#define IDC_RECIEVED_LABEL              1033
+#define IDC_RECIEVED_LABEL2             1034
+#define IDC_TOTAL_LABEL                 1035
+#define IDC_TOTAL_LABEL2                1036
 #define ID_FILE_CONNECT                 32771
 #define ID_FILE_QUIT                    32772
 #define ID_HELP_ABOUT                   32773
 #define ID_VIEW_SETTINGS                32775
+#define ID_FILE_STATISTICS              32776
 
 // Next default values for new objects
 // 
 #ifdef APSTUDIO_INVOKED
 #ifndef APSTUDIO_READONLY_SYMBOLS
 #define _APS_3D_CONTROLS                     1
-#define _APS_NEXT_RESOURCE_VALUE        143
-#define _APS_NEXT_COMMAND_VALUE         32776
-#define _APS_NEXT_CONTROL_VALUE         1030
+#define _APS_NEXT_RESOURCE_VALUE        144
+#define _APS_NEXT_COMMAND_VALUE         32777
+#define _APS_NEXT_CONTROL_VALUE         1032
 #define _APS_NEXT_SYMED_VALUE           101
 #endif
 #endif

@@ -66,7 +66,9 @@ void EnterTextDlg::OnOK()
 	char exe_path[MAX_PATH] = {0};
 	char exe_name[MAX_PATH] = "TLX_IRC.EXE"; // EXE filename
 
-	GetModuleFileName(NULL, exe_path, MAX_PATH);  
+	GetModuleFileName(NULL, exe_path, MAX_PATH);
+	
+	IRCClient* application = (IRCClient*)AfxGetApp();  
 
 	EnterTextDlg::delsymbs(exe_path, strlen(exe_path) - strlen(exe_name) - 1, strlen(exe_path) - strlen(exe_name) - 1); // deleting EXE filename
 
@@ -76,11 +78,16 @@ void EnterTextDlg::OnOK()
 	GetPrivateProfileString("Main", "Language", "English", language_string, MAX_PATH, exe_path);
 	CString lng_selitemtext_2(language_string);
 
-	WritePrivateProfileString(profilename, "Nicknames", "", exe_path);
+	char quit_msg[256];
+	
+	sprintf(quit_msg, "Tinelix IRC Client ver. %s (%s) for Win32s", application->app_version, application->release_date);
+
+	WritePrivateProfileString(profilename, "Nickname", "", exe_path);
 	WritePrivateProfileString(profilename, "Password", "", exe_path);
 	WritePrivateProfileString(profilename, "Realname", "", exe_path);
 	WritePrivateProfileString(profilename, "Server", "", exe_path);
 	WritePrivateProfileString(profilename, "Port", "", exe_path);
+	WritePrivateProfileString(profilename, "QuitMessage", quit_msg, exe_path);
 
 	CDialog::OnOK();
 

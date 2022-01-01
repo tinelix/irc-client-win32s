@@ -21,6 +21,7 @@ struct PARAMETERS
 	char server[256];
 	char nickname[80];
 	char realname[80];
+	char quit_msg[256];
 	int port;
 	HWND hwnd;
 };
@@ -259,7 +260,8 @@ void ConnectionManagerDialog::OnAddProfileClicked()
 
 void ConnectionManagerDialog::OnConnectProfileClicked() 
 {
-	MainWindow mainwin;
+	MainWindow* mainwin = (MainWindow*)GetParent();
+	IRCClient* application = (IRCClient*)AfxGetApp();
 	char selitemtext[80];
 	char section[800];
 	char port[5];
@@ -272,20 +274,25 @@ void ConnectionManagerDialog::OnConnectProfileClicked()
 	int selindex = profile_cb->GetCurSel(); 
 	ConnectionManagerDialog::delsymbs(exe_path, strlen(exe_path) - strlen(exe_name) - 1, strlen(exe_path) - strlen(exe_name) - 1); // deleting EXE filename
 	strcat(exe_path, "\\settings.ini");	// add settings filename
-	PARAMETERS params;
+	PARAMETERS profile_params;
 	profile_cb->GetText(selindex, selitemtext);
-	GetPrivateProfileString(selitemtext, "Server", "", params.server, 256, exe_path);
+	GetPrivateProfileString(selitemtext, "Server", "", profile_params.server, 256, exe_path);
 	GetPrivateProfileString(selitemtext, "Port", "", port, 5, exe_path);
-	GetPrivateProfileString(selitemtext, "Nicknames", "", params.nickname, 80, exe_path);
-	GetPrivateProfileString(selitemtext, "Realname", "", params.realname, 80, exe_path);
-	if(strlen(params.realname) == 0) {
-		sprintf(params.realname, "Member");
+	GetPrivateProfileString(selitemtext, "Nickname", "", profile_params.nickname, 80, exe_path);
+	GetPrivateProfileString(selitemtext, "Realname", "", profile_params.realname, 80, exe_path);
+	GetPrivateProfileString(selitemtext, "QuitMessage", "", profile_params.quit_msg, 256, exe_path);
+	if(strlen(profile_params.realname) == 0) {
+		sprintf(profile_params.realname, "Member");
 	};
-	params.port = atoi(port);
+	if(strlen(profile_params.quit_msg) == 0) {
+		sprintf(profile_params.quit_msg, "Tinelix IRC Client ver. %s (%s) for Win32s", application->app_version, application->release_date);
+		WritePrivateProfileString(selitemtext, "QuitMessage", profile_params.quit_msg, exe_path);
+	};
+	profile_params.port = atoi(port);
 	GetDlgItem(IDC_CONNECT_PROFILE_BTN)->EnableWindow(FALSE);
-
 		 
-	mainwin.CreateConnectionThread(params);	
+	mainwin->CreateConnectionThread(profile_params);
+	OnCancel();	
 }
 
 void ConnectionManagerDialog::OnOK() 
