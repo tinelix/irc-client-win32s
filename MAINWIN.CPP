@@ -1185,7 +1185,7 @@ void MainWindow::OnSendmsg()
 			for (int i = 2; i < spaces_splitter.GetSize(); i++) {
 				if(i == spaces_splitter.GetSize() - 1) {
 					msg_index += sprintf(cmd_msg + msg_index, " %s\r\n", spaces_splitter[i]);
-				} if (i < spaces_splitter.GetSize() - 1) {
+				} else if (i < spaces_splitter.GetSize() - 1) {
 					msg_index += sprintf(cmd_msg + msg_index, " %s", spaces_splitter[i]);
 				};
 			};
@@ -1296,7 +1296,7 @@ void MainWindow::OnSendmsg()
 		int msg_index;
 		if(strcmp(channel, "(None)") != 0 && spaces_splitter[0][0] != '/') {
 	   		msg_index = sprintf(msg, "PRIVMSG %s", channel);
-			msg_index += sprintf(msg + msg_index, " %s\r\n", msg_text);
+			msg_index += sprintf(msg + msg_index, " :%s\r\n", msg_text);
 			int status = send(sock, msg, strlen(msg), 0);
 			IRC_STATS irc_stats;
 			sended_bytes_count = sended_bytes_count + status;
