@@ -79,7 +79,7 @@ BOOL ConnectionManagerDialog::OnInitDialog()
 	GetModuleFileName(NULL, exe_path, MAX_PATH);  
 	if (GetFileAttributes(exe_path) == 1) {
 	}; 
-	ConnectionManagerDialog::delsymbs(exe_path, strlen(exe_path) - strlen(exe_name) - 1, strlen(exe_path) - strlen(exe_name) - 1); // deleting EXE filename
+	*(strrchr(exe_path, '\\')+1)='\0';
 
 	strcat(exe_path, "\\settings.ini");	// add settings filename
 
@@ -139,7 +139,7 @@ BOOL ConnectionManagerDialog::OnInitDialog()
 			settings_symbol.Right(i);
 			if (settings_symbol.Find("]") != -1) {
 				IsSection = FALSE;
-				if (section.IsEmpty() == FALSE && section != "Main") {
+				if (section.IsEmpty() == FALSE && section != "Main" && section != "Parser") {
 					profiles_cb->AddString(section);
 				};
 				section = "";
@@ -205,7 +205,7 @@ void ConnectionManagerDialog::OnAddProfileClicked()
 	GetModuleFileName(NULL, exe_path, MAX_PATH);
 	CListBox *profiles_cb = (CListBox*)GetDlgItem(IDC_PROFILELIST);
 	int selindex = profiles_cb->GetCurSel(); 
-	ConnectionManagerDialog::delsymbs(exe_path, strlen(exe_path) - strlen(exe_name) - 1, strlen(exe_path) - strlen(exe_name) - 1); // deleting EXE filename
+	*(strrchr(exe_path, '\\')+1)='\0';
 	strcat(exe_path, "\\settings.ini");	// add settings filename
 	try 
 	{	
@@ -272,7 +272,7 @@ void ConnectionManagerDialog::OnConnectProfileClicked()
 	GetModuleFileName(NULL, exe_path, MAX_PATH);
 	CListBox* profile_cb = (CListBox*)GetDlgItem(IDC_PROFILELIST);
 	int selindex = profile_cb->GetCurSel(); 
-	ConnectionManagerDialog::delsymbs(exe_path, strlen(exe_path) - strlen(exe_name) - 1, strlen(exe_path) - strlen(exe_name) - 1); // deleting EXE filename
+	*(strrchr(exe_path, '\\')+1)='\0';
 	strcat(exe_path, "\\settings.ini");	// add settings filename
 	PARAMETERS profile_params;
 	profile_cb->GetText(selindex, selitemtext);
@@ -308,7 +308,8 @@ void ConnectionManagerDialog::OnOK()
 	char exe_name[MAX_PATH] = "TLX_IRC.EXE"; // EXE filename
 	GetModuleFileName(NULL, exe_path, MAX_PATH);
 	GetModuleFileName(NULL, settings_path, MAX_PATH);
-	ConnectionManagerDialog::delsymbs(settings_path, strlen(settings_path) - strlen(exe_name) - 1, MAX_PATH); // deleting EXE filename
+	*(strrchr(exe_path, '\\')+1)='\0';
+	*(strrchr(settings_path, '\\')+1)='\0';
 	strcat(settings_path, "\\settings.ini");	// add settings filename
 	if(GetFileAttributes(settings_path) == 1 && GetFileAttributes(exe_path) == 1) {
 		MessageBox("The disk may be write protected.", "Warning", MB_OK|MB_ICONEXCLAMATION);
@@ -391,7 +392,7 @@ void ConnectionManagerDialog::OnChangeProfileBtn()
 
 	GetModuleFileName(NULL, exe_path, MAX_PATH);  
 
-	ConnectionManagerDialog::delsymbs(exe_path, strlen(exe_path) - strlen(exe_name) - 1, strlen(exe_path) - strlen(exe_name) - 1); // deleting EXE filename
+	*(strrchr(exe_path, '\\')+1)='\0';
 
 	strcat(exe_path, "\\settings.ini");
 

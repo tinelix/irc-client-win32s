@@ -2,6 +2,7 @@
 // Microsoft Visual C++ generated include file.
 // Used by TLX_IRC.RC
 //
+#define IDC_PARSER_SETTINGS             3
 #define IDM_ABOUTBOX                    0x0010
 #define IDD_ABOUTBOX                    100
 #define IDS_ABOUTBOX                    101
@@ -18,6 +19,8 @@
 #define IDD_PROFCONNPAGE                138
 #define IDD_SETTINGS                    141
 #define IDD_STATISTICS                  143
+#define IDD_DIALOG1                     144
+#define IDD_PARSER_S                    144
 #define IDC_LANGCOMBO1                  1000
 #define IDC_SOCKMSGS                    1000
 #define IDC_EDIT2                       1001
@@ -62,8 +65,11 @@
 #define IDC_TRAFFIC_GROUP               1030
 #define IDC_SENDED_LABEL                1031
 #define IDC_SENDED_LABEL2               1032
+#define IDC_SHOW_MSGTIME                1032
 #define IDC_RECIEVED_LABEL              1033
+#define IDC_TIMESTAMPS_POS              1033
 #define IDC_RECIEVED_LABEL2             1034
+#define IDC_PARSER_GROUP                1034
 #define IDC_TOTAL_LABEL                 1035
 #define IDC_TOTAL_LABEL2                1036
 #define ID_FILE_CONNECT                 32771
@@ -77,9 +83,9 @@
 #ifdef APSTUDIO_INVOKED
 #ifndef APSTUDIO_READONLY_SYMBOLS
 #define _APS_3D_CONTROLS                     1
-#define _APS_NEXT_RESOURCE_VALUE        144
+#define _APS_NEXT_RESOURCE_VALUE        146
 #define _APS_NEXT_COMMAND_VALUE         32777
-#define _APS_NEXT_CONTROL_VALUE         1032
+#define _APS_NEXT_CONTROL_VALUE         1035
 #define _APS_NEXT_SYMED_VALUE           101
 #endif
 #endif

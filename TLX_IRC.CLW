@@ -2,17 +2,17 @@
 
 [General Info]
 Version=1
-LastClass=StatisticsDialog
+LastClass=ParserSettingsDialog
 LastTemplate=CDialog
 NewFileInclude1=#include "stdafx.h"
 NewFileInclude2=#include "TLX_IRC.h"
 
-ClassCount=10
+ClassCount=11
 Class1=IRCClient
 Class2=MainWindow
 Class3=CAboutDlg
 
-ResourceCount=10
+ResourceCount=12
 Resource1=IDR_MAINMENU
 Resource2=IDR_MAINFRAME
 Resource3=IDD_ABOUTBOX
@@ -27,9 +27,12 @@ Class8=ProfileConnectionPage
 Resource7=IDR_RUS_MAINMENU
 Resource8=IDD_MAINWINDOW
 Class9=SettingsDialog
-Resource9=IDD_SETTINGS
+Resource9=IDD_DIALOG1
 Class10=StatisticsDialog
 Resource10=IDD_STATISTICS
+Resource11=IDD_PARSER_S
+Class11=ParserSettingsDialog
+Resource12=IDD_SETTINGS
 
 [CLS:IRCClient]
 Type=0
@@ -163,19 +166,22 @@ CommandCount=3
 [DLG:IDD_SETTINGS]
 Type=1
 Class=SettingsDialog
-ControlCount=6
+ControlCount=7
 Control1=IDOK,button,1342242817
 Control2=IDCANCEL,button,1342242816
 Control3=IDC_LANGLABEL,static,1342308352
 Control4=IDC_LANGCOMBO1,combobox,1344340227
 Control5=IDC_SAVE_MSG_HISTORY,button,1342242819
 Control6=IDC_CHANGE_MSG_FONT,button,1342242816
+Control7=IDC_PARSER_SETTINGS,button,1342242817
 
 [CLS:SettingsDialog]
 Type=0
 HeaderFile=setgdlg.h
 ImplementationFile=setgdlg.cpp
-LastObject=IDC_CHANGE_MSG_FONT
+LastObject=IDC_PARSER_SETTINGS
+Filter=D
+VirtualFilter=dWC
 
 [DLG:IDD_STATISTICS]
 Type=1
@@ -197,4 +203,32 @@ ImplementationFile=statsdlg.cpp
 Filter=D
 LastObject=StatisticsDialog
 VirtualFilter=dWC
+
+[DLG:IDD_DIALOG1]
+Type=1
+ControlCount=5
+Control1=IDOK,button,1342242817
+Control2=IDCANCEL,button,1342242816
+Control3=IDC_SHOW_MSGTIME,button,1342242819
+Control4=IDC_TIMESTAMPS_POS,combobox,1344340227
+Control5=IDC_PARSER_GROUP,button,1342177287
+Class=?
+
+[CLS:ParserSettingsDialog]
+Type=0
+HeaderFile=parssdlg.h
+ImplementationFile=parssdlg.cpp
+Filter=D
+VirtualFilter=dWC
+LastObject=IDC_SHOW_MSGTIME
+
+[DLG:IDD_PARSER_S]
+Type=1
+Class=ParserSettingsDialog
+ControlCount=5
+Control1=IDOK,button,1342242817
+Control2=IDCANCEL,button,1342242816
+Control3=IDC_SHOW_MSGTIME,button,1342242819
+Control4=IDC_TIMESTAMPS_POS,combobox,1344340227
+Control5=IDC_PARSER_GROUP,button,1342177287
 

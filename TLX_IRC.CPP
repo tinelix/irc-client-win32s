@@ -51,7 +51,7 @@ BOOL IRCClient::InitInstance()
 	GetModuleFileName(NULL, exe_path, MAX_PATH);
 	GetModuleFileName(NULL, settings_path, MAX_PATH); 
 
-	delsymbs(settings_path, strlen(settings_path) - strlen(exe_name) - 1, strlen(settings_path) - strlen(exe_name) - 1); // deleting EXE filename
+	*(strrchr(settings_path, '\\')+1)='\0';
 
 	strcat(settings_path, "\\settings.ini");	// add settings filename
 
@@ -66,8 +66,8 @@ BOOL IRCClient::InitInstance()
 	LoadStdProfileSettings();  // Load standard INI file options (including MRU)
 
 	MainWindow dlg;
-	sprintf(app_version, "0.1.6 Beta");
-	sprintf(release_date, "2022-01-01");
+	sprintf(app_version, "0.1.7 Beta");
+	sprintf(release_date, "2022-01-08");
 	m_pMainWnd = &dlg;
 	int nResponse = dlg.DoModal();
 	if (nResponse == IDOK)

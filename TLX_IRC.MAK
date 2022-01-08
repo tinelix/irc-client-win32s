@@ -71,7 +71,8 @@ BSC32_SBRS= \
 	$(INTDIR)/CNMANDLG.SBR \
 	$(INTDIR)/ENTERTXT.SBR \
 	$(INTDIR)/SETGDLG.SBR \
-	$(INTDIR)/STATSDLG.SBR
+	$(INTDIR)/STATSDLG.SBR \
+	$(INTDIR)/PARSSDLG.SBR
 
 $(OUTDIR)/TLX_IRC.bsc : $(OUTDIR)  $(BSC32_SBRS)
     $(BSC32) @<<
@@ -94,7 +95,8 @@ LINK32_OBJS= \
 	$(INTDIR)/CNMANDLG.OBJ \
 	$(INTDIR)/ENTERTXT.OBJ \
 	$(INTDIR)/SETGDLG.OBJ \
-	$(INTDIR)/STATSDLG.OBJ
+	$(INTDIR)/STATSDLG.OBJ \
+	$(INTDIR)/PARSSDLG.OBJ
 
 $(OUTDIR)/TLX_IRC.exe : $(OUTDIR)  $(DEF_FILE) $(LINK32_OBJS)
     $(LINK32) @<<
@@ -140,7 +142,8 @@ BSC32_SBRS= \
 	$(INTDIR)/CNMANDLG.SBR \
 	$(INTDIR)/ENTERTXT.SBR \
 	$(INTDIR)/SETGDLG.SBR \
-	$(INTDIR)/STATSDLG.SBR
+	$(INTDIR)/STATSDLG.SBR \
+	$(INTDIR)/PARSSDLG.SBR
 
 $(OUTDIR)/TLX_IRC.bsc : $(OUTDIR)  $(BSC32_SBRS)
     $(BSC32) @<<
@@ -163,7 +166,8 @@ LINK32_OBJS= \
 	$(INTDIR)/CNMANDLG.OBJ \
 	$(INTDIR)/ENTERTXT.OBJ \
 	$(INTDIR)/SETGDLG.OBJ \
-	$(INTDIR)/STATSDLG.OBJ
+	$(INTDIR)/STATSDLG.OBJ \
+	$(INTDIR)/PARSSDLG.OBJ
 
 $(OUTDIR)/TLX_IRC.exe : $(OUTDIR)  $(DEF_FILE) $(LINK32_OBJS)
     $(LINK32) @<<
@@ -211,7 +215,8 @@ BSC32_SBRS= \
 	$(INTDIR)/CNMANDLG.SBR \
 	$(INTDIR)/ENTERTXT.SBR \
 	$(INTDIR)/SETGDLG.SBR \
-	$(INTDIR)/STATSDLG.SBR
+	$(INTDIR)/STATSDLG.SBR \
+	$(INTDIR)/PARSSDLG.SBR
 
 $(OUTDIR)/TLX_IRC.bsc : $(OUTDIR)  $(BSC32_SBRS)
     $(BSC32) @<<
@@ -232,7 +237,8 @@ LINK32_OBJS= \
 	$(INTDIR)/CNMANDLG.OBJ \
 	$(INTDIR)/ENTERTXT.OBJ \
 	$(INTDIR)/SETGDLG.OBJ \
-	$(INTDIR)/STATSDLG.OBJ
+	$(INTDIR)/STATSDLG.OBJ \
+	$(INTDIR)/PARSSDLG.OBJ
 
 $(OUTDIR)/TLX_IRC.exe : $(OUTDIR)  $(DEF_FILE) $(LINK32_OBJS)
     $(LINK32) @<<
@@ -297,7 +303,8 @@ SOURCE=.\TLX_IRC.CPP
 DEP_TLX_I=\
 	.\STDAFX.H\
 	.\TLX_IRC.H\
-	.\MAINWIN.H
+	.\MAINWIN.H\
+	.\STATSDLG.H
 
 !IF  "$(CFG)" == "Win32 Debug"
 
@@ -324,7 +331,7 @@ DEP_MAINW=\
 	.\MAINWIN.H\
 	.\CNMANDLG.H\
 	.\SETGDLG.H\
-	.\statsdlg.h
+	.\STATSDLG.H
 
 !IF  "$(CFG)" == "Win32 Debug"
 
@@ -376,7 +383,8 @@ DEP_CNMAN=\
 	.\TLX_IRC.H\
 	.\CNMANDLG.H\
 	.\ENTERTXT.H\
-	.\MAINWIN.H
+	.\MAINWIN.H\
+	.\STATSDLG.H
 
 !IF  "$(CFG)" == "Win32 Debug"
 
@@ -430,7 +438,8 @@ DEP_SETGD=\
 	.\TLX_IRC.H\
 	.\SETGDLG.H\
 	.\MAINWIN.H\
-	.\statsdlg.h
+	.\PARSSDLG.H\
+	.\STATSDLG.H
 
 !IF  "$(CFG)" == "Win32 Debug"
 
@@ -454,7 +463,7 @@ SOURCE=.\STATSDLG.CPP
 DEP_STATS=\
 	.\STDAFX.H\
 	.\TLX_IRC.H\
-	.\statsdlg.h
+	.\STATSDLG.H
 
 !IF  "$(CFG)" == "Win32 Debug"
 
@@ -469,6 +478,37 @@ $(INTDIR)/STATSDLG.OBJ :  $(SOURCE)  $(DEP_STATS) $(INTDIR)\
 !ELSEIF  "$(CFG)" == "Win32 Prerelease"
 
 $(INTDIR)/STATSDLG.OBJ :  $(SOURCE)  $(DEP_STATS) $(INTDIR)
+
+!ENDIF 
+
+# End Source File
+################################################################################
+# Begin Source File
+
+SOURCE=.\PARSSDLG.H
+# End Source File
+################################################################################
+# Begin Source File
+
+SOURCE=.\PARSSDLG.CPP
+DEP_PARSS=\
+	.\STDAFX.H\
+	.\TLX_IRC.H\
+	.\PARSSDLG.H
+
+!IF  "$(CFG)" == "Win32 Debug"
+
+$(INTDIR)/PARSSDLG.OBJ :  $(SOURCE)  $(DEP_PARSS) $(INTDIR)\
+ $(INTDIR)/STDAFX.OBJ
+
+!ELSEIF  "$(CFG)" == "Win32 Release"
+
+$(INTDIR)/PARSSDLG.OBJ :  $(SOURCE)  $(DEP_PARSS) $(INTDIR)\
+ $(INTDIR)/STDAFX.OBJ
+
+!ELSEIF  "$(CFG)" == "Win32 Prerelease"
+
+$(INTDIR)/PARSSDLG.OBJ :  $(SOURCE)  $(DEP_PARSS) $(INTDIR)
 
 !ENDIF 
 

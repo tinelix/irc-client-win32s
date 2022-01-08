@@ -5,6 +5,7 @@
 #include "TLX_IRC.h"
 #include "setgdlg.h"
 #include "mainwin.h"
+#include "parssdlg.h"
 #include <locale.h>
 #include <stdio.h>
 
@@ -38,6 +39,7 @@ void SettingsDialog::DoDataExchange(CDataExchange* pDX)
 BEGIN_MESSAGE_MAP(SettingsDialog, CDialog)
 	//{{AFX_MSG_MAP(SettingsDialog)
 	ON_BN_CLICKED(IDC_CHANGE_MSG_FONT, OnChangeMsgFont)
+	ON_BN_CLICKED(IDC_PARSER_SETTINGS, OnParserSettings)
 	//}}AFX_MSG_MAP
 END_MESSAGE_MAP()
 
@@ -59,7 +61,7 @@ void SettingsDialog::OnOK()
 	char settings_path[MAX_PATH] = {0};
 	char exe_name[MAX_PATH] = "TLX_IRC.EXE"; // EXE filename
 	GetModuleFileName(NULL, settings_path, MAX_PATH); 
-	SettingsDialog::delsymbs(settings_path, strlen(settings_path) - strlen(exe_name) - 1, MAX_PATH); // deleting EXE filename
+	*(strrchr(settings_path, '\\')+1)='\0';
 	strcat(settings_path, "\\settings.ini");	// add settings filename
 	if(GetFileAttributes(settings_path) == 1 && GetFileAttributes(exe_path) == 1) {
 		MessageBox("The disk may be write protected.", "Warning", MB_OK|MB_ICONEXCLAMATION);
@@ -155,7 +157,7 @@ BOOL SettingsDialog::OnInitDialog()
 
 	GetModuleFileName(NULL, exe_path, MAX_PATH);  
 
-	SettingsDialog::delsymbs(exe_path, strlen(exe_path) - strlen(exe_name) - 1, strlen(exe_path) - strlen(exe_name) - 1); // deleting EXE filename
+	*(strrchr(exe_path, '\\')+1)='\0';
 
 	strcat(exe_path, "\\settings.ini");	// add settings filename
 
@@ -176,6 +178,7 @@ BOOL SettingsDialog::OnInitDialog()
 		GetDlgItem(IDC_LANGCOMBO1)->SetFont(&mainfont);
 		GetDlgItem(IDC_SAVE_MSG_HISTORY)->SetFont(&mainfont);
 		GetDlgItem(IDC_CHANGE_MSG_FONT)->SetFont(&mainfont);
+		GetDlgItem(IDC_PARSER_SETTINGS)->SetFont(&mainfont);
 
 		CString lng_selitemtext_2(language_string);
 		CString msg_history_string2(msg_history_string);
@@ -185,12 +188,14 @@ BOOL SettingsDialog::OnInitDialog()
             GetDlgItem(IDC_LANGLABEL)->SetWindowText("Язык (Language):");
             GetDlgItem(IDC_SAVE_MSG_HISTORY)->SetWindowText("Сохранять историю сообщений");
 			GetDlgItem(IDC_CHANGE_MSG_FONT)->SetWindowText("Сменить шрифт...");
+			GetDlgItem(IDC_PARSER_SETTINGS)->SetWindowText("Настройки парсера");
             SetWindowText("Настройки");
 		} else {
 			GetDlgItem(IDCANCEL)->SetWindowText("Cancel");
             GetDlgItem(IDC_LANGLABEL)->SetWindowText("Language:");
             GetDlgItem(IDC_SAVE_MSG_HISTORY)->SetWindowText("Save messages history");
 			GetDlgItem(IDC_CHANGE_MSG_FONT)->SetWindowText("Change font...");
+			GetDlgItem(IDC_PARSER_SETTINGS)->SetWindowText("Parser settings");
             SetWindowText("Settings");
 		};
 		
@@ -213,7 +218,7 @@ void SettingsDialog::OnChangeMsgFont()
 		char exe_path[MAX_PATH] = {0};
 		char exe_name[MAX_PATH] = "TLX_IRC.EXE"; // EXE filename
 		GetModuleFileName(NULL, exe_path, MAX_PATH);  
-		SettingsDialog::delsymbs(exe_path, strlen(exe_path) - strlen(exe_name) - 1, strlen(exe_path) - strlen(exe_name) - 1); // deleting EXE filename
+		*(strrchr(exe_path, '\\')+1)='\0';
 		strcat(exe_path, "\\settings.ini");
 		LOGFONT logfont;
 		CFontDialog fontdlg(&logfont);
@@ -246,4 +251,11 @@ void SettingsDialog::OnChangeMsgFont()
 	} catch(...) {
 	
 	};	
+}
+
+void SettingsDialog::OnParserSettings() 
+{
+	ParserSettingsDialog parser_settings_dlg;
+	parser_settings_dlg.DoModal();
+	
 }

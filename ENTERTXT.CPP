@@ -70,7 +70,7 @@ void EnterTextDlg::OnOK()
 	
 	IRCClient* application = (IRCClient*)AfxGetApp();  
 
-	EnterTextDlg::delsymbs(exe_path, strlen(exe_path) - strlen(exe_name) - 1, strlen(exe_path) - strlen(exe_name) - 1); // deleting EXE filename
+	*(strrchr(exe_path, '\\')+1)='\0';
 
 	strcat(exe_path, "\\settings.ini");
 

@@ -1,10 +1,15 @@
 #include "parser.h"
 #include <time.h>
 
-extern "C" __declspec(dllexport) void ParseMessage(char* line, char* array[], char* output, BOOL debug) {
+extern "C" __declspec(dllexport) void ParseMessage(char* line, char* array[], char* output, BOOL debug, char* clock_position) {
 	char msg[32768];
 	if (line == NULL || output == NULL) {
 		exit;
+	};
+	if(clock_position == NULL) {
+		sprintf(clock_position, "right");
+	} else if(strcmp(clock_position, "left") != 0 && strcmp(clock_position, "right") != 0 && strcmp(clock_position, "noshow") != 0) {
+		sprintf(clock_position, "right");
 	};
 	char* token;
 	char* new_token;
@@ -65,9 +70,17 @@ extern "C" __declspec(dllexport) void ParseMessage(char* line, char* array[], ch
 			string_index += sprintf(output + string_index, "%s ", array[i]);
 		} else if(i == 2 && strcmp(array[1], "PRIVMSG") == 0) {
 			if(array[i][0] != '#') {
-				string_index += sprintf(output + string_index, "(direct):");
+				if(strcmp(clock_position, "left") == 0) {
+					string_index += sprintf(output + string_index, "(direct, %s):", current_time_ch);
+				} else {
+					string_index += sprintf(output + string_index, "(direct):");
+				};
 			} else {
-				string_index += sprintf(output + string_index, "(#%s):", array[i] + 1);
+				if(strcmp(clock_position, "left") == 0) {
+					string_index += sprintf(output + string_index, "(#%s, %s):", array[i] + 1, current_time_ch);
+				} else {
+					string_index += sprintf(output + string_index, "(#%s):", array[i] + 1);
+				};
 			};
 		} else if(i == 0 && strcmp(array[1], "JOIN") == 0) {
 			if (debug == TRUE) {
@@ -75,7 +88,11 @@ extern "C" __declspec(dllexport) void ParseMessage(char* line, char* array[], ch
 				OutputDebugString("\r\n");
 			};
 			strtok(array[i], "!");
-			string_index += sprintf(output + string_index, "%s joined the ", array[i]);
+			if(strcmp(clock_position, "left") == 0) {
+				string_index += sprintf(output + string_index, "(%s) %s joined the ", current_time_ch, array[i]);
+			} else {
+				string_index += sprintf(output + string_index, "%s joined the ", array[i]);
+			};
 		} else if(i == 0 && strcmp(array[1], "QUIT") == 0) {
 			if (debug == TRUE) {
 				OutputDebugString("Code is QUIT.");
@@ -83,9 +100,19 @@ extern "C" __declspec(dllexport) void ParseMessage(char* line, char* array[], ch
 			};
 			strtok(array[i], "!");
 			if(strlen(array[i]) < 3) {
-				string_index += sprintf(output + string_index, "%s quited. (%s)\r\n", array[i], current_time_ch);
+				if(strcmp(clock_position, "right") == 0) {
+					string_index += sprintf(output + string_index, "%s quited. (%s)\r\n", array[i], current_time_ch);
+				} else if(strcmp(clock_position, "left") == 0) {
+					string_index += sprintf(output + string_index, "(%s) %s quited.\r\n", current_time_ch, array[i]);
+				} else {
+					string_index += sprintf(output + string_index, "%s quited.\r\n", array[i]);
+				};
 			} else {
-				string_index += sprintf(output + string_index, "%s quited with reason: [", array[i]);
+				if(strcmp(clock_position, "left") == 0) {
+					string_index += sprintf(output + string_index, "(%s) %s quited with reason: [", current_time_ch, array[i]);
+				} else {
+					string_index += sprintf(output + string_index, "%s quited with reason: [", array[i]);
+				};
 			};
 		} else if(i >= 2 && strcmp(array[1], "QUIT") == 0) {
 			if (debug == TRUE) {
@@ -94,7 +121,11 @@ extern "C" __declspec(dllexport) void ParseMessage(char* line, char* array[], ch
 			};
 			strtok(array[i], "!");
 			if(i > index - 2) {
-				string_index += sprintf(output + string_index, "%s]. (%s)\r\n", array[i], current_time_ch);
+				if(strcmp(clock_position, "right") == 0) {
+					string_index += sprintf(output + string_index, "%s]. (%s)\r\n", array[i], current_time_ch);
+				} else {
+					string_index += sprintf(output + string_index, "%s].\r\n", array[i]);
+				}
 			} else {
 				string_index += sprintf(output + string_index, "%s ", array[i]);
 			};
@@ -104,8 +135,11 @@ extern "C" __declspec(dllexport) void ParseMessage(char* line, char* array[], ch
 				OutputDebugString("\r\n");
 			};
 			strtok(array[i], "!");
-			
-			string_index += sprintf(output + string_index, "%s left the ", array[i]);
+			if(strcmp(clock_position, "left") == 0) {
+				string_index += sprintf(output + string_index, "(%s) %s left the ", current_time_ch, array[i]);
+			} else {
+				string_index += sprintf(output + string_index, "%s left the ", array[i]);
+			};
 		} else if(i >= 3 && strcmp(array[1], "PART") == 0) {
 			if (debug == TRUE) {
 				OutputDebugString("Code is PART.");
@@ -113,7 +147,11 @@ extern "C" __declspec(dllexport) void ParseMessage(char* line, char* array[], ch
 			};
 			strtok(array[i], "!");
 			if(i > index - 2) {
-				string_index += sprintf(output + string_index, "%s]. (%s)\r\n", array[i], current_time_ch);
+				if(strcmp(clock_position, "right") == 0) {
+					string_index += sprintf(output + string_index, "%s]. (%s)\r\n", array[i], current_time_ch);
+				} else {
+					string_index += sprintf(output + string_index, "%s].\r\n", array[i]);
+				};
 			} else {
 				string_index += sprintf(output + string_index, "%s ", array[i]);
 			};
@@ -143,7 +181,11 @@ extern "C" __declspec(dllexport) void ParseMessage(char* line, char* array[], ch
 				OutputDebugString("\r\n");
 			};
 			if(index <= 4) {
-				string_index += sprintf(output + string_index, "%s channel. (%s)\r\n", array[i], current_time_ch);
+				if(strcmp(clock_position, "right") == 0) {
+					string_index += sprintf(output + string_index, "%s channel. (%s)\r\n", array[i], current_time_ch);
+				} else {
+					string_index += sprintf(output + string_index, "%s channel.\r\n", array[i]);
+				};
 			} else {
 				string_index += sprintf(output + string_index, "%s channel with reason: [", array[i]);
 			};
@@ -152,7 +194,11 @@ extern "C" __declspec(dllexport) void ParseMessage(char* line, char* array[], ch
 				OutputDebugString("Code is JOIN.");
 				OutputDebugString("\r\n");
 			};
-			string_index += sprintf(output + string_index, "%s channel. (%s)\r\n", array[i], current_time_ch);
+			if(strcmp(clock_position, "right") == 0) {
+				string_index += sprintf(output + string_index, "%s channel. (%s)\r\n", array[i], current_time_ch);
+			} else {
+				string_index += sprintf(output + string_index, "%s channel.\r\n", array[i]);
+			};
 		} else if(i == 0 && strcmp(array[1], "311") == 0) {
 			if (debug == TRUE) {
 				OutputDebugString("Code is WHOIS (311).");
@@ -205,7 +251,7 @@ extern "C" __declspec(dllexport) void ParseMessage(char* line, char* array[], ch
 		} else if(i < 3 && strlen(array[i]) < 4 && isdigit(code) != 0 && strcmp(array[1], "372") != 0 
 			&& strcmp(array[1], "311") != 0 && strcmp(array[1], "312") != 0 && strcmp(array[1], "317") != 0 
 			&& strcmp(array[1], "378") != 0 && strcmp(array[1], "318") != 0 && strcmp(array[1], "321") != 0 
-			&& strcmp(array[1], "322") != 0 && strcmp(array[1], "323") != 0) {
+			&& strcmp(array[1], "322") != 0 && strcmp(array[1], "323") != 0 && strcmp(array[1], "366") != 0) {
 			if (debug == TRUE) {
 				OutputDebugString("Code is digit.");
 				OutputDebugString("\r\n");
@@ -215,13 +261,18 @@ extern "C" __declspec(dllexport) void ParseMessage(char* line, char* array[], ch
 			&& strcmp(array[1], "PART") != 0 && strcmp(array[1], "378") != 0 
 			&& strcmp(array[1], "312") != 0 && strcmp(array[1], "317") != 0 
 			&& strcmp(array[1], "318") != 0 && strcmp(array[1], "321") != 0 
-			&& strcmp(array[1], "322") != 0 && strcmp(array[1], "323") != 0) {
+			&& strcmp(array[1], "322") != 0 && strcmp(array[1], "323") != 0 
+			&& strcmp(array[1], "366") != 0) {
 			if (debug == TRUE) {
 				OutputDebugString("Code isn't digit. (i > index - 2)");
 				OutputDebugString("\r\n");
 			};
 			if(strcmp(array[1], "PRIVMSG") == 0) {
-				string_index += sprintf(output + string_index, " %s (%s)\r\n", array[i], current_time_ch);
+				if(strcmp(clock_position, "right") == 0) {
+					string_index += sprintf(output + string_index, " %s (%s)\r\n", array[i], current_time_ch);
+				} else {
+					string_index += sprintf(output + string_index, " %s\r\n", array[i]);
+				};
 			} else {
 				string_index += sprintf(output + string_index, " %s\r\n", array[i]);
 			};
@@ -302,10 +353,15 @@ extern "C" __declspec(dllexport) void ParseMessage(char* line, char* array[], ch
 						OutputDebugString("Parsing messages (strcmp(array[1], \"323\") == 0 && i >= 3)");
 						OutputDebugString("\r\n");
 					};
+				} else if (strcmp(array[1], "366") == 0 && i >= 3) {
+					if (debug == TRUE) {
+						OutputDebugString("Parsing messages (strcmp(array[1], \"366\") == 0 && i >= 3)");
+						OutputDebugString("\r\n");
+					};
 				} else if ((i == 1 && isdigit(code) == 0 && isdigit(code) == 0 && strcmp(array[1], "PRIVMSG") != 0 
 					&& strcmp(array[1], "JOIN") != 0 && strcmp(array[1], "QUIT") != 0 && strcmp(array[1], "372") != 0 
 					&& strcmp(array[1], "PART") != 0 && strcmp(array[1], "321") != 0 && strcmp(array[1], "322") != 0
-					&& strcmp(array[1], "323") != 0)) {
+					&& strcmp(array[1], "323") != 0 && strcmp(array[1], "366") != 0)) {
 					if (debug == TRUE) {
 						OutputDebugString("Parsing messages (i == 1 && isdigit(code) == 0 && strcmp(array[1], \"PRIVMSG\")\r\n"
 						"!= 0 && strcmp(array[1], \"JOIN\") != 0 && strcmp(array[1], \"QUIT\") != 0 && strcmp(array[1], \"372\") != 0)");
