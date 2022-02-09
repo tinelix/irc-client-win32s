@@ -37,6 +37,8 @@ public:
 	char history_path[MAX_PATH];
 	char history_path2[MAX_PATH];
 	char history_file[MAX_PATH];
+	char history_date[MAX_PATH];
+	char* msg_history_text;
 	time_t current_time;
 	int sended_bytes_count;
 	int recieved_bytes_count;

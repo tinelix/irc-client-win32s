@@ -591,8 +591,10 @@ void MainWindow::ConnectionFunc(HWND hwnd, struct MainWindow::PARAMETERS params)
 		strftime(current_time_ch, 9, "%y_%m_%d", localtime(&current_time));
 		strcat(h_pch2, "\\");
 		strcat(h_pch2, current_time_ch);	// add history filename
+		strftime(current_time_ch, 9, "%y_%m_%d", localtime(&current_time));
 		sprintf(mainwin->history_path, "%s", h_pch);
 		sprintf(mainwin->history_path2, "%s", h_pch2);
+		strftime(mainwin->history_date, MAX_PATH, "%Y-%m-%d", localtime(&current_time));
 		char info_msg[120];
 		int create_dir_status = CreateDirectory(h_pch, NULL);
 
@@ -806,10 +808,11 @@ LRESULT MainWindow::WindowProc(UINT message, WPARAM wParam, LPARAM lParam)
 					IsConnected = FALSE;
 					exit;
 				};
-				char listing[32768] = {0};
-				char previous_listing[32768] = {0};
+				char listing[65536] = {0};
+				char previous_listing[65536] = {0};
+				msg_history_text = (char*)malloc(sizeof(char) * 73728);
 				int sp;
-				AfxGetApp()->GetMainWnd()->GetDlgItem(IDC_SOCKMSGS)->GetWindowText(previous_listing, 32767);
+				AfxGetApp()->GetMainWnd()->GetDlgItem(IDC_SOCKMSGS)->GetWindowText(previous_listing, 65536);
 				if(previous_listing == NULL) {
 				};
 				sp = sprintf(listing, "%s", previous_listing);
@@ -820,7 +823,7 @@ LRESULT MainWindow::WindowProc(UINT message, WPARAM wParam, LPARAM lParam)
 				char nwline[32768];
 				char* parsed_msg;
 				char* parsed_msg_list;
-				parsed_msg_list = (char*)malloc(sizeof(char) * 32768);
+				parsed_msg_list = (char*)malloc(sizeof(char) * 65536);
 				char* nw_token;
 				CArray<CString, CString> new_line_splitter;
 				while(AfxExtractSubString(sock_buffer_str, sock_buffer, string_index, '\n'))
@@ -860,12 +863,12 @@ LRESULT MainWindow::WindowProc(UINT message, WPARAM wParam, LPARAM lParam)
 							char** owners_array;
 							char** operators_array;
 							char** members_array;
-							unparsed_msg = (char*)calloc(sizeof(char), 32768 + 1);
-							unparsed_names_msg = (char*)calloc(sizeof(char), 32768 + 1);
-							parsed_msg = (char*)calloc(sizeof(char), 32768 + 1);
-							parsing_array = (char**)calloc(sizeof(char*), 32768 + 1);
+							unparsed_msg = (char*)calloc(sizeof(char), 65536 + 1);
+							unparsed_names_msg = (char*)calloc(sizeof(char), 65536 + 1);
+							parsed_msg = (char*)calloc(sizeof(char), 65536 + 1);
+							parsing_array = (char**)calloc(sizeof(char*), 65536 + 1);
 							for (int array_index = 0; array_index < sizeof(parsing_array); array_index++) {
-								parsing_array[array_index] = (char*)calloc(sizeof(char), 32768 + 1);
+								parsing_array[array_index] = (char*)calloc(sizeof(char), 65536 + 1);
 							};
 							sprintf(unparsed_msg, "%s", new_line_splitter[i]);
 							sprintf(unparsed_names_msg, "%s", new_line_splitter[i]);
@@ -885,9 +888,9 @@ LRESULT MainWindow::WindowProc(UINT message, WPARAM wParam, LPARAM lParam)
 								};
 								CString p_msg(parsed_msg);
 								if(strcmp(parsing_array[1], "353") == 0) {
-									owners_array = (char**)calloc(sizeof(char*), 32768 + 1);
-									operators_array = (char**)calloc(sizeof(char*), 32768 + 1);
-									members_array = (char**)calloc(sizeof(char*), 32768 + 1);
+									owners_array = (char**)calloc(sizeof(char*), 65536 + 1);
+									operators_array = (char**)calloc(sizeof(char*), 65536 + 1);
+									members_array = (char**)calloc(sizeof(char*), 65536 + 1);
 									parsed_msg_index += sprintf(parsed_msg_list + parsed_msg_index, "");
 									ParseNamesMsg(unparsed_names_msg, parsing_array, owners_array, operators_array, members_array, FALSE);
 								} else {
@@ -900,18 +903,22 @@ LRESULT MainWindow::WindowProc(UINT message, WPARAM wParam, LPARAM lParam)
 					};
 				};
 				if(pong == "") {
-					if(strlen(previous_listing) + strlen(parsed_msg_list) < 32768) {
+					if(strlen(previous_listing) + strlen(parsed_msg_list) < 65536) {
 						sp += sprintf(listing + sp, "%s",  parsed_msg_list);
 					} else {
 						sp = sprintf(listing, "%s",  parsed_msg_list);
 					};
+					int msghi = 0;
+					msghi = sprintf(msg_history_text, "Messages History\r\nCreated %s by Tinelix IRC Client | %s\r\nhttps://github.com/tinelix/irc-client-for-win32s\r\n------------------------------------------------------------------------"
+					"\r\n", history_date, params.server);
+					msghi += sprintf(msg_history_text + msghi, "%s------------------------------------------------------------------------\r\n\r\n", listing);
 					if(msg_history_string2 == "Enabled") {
 						if(history_file_stdio.Open(history_file, CFile::modeReadWrite)) {
-							history_file_stdio.Write(listing, 32768);
+							history_file_stdio.Write(msg_history_text, 65536);
 							history_file_stdio.Close();
 						} else {
 							if (history_file_stdio.Open(history_file, CFile::modeReadWrite | CFile::modeCreate)) {
-								history_file_stdio.Write(listing, 32768);
+								history_file_stdio.Write(msg_history_text, 65536);
 								history_file_stdio.Close();
 							} else {
 							};
@@ -1365,5 +1372,6 @@ void MainWindow::OnDestroy()
 {
 	CDialog::OnDestroy();
 	
-	delete stats_dlg;	
+	delete stats_dlg;
+	free(msg_history_text);	
 }
