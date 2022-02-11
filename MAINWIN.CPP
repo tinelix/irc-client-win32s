@@ -248,6 +248,8 @@ CDialog::OnInitDialog();
 	strcat(exe_path, "\\settings.ini");	// add settings filename
 	strcat(dll_path, "\\parser.dll");
 
+	msg_history_text = (char*)malloc(sizeof(char) * 139264); 
+	listing = (char*)calloc(sizeof(char), 131072 + 1);
 
 	TRACE("Tinelix IRC Client ver. %s (%s)\r\nCopyright © 2021-2022 Dmitry Tretyakov (aka. Tinelix)\r\n"
 	"https:/github.com/tinelix/irc-client-for-win32s\r\n\r\n", application->app_version, application->release_date);
@@ -808,11 +810,11 @@ LRESULT MainWindow::WindowProc(UINT message, WPARAM wParam, LPARAM lParam)
 					IsConnected = FALSE;
 					exit;
 				};
-				char listing[65536] = {0};
+				listing = (char*)calloc(sizeof(char), 131072 + 1);
 				char previous_listing[65536] = {0};
-				msg_history_text = (char*)malloc(sizeof(char) * 73728);
+				msg_history_text = (char*)malloc(sizeof(char) * 139264);
 				int sp;
-				AfxGetApp()->GetMainWnd()->GetDlgItem(IDC_SOCKMSGS)->GetWindowText(previous_listing, 65536);
+				AfxGetApp()->GetMainWnd()->GetDlgItem(IDC_SOCKMSGS)->GetWindowText(previous_listing, 131072);
 				if(previous_listing == NULL) {
 				};
 				sp = sprintf(listing, "%s", previous_listing);
@@ -823,7 +825,7 @@ LRESULT MainWindow::WindowProc(UINT message, WPARAM wParam, LPARAM lParam)
 				char nwline[32768];
 				char* parsed_msg;
 				char* parsed_msg_list;
-				parsed_msg_list = (char*)malloc(sizeof(char) * 65536);
+				parsed_msg_list = (char*)malloc(sizeof(char) * 131072);
 				char* nw_token;
 				CArray<CString, CString> new_line_splitter;
 				while(AfxExtractSubString(sock_buffer_str, sock_buffer, string_index, '\n'))
@@ -903,7 +905,7 @@ LRESULT MainWindow::WindowProc(UINT message, WPARAM wParam, LPARAM lParam)
 					};
 				};
 				if(pong == "") {
-					if(strlen(previous_listing) + strlen(parsed_msg_list) < 65536) {
+					if(strlen(previous_listing) + strlen(parsed_msg_list) < 131072) {
 						sp += sprintf(listing + sp, "%s",  parsed_msg_list);
 					} else {
 						sp = sprintf(listing, "%s",  parsed_msg_list);
@@ -914,11 +916,11 @@ LRESULT MainWindow::WindowProc(UINT message, WPARAM wParam, LPARAM lParam)
 					msghi += sprintf(msg_history_text + msghi, "%s------------------------------------------------------------------------\r\n\r\n", listing);
 					if(msg_history_string2 == "Enabled") {
 						if(history_file_stdio.Open(history_file, CFile::modeReadWrite)) {
-							history_file_stdio.Write(msg_history_text, 65536);
+							history_file_stdio.Write(msg_history_text, strlen(msg_history_text)*sizeof(char));
 							history_file_stdio.Close();
 						} else {
 							if (history_file_stdio.Open(history_file, CFile::modeReadWrite | CFile::modeCreate)) {
-								history_file_stdio.Write(msg_history_text, 65536);
+								history_file_stdio.Write(msg_history_text, strlen(msg_history_text)*sizeof(char));
 								history_file_stdio.Close();
 							} else {
 							};
@@ -1374,4 +1376,5 @@ void MainWindow::OnDestroy()
 	
 	delete stats_dlg;
 	free(msg_history_text);	
+	free(listing);
 }
