@@ -21,6 +21,7 @@
 #define IDD_STATISTICS                  143
 #define IDD_DIALOG1                     144
 #define IDD_PARSER_S                    144
+#define IDD_MENTIONWND                  146
 #define IDC_LANGCOMBO1                  1000
 #define IDC_SOCKMSGS                    1000
 #define IDC_EDIT2                       1001
@@ -72,6 +73,9 @@
 #define IDC_PARSER_GROUP                1034
 #define IDC_TOTAL_LABEL                 1035
 #define IDC_TOTAL_LABEL2                1036
+#define IDC_OPEN                        1036
+#define IDC_MENTIONED_MSG               1037
+#define IDC_TITLE                       1038
 #define ID_FILE_CONNECT                 32771
 #define ID_FILE_QUIT                    32772
 #define ID_HELP_ABOUT                   32773
@@ -83,9 +87,9 @@
 #ifdef APSTUDIO_INVOKED
 #ifndef APSTUDIO_READONLY_SYMBOLS
 #define _APS_3D_CONTROLS                     1
-#define _APS_NEXT_RESOURCE_VALUE        146
+#define _APS_NEXT_RESOURCE_VALUE        147
 #define _APS_NEXT_COMMAND_VALUE         32777
-#define _APS_NEXT_CONTROL_VALUE         1035
+#define _APS_NEXT_CONTROL_VALUE         1039
 #define _APS_NEXT_SYMED_VALUE           101
 #endif
 #endif

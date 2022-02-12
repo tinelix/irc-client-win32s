@@ -72,7 +72,7 @@ void EnterTextDlg::OnOK()
 
 	*(strrchr(exe_path, '\\')+1)='\0';
 
-	strcat(exe_path, "\\settings.ini");
+	strcat(exe_path, "settings.ini");	// add settings filename
 
 	char language_string[MAX_PATH] = {0};
 	GetPrivateProfileString("Main", "Language", "English", language_string, MAX_PATH, exe_path);
@@ -115,7 +115,7 @@ BOOL EnterTextDlg::OnInitDialog()
 
 	EnterTextDlg::delsymbs(exe_path, strlen(exe_path) - strlen(exe_name) - 1, strlen(exe_path) - strlen(exe_name) - 1); // deleting EXE filename
 
-	strcat(exe_path, "\\settings.ini");	// add settings filename
+	strcat(exe_path, "settings.ini");	// add settings filename
 
 	char language_string[MAX_PATH] = {0};
 

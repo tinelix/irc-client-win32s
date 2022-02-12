@@ -7,8 +7,10 @@
 #define WM_SOCKET_MESSAGE 0xAFFF
 #define WM_SOCKET_TIMER 1;
 #define WM_UPDATING_STATISTICS 0xAFFC
+#define WM_USER_MENTION 0xAFFB
 
 #include "statsdlg.h"
+#include "mentionw.h"
 
 class MainWindow : public CDialog
 {
@@ -28,7 +30,13 @@ public:
 		int sended_bytes;
 		int recieved_bytes;
 	};
+	struct MENTIONED_MSG 
+	{
+		char mentioner[128];
+		char message[512];
+	};
 	PARAMETERS params;
+	MENTIONED_MSG mentioned_message;
 	char channel[256];
 	char left_ch[256];
 	char app_version[20];
@@ -71,6 +79,7 @@ protected:
 	CFont font;
 	CFont mainfont;
 	StatisticsDialog* stats_dlg;
+	MentionWindow* mention_wnd;
 
 	// Generated message map functions
 	//{{AFX_MSG(MainWindow)

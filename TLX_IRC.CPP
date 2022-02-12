@@ -53,7 +53,7 @@ BOOL IRCClient::InitInstance()
 
 	*(strrchr(settings_path, '\\')+1)='\0';
 
-	strcat(settings_path, "\\settings.ini");	// add settings filename
+	strcat(exe_path, "settings.ini");	// add settings filename
 
 	GetPrivateProfileString("Main", "Language", "English", language_string, 80, exe_path);
 	CString language_string_2(language_string);
@@ -66,8 +66,8 @@ BOOL IRCClient::InitInstance()
 	LoadStdProfileSettings();  // Load standard INI file options (including MRU)
 
 	MainWindow dlg;
-	sprintf(app_version, "0.1.10 Beta");
-	sprintf(release_date, "2022-02-11");
+	sprintf(app_version, "0.1.11 Beta");
+	sprintf(release_date, "2022-02-12");
 	m_pMainWnd = &dlg;
 	int nResponse = dlg.DoModal();
 	if (nResponse == IDOK)

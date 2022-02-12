@@ -62,7 +62,7 @@ void SettingsDialog::OnOK()
 	char exe_name[MAX_PATH] = "TLX_IRC.EXE"; // EXE filename
 	GetModuleFileName(NULL, settings_path, MAX_PATH); 
 	*(strrchr(settings_path, '\\')+1)='\0';
-	strcat(settings_path, "\\settings.ini");	// add settings filename
+	strcat(exe_path, "settings.ini");	// add settings filename
 	if(GetFileAttributes(settings_path) == 1 && GetFileAttributes(exe_path) == 1) {
 		MessageBox("The disk may be write protected.", "Warning", MB_OK|MB_ICONEXCLAMATION);
 		exit; 
@@ -159,7 +159,7 @@ BOOL SettingsDialog::OnInitDialog()
 
 	*(strrchr(exe_path, '\\')+1)='\0';
 
-	strcat(exe_path, "\\settings.ini");	// add settings filename
+	strcat(exe_path, "settings.ini");	// add settings filename
 
 	TCHAR language_string[MAX_PATH] = {0};
 	TCHAR msg_history_string[MAX_PATH] = {0};
@@ -219,7 +219,7 @@ void SettingsDialog::OnChangeMsgFont()
 		char exe_name[MAX_PATH] = "TLX_IRC.EXE"; // EXE filename
 		GetModuleFileName(NULL, exe_path, MAX_PATH);  
 		*(strrchr(exe_path, '\\')+1)='\0';
-		strcat(exe_path, "\\settings.ini");
+		strcat(exe_path, "settings.ini");
 		LOGFONT logfont;
 		CFontDialog fontdlg(&logfont);
 		sprintf(logfont.lfFaceName, "Fixedsys");

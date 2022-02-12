@@ -63,7 +63,7 @@ BOOL ParserSettingsDialog::OnInitDialog()
 
 	*(strrchr(exe_path, '\\')+1)='\0';
 
-	strcat(exe_path, "\\settings.ini");	// add settings filename
+	strcat(exe_path, "settings.ini");	// add settings filename
 
 	GetPrivateProfileString("Parser", "ShowMsgTime", "Enabled", show_msgtime_string, MAX_PATH, exe_path);
 	GetPrivateProfileString("Parser", "MsgTimePos", "Right", msgtime_pos_string, MAX_PATH, exe_path);
@@ -146,7 +146,7 @@ void ParserSettingsDialog::OnOK()
 
 	*(strrchr(exe_path, '\\')+1)='\0';
 
-	strcat(exe_path, "\\settings.ini");	// add settings filename
+	strcat(exe_path, "settings.ini");	// add settings filename
 
 	GetPrivateProfileString("Parser", "ShowMsgTime", "Enabled", show_msgtime_string, MAX_PATH, exe_path);
 	GetPrivateProfileString("Parser", "MsgTimePos", "Right", msgtime_pos_string, MAX_PATH, exe_path);

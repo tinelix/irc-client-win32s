@@ -160,6 +160,16 @@ BEGIN
     GROUPBOX        "Tinelix IRC Parser",IDC_PARSER_GROUP,4,5,177,44
 END
 
+IDD_MENTIONWND DIALOG DISCARDABLE  0, 0, 187, 55
+STYLE DS_SYSMODAL | DS_MODALFRAME | WS_POPUP
+FONT 8, "MS Sans Serif"
+BEGIN
+    DEFPUSHBUTTON   "Open",IDC_OPEN,109,37,36,14
+    PUSHBUTTON      "Close",IDCANCEL,147,37,36,14
+    LTEXT           "<member> mentioned you",IDC_TITLE,4,4,176,10
+    LTEXT           "<mentioned message>",IDC_MENTIONED_MSG,4,17,177,16
+END
+
 
 /////////////////////////////////////////////////////////////////////////////
 //
@@ -167,8 +177,8 @@ END
 //
 
 VS_VERSION_INFO VERSIONINFO
- FILEVERSION 0,1,10,0
- PRODUCTVERSION 0,1,10,0
+ FILEVERSION 0,1,11,0
+ PRODUCTVERSION 0,1,11,0
  FILEFLAGSMASK 0x3fL
 #ifdef _DEBUG
  FILEFLAGS 0x23L
@@ -183,16 +193,16 @@ BEGIN
     BEGIN
         BLOCK "040904b0"
         BEGIN
-            VALUE "Comments", "Tinelix IRC Client for Win32s (for Windows NT / 9x / 3.1x). Version 0.1.10 Beta (2022-02-11)\0"
+            VALUE "Comments", "Tinelix IRC Client for Win32s (for Windows NT / 9x / 3.1x). Version 0.1.11 Beta (2022-02-12)\0"
             VALUE "CompanyName", "\0"
             VALUE "FileDescription", "Tinelix IRC Client for Win32s\0"
-            VALUE "FileVersion", "0.1.10\0"
+            VALUE "FileVersion", "0.1.11\0"
             VALUE "InternalName", "Tinelix IRC Client\0"
             VALUE "LegalCopyright", "Copyright \251 2021-2022 Dmitry Tretyakov (aka. Tinelix)\0"
             VALUE "OriginalFilename", "TLX_IRC.EXE\0"
             VALUE "ProductName", "Tinelix IRC Client\0"
-            VALUE "ProductVersion", "0.1.10\0"
-            VALUE "SpecialBuild", "0.1.10 Beta (2022-02-10). Repository link: https://github.com/tinelix/irc-client-for-win32s (GNU GPL 3.0)\0"
+            VALUE "ProductVersion", "0.1.11\0"
+            VALUE "SpecialBuild", "0.1.11 Beta (2022-02-12). Repository link: https://github.com/tinelix/irc-client-for-win32s (GNU GPL 3.0)\0"
         END
     END
     BLOCK "VarFileInfo"

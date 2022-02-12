@@ -98,7 +98,7 @@ BOOL CAboutDlg::OnInitDialog()
 
 	*(strrchr(exe_path, '\\')+1)='\0';
 
-	strcat(exe_path, "\\settings.ini");	// add settings filename
+	strcat(exe_path, "settings.ini");	// add settings filename
 
 	TCHAR language_string[MAX_PATH] = {0};
 	
@@ -233,6 +233,9 @@ CDialog::OnInitDialog();
 	stats_dlg = new StatisticsDialog;
 	stats_dlg->Create(StatisticsDialog::IDD, this);
 
+	mention_wnd = new MentionWindow;
+	mention_wnd->Create(MentionWindow::IDD, this);
+
 	sprintf(channel, "(None)");
 
 	IRCClient* application = (IRCClient*)AfxGetApp();
@@ -245,8 +248,9 @@ CDialog::OnInitDialog();
 	*(strrchr(exe_path, '\\')+1)='\0';
 	*(strrchr(dll_path, '\\')+1)='\0';
 
-	strcat(exe_path, "\\settings.ini");	// add settings filename
-	strcat(dll_path, "\\parser.dll");
+	strcat(exe_path, "settings.ini");	// add settings filename
+	strcat(dll_path, "parser.dll");
+
 
 	msg_history_text = (char*)malloc(sizeof(char) * 139264); 
 	listing = (char*)calloc(sizeof(char), 131072 + 1);
@@ -752,7 +756,7 @@ LRESULT MainWindow::WindowProc(UINT message, WPARAM wParam, LPARAM lParam)
 
 	*(strrchr(exe_path, '\\')+1)='\0';
 
-	strcat(exe_path, "\\settings.ini");	// add settings filename
+	strcat(exe_path, "settings.ini");	// add settings filename
 	
 	TCHAR language_string[MAX_PATH] = {0};
 	TCHAR msg_history_string[MAX_PATH] = {0};
@@ -865,12 +869,12 @@ LRESULT MainWindow::WindowProc(UINT message, WPARAM wParam, LPARAM lParam)
 							char** owners_array;
 							char** operators_array;
 							char** members_array;
-							unparsed_msg = (char*)calloc(sizeof(char), 65536 + 1);
-							unparsed_names_msg = (char*)calloc(sizeof(char), 65536 + 1);
-							parsed_msg = (char*)calloc(sizeof(char), 65536 + 1);
-							parsing_array = (char**)calloc(sizeof(char*), 65536 + 1);
+							unparsed_msg = (char*)calloc(sizeof(char), 131072 + 1);
+							unparsed_names_msg = (char*)calloc(sizeof(char), 131072 + 1);
+							parsed_msg = (char*)calloc(sizeof(char), 131072 + 1);
+							parsing_array = (char**)calloc(sizeof(char*), 131072 + 1);
 							for (int array_index = 0; array_index < sizeof(parsing_array); array_index++) {
-								parsing_array[array_index] = (char*)calloc(sizeof(char), 65536 + 1);
+								parsing_array[array_index] = (char*)calloc(sizeof(char), 131072 + 1);
 							};
 							sprintf(unparsed_msg, "%s", new_line_splitter[i]);
 							sprintf(unparsed_names_msg, "%s", new_line_splitter[i]);
@@ -889,15 +893,30 @@ LRESULT MainWindow::WindowProc(UINT message, WPARAM wParam, LPARAM lParam)
 									ParseMsg(unparsed_msg, parsing_array, parsed_msg, FALSE, "noshow");
 								};
 								CString p_msg(parsed_msg);
-								if(strcmp(parsing_array[1], "353") == 0) {
-									owners_array = (char**)calloc(sizeof(char*), 65536 + 1);
-									operators_array = (char**)calloc(sizeof(char*), 65536 + 1);
-									members_array = (char**)calloc(sizeof(char*), 65536 + 1);
-									parsed_msg_index += sprintf(parsed_msg_list + parsed_msg_index, "");
-									ParseNamesMsg(unparsed_names_msg, parsing_array, owners_array, operators_array, members_array, FALSE);
-								} else {
-									parsed_msg_index += sprintf(parsed_msg_list + parsed_msg_index, "%s", p_msg);
-								};
+								parsed_msg_index += sprintf(parsed_msg_list + parsed_msg_index, "%s", p_msg); 
+								if(strcmp(parsing_array[1], "PRIVMSG") == 0) {
+									MENTIONED_MSG mentioned_message;
+									sprintf(mentioned_message.mentioner, "%s", parsing_array[0]);
+									int message_text_index = 0;
+									int mention_index = 0;
+									for(int array_index = 3; array_index < 131072; array_index++) {
+										if(array_index == 3 && parsing_array[array_index] != NULL) {
+											message_text_index += sprintf(mentioned_message.message + message_text_index, "%s", parsing_array[array_index]);
+										} else if(array_index > 3 && parsing_array[array_index] != NULL) {
+											if(message_text_index < 400) {
+												message_text_index += sprintf(mentioned_message.message + message_text_index, " %s", parsing_array[array_index]);
+											} else if(message_text_index >= 400 || strlen(parsing_array[array_index]) > 80) {
+												message_text_index += sprintf(mentioned_message.message + message_text_index, "...");
+												array_index = 131072;
+											};
+										};
+									};
+									CString parsed_array_part(mentioned_message.message);
+									mention_index = parsed_array_part.Find(params.nickname);
+									if(mention_index != -1) {
+										mention_wnd->SendMessage(WM_USER_MENTION, NULL, (LPARAM)&mentioned_message);
+									};	
+								}
 							} catch(...) {
 
 							};
@@ -931,6 +950,10 @@ LRESULT MainWindow::WindowProc(UINT message, WPARAM wParam, LPARAM lParam)
 					msg_box->SetSel(0, -1);
 					msg_box->SetSel(-1);
 				};
+		} else if(message == WM_SYSCOMMAND && wParam == SC_MINIMIZE) {
+			mention_wnd->ShowWindow(SW_HIDE);
+		} else if(message == WM_SYSCOMMAND && wParam == SC_RESTORE) {
+			mention_wnd->ShowWindow(SW_HIDE);
 		};
 	return CDialog::WindowProc(message, wParam, lParam);
 }
@@ -1002,7 +1025,7 @@ void MainWindow::OnSendmsg()
 
 	*(strrchr(exe_path, '\\')+1)='\0';
 
-	strcat(exe_path, "\\settings.ini");	// add settings filename
+	strcat(exe_path, "settings.ini");	// add settings filename
 
 	TCHAR language_string[MAX_PATH] = {0};
 	CMenu* mainmenu;
@@ -1366,8 +1389,7 @@ void MainWindow::OnSelchangeJoinedChannels()
 void MainWindow::OnFileStatistics() 
 {
 	stats_dlg->CenterWindow();
-	stats_dlg->ShowWindow(SW_SHOW);
-	
+	stats_dlg->ShowWindow(SW_SHOW);	
 }
 
 void MainWindow::OnDestroy() 
@@ -1375,6 +1397,7 @@ void MainWindow::OnDestroy()
 	CDialog::OnDestroy();
 	
 	delete stats_dlg;
+	delete mention_wnd;
 	free(msg_history_text);	
 	free(listing);
 }
