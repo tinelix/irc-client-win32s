@@ -81,7 +81,7 @@ BOOL ConnectionManagerDialog::OnInitDialog()
 	}; 
 	*(strrchr(exe_path, '\\')+1)='\0';
 
-	strcat(exe_path, "settings.ini");
+	strcat(exe_path, "settings.ini");	// add settings filename
 
 	char language_string[MAX_PATH] = {0};
 
@@ -206,7 +206,7 @@ void ConnectionManagerDialog::OnAddProfileClicked()
 	CListBox *profiles_cb = (CListBox*)GetDlgItem(IDC_PROFILELIST);
 	int selindex = profiles_cb->GetCurSel(); 
 	*(strrchr(exe_path, '\\')+1)='\0';
-	strcat(exe_path, "settings.ini");
+	strcat(exe_path, "settings.ini");	// add settings filename
 	try 
 	{	
 		int profiles_count = profiles_cb->GetCount();
@@ -273,7 +273,7 @@ void ConnectionManagerDialog::OnConnectProfileClicked()
 	CListBox* profile_cb = (CListBox*)GetDlgItem(IDC_PROFILELIST);
 	int selindex = profile_cb->GetCurSel(); 
 	*(strrchr(exe_path, '\\')+1)='\0';
-	strcat(exe_path, "settings.ini");
+	strcat(exe_path, "settings.ini");	// add settings filename
 	PARAMETERS profile_params;
 	profile_cb->GetText(selindex, selitemtext);
 	GetPrivateProfileString(selitemtext, "Server", "", profile_params.server, 256, exe_path);
@@ -310,7 +310,7 @@ void ConnectionManagerDialog::OnOK()
 	GetModuleFileName(NULL, settings_path, MAX_PATH);
 	*(strrchr(exe_path, '\\')+1)='\0';
 	*(strrchr(settings_path, '\\')+1)='\0';
-	strcat(exe_path, "settings.ini");
+	strcat(exe_path, "settings.ini");	// add settings filename
 	if(GetFileAttributes(settings_path) == 1 && GetFileAttributes(exe_path) == 1) {
 		MessageBox("The disk may be write protected.", "Warning", MB_OK|MB_ICONEXCLAMATION);
 	};
@@ -394,7 +394,7 @@ void ConnectionManagerDialog::OnChangeProfileBtn()
 
 	*(strrchr(exe_path, '\\')+1)='\0';
 
-	strcat(exe_path, "settings.ini");
+	strcat(exe_path, "settings.ini");	// add settings filename
 
 	char language_string[MAX_PATH] = {0};
 	GetPrivateProfileString("Main", "Language", "English", language_string, MAX_PATH, exe_path);

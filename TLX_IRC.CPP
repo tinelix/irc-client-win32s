@@ -66,7 +66,7 @@ BOOL IRCClient::InitInstance()
 	LoadStdProfileSettings();  // Load standard INI file options (including MRU)
 
 	MainWindow dlg;
-	sprintf(app_version, "0.1.11 Beta");
+	sprintf(app_version, "0.1.12 Beta");
 	sprintf(release_date, "2022-02-12");
 	m_pMainWnd = &dlg;
 	int nResponse = dlg.DoModal();

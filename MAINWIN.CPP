@@ -233,7 +233,7 @@ CDialog::OnInitDialog();
 	stats_dlg = new StatisticsDialog;
 	stats_dlg->Create(StatisticsDialog::IDD, this);
 
-	mention_wnd = new MentionWindow;
+    mention_wnd = new MentionWindow;
 	mention_wnd->Create(MentionWindow::IDD, this);
 
 	sprintf(channel, "(None)");
@@ -251,9 +251,6 @@ CDialog::OnInitDialog();
 	strcat(exe_path, "settings.ini");	// add settings filename
 	strcat(dll_path, "parser.dll");
 
-
-	msg_history_text = (char*)malloc(sizeof(char) * 139264); 
-	listing = (char*)calloc(sizeof(char), 131072 + 1);
 
 	TRACE("Tinelix IRC Client ver. %s (%s)\r\nCopyright © 2021-2022 Dmitry Tretyakov (aka. Tinelix)\r\n"
 	"https:/github.com/tinelix/irc-client-for-win32s\r\n\r\n", application->app_version, application->release_date);
@@ -597,10 +594,8 @@ void MainWindow::ConnectionFunc(HWND hwnd, struct MainWindow::PARAMETERS params)
 		strftime(current_time_ch, 9, "%y_%m_%d", localtime(&current_time));
 		strcat(h_pch2, "\\");
 		strcat(h_pch2, current_time_ch);	// add history filename
-		strftime(current_time_ch, 9, "%y_%m_%d", localtime(&current_time));
 		sprintf(mainwin->history_path, "%s", h_pch);
 		sprintf(mainwin->history_path2, "%s", h_pch2);
-		strftime(mainwin->history_date, MAX_PATH, "%Y-%m-%d", localtime(&current_time));
 		char info_msg[120];
 		int create_dir_status = CreateDirectory(h_pch, NULL);
 
@@ -814,11 +809,10 @@ LRESULT MainWindow::WindowProc(UINT message, WPARAM wParam, LPARAM lParam)
 					IsConnected = FALSE;
 					exit;
 				};
-				listing = (char*)calloc(sizeof(char), 131072 + 1);
-				char previous_listing[65536] = {0};
-				msg_history_text = (char*)malloc(sizeof(char) * 139264);
+				char listing[32768] = {0};
+				char previous_listing[32768] = {0};
 				int sp;
-				AfxGetApp()->GetMainWnd()->GetDlgItem(IDC_SOCKMSGS)->GetWindowText(previous_listing, 131072);
+				AfxGetApp()->GetMainWnd()->GetDlgItem(IDC_SOCKMSGS)->GetWindowText(previous_listing, 32767);
 				if(previous_listing == NULL) {
 				};
 				sp = sprintf(listing, "%s", previous_listing);
@@ -829,7 +823,7 @@ LRESULT MainWindow::WindowProc(UINT message, WPARAM wParam, LPARAM lParam)
 				char nwline[32768];
 				char* parsed_msg;
 				char* parsed_msg_list;
-				parsed_msg_list = (char*)malloc(sizeof(char) * 131072);
+				parsed_msg_list = (char*)malloc(sizeof(char) * 32768);
 				char* nw_token;
 				CArray<CString, CString> new_line_splitter;
 				while(AfxExtractSubString(sock_buffer_str, sock_buffer, string_index, '\n'))
@@ -869,12 +863,12 @@ LRESULT MainWindow::WindowProc(UINT message, WPARAM wParam, LPARAM lParam)
 							char** owners_array;
 							char** operators_array;
 							char** members_array;
-							unparsed_msg = (char*)calloc(sizeof(char), 131072 + 1);
-							unparsed_names_msg = (char*)calloc(sizeof(char), 131072 + 1);
-							parsed_msg = (char*)calloc(sizeof(char), 131072 + 1);
-							parsing_array = (char**)calloc(sizeof(char*), 131072 + 1);
+							unparsed_msg = (char*)calloc(sizeof(char), 32768 + 1);
+							unparsed_names_msg = (char*)calloc(sizeof(char), 32768 + 1);
+							parsed_msg = (char*)calloc(sizeof(char), 32768 + 1);
+							parsing_array = (char**)calloc(sizeof(char*), 32768 + 1);
 							for (int array_index = 0; array_index < sizeof(parsing_array); array_index++) {
-								parsing_array[array_index] = (char*)calloc(sizeof(char), 131072 + 1);
+								parsing_array[array_index] = (char*)calloc(sizeof(char), 32768 + 1);
 							};
 							sprintf(unparsed_msg, "%s", new_line_splitter[i]);
 							sprintf(unparsed_names_msg, "%s", new_line_splitter[i]);
@@ -893,15 +887,20 @@ LRESULT MainWindow::WindowProc(UINT message, WPARAM wParam, LPARAM lParam)
 									ParseMsg(unparsed_msg, parsing_array, parsed_msg, FALSE, "noshow");
 								};
 								CString p_msg(parsed_msg);
-								parsed_msg_index += sprintf(parsed_msg_list + parsed_msg_index, "%s", p_msg); 
-								if(strcmp(parsing_array[1], "PRIVMSG") == 0) {
+								if(strcmp(parsing_array[1], "353") == 0) {
+									owners_array = (char**)calloc(sizeof(char*), 32768 + 1);
+									operators_array = (char**)calloc(sizeof(char*), 32768 + 1);
+									members_array = (char**)calloc(sizeof(char*), 32768 + 1);
+									parsed_msg_index += sprintf(parsed_msg_list + parsed_msg_index, "");
+									ParseNamesMsg(unparsed_names_msg, parsing_array, owners_array, operators_array, members_array, FALSE);
+								} else if(strcmp(parsing_array[1], "PRIVMSG") == 0) {
 									MENTIONED_MSG mentioned_message;
-									sprintf(mentioned_message.mentioner, "%s", parsing_array[0]);
+									sprintf(mentioned_message.mentioner, "%s", parsing_array[0]+1);
 									int message_text_index = 0;
 									int mention_index = 0;
-									for(int array_index = 3; array_index < 131072; array_index++) {
+									for(int array_index = 3; array_index < 32768; array_index++) {
 										if(array_index == 3 && parsing_array[array_index] != NULL) {
-											message_text_index += sprintf(mentioned_message.message + message_text_index, "%s", parsing_array[array_index]);
+											message_text_index += sprintf(mentioned_message.message + message_text_index, "%s", parsing_array[array_index]+1);
 										} else if(array_index > 3 && parsing_array[array_index] != NULL) {
 											if(message_text_index < 400) {
 												message_text_index += sprintf(mentioned_message.message + message_text_index, " %s", parsing_array[array_index]);
@@ -915,8 +914,11 @@ LRESULT MainWindow::WindowProc(UINT message, WPARAM wParam, LPARAM lParam)
 									mention_index = parsed_array_part.Find(params.nickname);
 									if(mention_index != -1) {
 										mention_wnd->SendMessage(WM_USER_MENTION, NULL, (LPARAM)&mentioned_message);
-									};	
-								}
+									};
+									TRACE(mentioned_message.message);
+								} else {
+									parsed_msg_index += sprintf(parsed_msg_list + parsed_msg_index, "%s", p_msg);
+                                };
 							} catch(...) {
 
 							};
@@ -924,22 +926,18 @@ LRESULT MainWindow::WindowProc(UINT message, WPARAM wParam, LPARAM lParam)
 					};
 				};
 				if(pong == "") {
-					if(strlen(previous_listing) + strlen(parsed_msg_list) < 131072) {
+					if(strlen(previous_listing) + strlen(parsed_msg_list) < 32768) {
 						sp += sprintf(listing + sp, "%s",  parsed_msg_list);
 					} else {
 						sp = sprintf(listing, "%s",  parsed_msg_list);
 					};
-					int msghi = 0;
-					msghi = sprintf(msg_history_text, "Messages History\r\nCreated %s by Tinelix IRC Client | %s\r\nhttps://github.com/tinelix/irc-client-for-win32s\r\n------------------------------------------------------------------------"
-					"\r\n", history_date, params.server);
-					msghi += sprintf(msg_history_text + msghi, "%s------------------------------------------------------------------------\r\n\r\n", listing);
 					if(msg_history_string2 == "Enabled") {
 						if(history_file_stdio.Open(history_file, CFile::modeReadWrite)) {
-							history_file_stdio.Write(msg_history_text, strlen(msg_history_text)*sizeof(char));
+							history_file_stdio.Write(listing, strlen(listing)*sizeof(char));
 							history_file_stdio.Close();
 						} else {
 							if (history_file_stdio.Open(history_file, CFile::modeReadWrite | CFile::modeCreate)) {
-								history_file_stdio.Write(msg_history_text, strlen(msg_history_text)*sizeof(char));
+								history_file_stdio.Write(listing, strlen(listing)*sizeof(char));
 								history_file_stdio.Close();
 							} else {
 							};
@@ -1389,7 +1387,8 @@ void MainWindow::OnSelchangeJoinedChannels()
 void MainWindow::OnFileStatistics() 
 {
 	stats_dlg->CenterWindow();
-	stats_dlg->ShowWindow(SW_SHOW);	
+	stats_dlg->ShowWindow(SW_SHOW);
+	
 }
 
 void MainWindow::OnDestroy() 
@@ -1397,7 +1396,5 @@ void MainWindow::OnDestroy()
 	CDialog::OnDestroy();
 	
 	delete stats_dlg;
-	delete mention_wnd;
-	free(msg_history_text);	
-	free(listing);
+    delete mention_wnd;
 }

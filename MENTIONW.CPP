@@ -92,7 +92,14 @@ LRESULT MentionWindow::WindowProc(UINT message, WPARAM wParam, LPARAM lParam)
 		int screen_width = GetSystemMetrics(SM_CXSCREEN);
 		int screen_height = GetSystemMetrics(SM_CYSCREEN);
 		ShowWindow(SW_SHOW);
-		SetWindowPos(NULL, screen_width - 358, screen_height - 120, 338, 100, SWP_SHOWWINDOW);
+		DWORD winver = GetVersion();
+		if(LOBYTE(LOWORD(winver)) >= 4) {
+			SetWindowPos(NULL, screen_width - 368, screen_height - 120, 338, 100, SWP_SHOWWINDOW);
+		} else if(LOBYTE(LOWORD(winver)) >= 6 && HIBYTE(LOWORD(winver)) >= 1) {
+			SetWindowPos(NULL, screen_width - 408, screen_height - 120, 338, 100, SWP_SHOWWINDOW);
+		} else {
+			SetWindowPos(NULL, screen_width - 358, screen_height - 120, 338, 100, SWP_SHOWWINDOW);
+		};
 	};
 		
 	return CDialog::WindowProc(message, wParam, lParam);

@@ -2,12 +2,12 @@
 
 [General Info]
 Version=1
-LastClass=MentionWindow
+LastClass=ParserSettingsDialog
 LastTemplate=CDialog
 NewFileInclude1=#include "stdafx.h"
 NewFileInclude2=#include "TLX_IRC.h"
 
-ClassCount=12
+ClassCount=11
 Class1=IRCClient
 Class2=MainWindow
 Class3=CAboutDlg
@@ -33,7 +33,6 @@ Resource10=IDD_STATISTICS
 Resource11=IDD_PARSER_S
 Class11=ParserSettingsDialog
 Resource12=IDD_SETTINGS
-Class12=MentionWindow
 Resource13=IDD_MENTIONWND
 
 [CLS:IRCClient]
@@ -236,18 +235,9 @@ Control5=IDC_PARSER_GROUP,button,1342177287
 
 [DLG:IDD_MENTIONWND]
 Type=1
-Class=MentionWindow
 ControlCount=4
 Control1=IDC_OPEN,button,1342242817
 Control2=IDCANCEL,button,1342242816
 Control3=IDC_TITLE,static,1342308352
 Control4=IDC_MENTIONED_MSG,static,1342308352
-
-[CLS:MentionWindow]
-Type=0
-HeaderFile=mentionw.h
-ImplementationFile=mentionw.cpp
-Filter=D
-LastObject=IDC_OPEN
-VirtualFilter=dWC
 

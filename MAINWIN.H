@@ -25,12 +25,12 @@ public:
 		int port;
 		HWND hwnd;
 	};
-	struct IRC_STATS 
+	struct IRC_STATS
 	{
 		int sended_bytes;
 		int recieved_bytes;
 	};
-	struct MENTIONED_MSG 
+	struct MENTIONED_MSG
 	{
 		char mentioner[128];
 		char message[512];
@@ -45,9 +45,6 @@ public:
 	char history_path[MAX_PATH];
 	char history_path2[MAX_PATH];
 	char history_file[MAX_PATH];
-	char history_date[MAX_PATH];
-	char* msg_history_text;
-	char* listing;
 	time_t current_time;
 	int sended_bytes_count;
 	int recieved_bytes_count;
@@ -79,7 +76,7 @@ protected:
 	CFont font;
 	CFont mainfont;
 	StatisticsDialog* stats_dlg;
-	MentionWindow* mention_wnd;
+    MentionWindow* mention_wnd;
 
 	// Generated message map functions
 	//{{AFX_MSG(MainWindow)

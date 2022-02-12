@@ -124,7 +124,7 @@ LRESULT StatisticsDialog::WindowProc(UINT message, WPARAM wParam, LPARAM lParam)
 
 		*(strrchr(exe_path, '\\')+1)='\0';
 
-		strcat(exe_path, "settings.ini");
+		strcat(exe_path, "settings.ini");	// add settings filename
 
 		char language_string[MAX_PATH] = {0};
 		GetPrivateProfileString("Main", "Language", "English", language_string, MAX_PATH, exe_path);

@@ -219,7 +219,7 @@ void SettingsDialog::OnChangeMsgFont()
 		char exe_name[MAX_PATH] = "TLX_IRC.EXE"; // EXE filename
 		GetModuleFileName(NULL, exe_path, MAX_PATH);  
 		*(strrchr(exe_path, '\\')+1)='\0';
-		strcat(exe_path, "settings.ini");
+		strcat(exe_path, "settings.ini");	// add settings filename
 		LOGFONT logfont;
 		CFontDialog fontdlg(&logfont);
 		sprintf(logfont.lfFaceName, "Fixedsys");
