@@ -1,0 +1,190 @@
+//Microsoft Visual C++ generated resource script.
+//
+#include "Resource.h"
+
+#define APSTUDIO_READONLY_SYMBOLS
+/////////////////////////////////////////////////////////////////////////////
+//
+// Generated from the TEXTINCLUDE 2 resource.
+//
+#define APSTUDIO_HIDDEN_SYMBOLS
+#include "windows.h"
+#undef APSTUDIO_HIDDEN_SYMBOLS
+
+/////////////////////////////////////////////////////////////////////////////
+#undef APSTUDIO_READONLY_SYMBOLS
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Dialog
+//
+
+IDD_ABOUTDIALOG DIALOG DISCARDABLE  0, 0, 201, 88
+STYLE DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "About"
+FONT 8, "Helv"
+BEGIN
+    ICON            100,IDC_STATIC,7,7,18,20
+    LTEXT           "Tinelix IRC Client (Win16)",IDC_APPNAME,34,7,131,8
+    CONTROL         "\251 2022 Dmitry Tretyakov (aka. Tinelix)",
+                    IDC_CORYRIGHT,"Static",SS_LEFTNOWORDWRAP | WS_GROUP,34,
+                    17,135,8
+    DEFPUSHBUTTON   "OK",IDOK,153,69,42,14,WS_GROUP
+    LTEXT           "https://github.com/tinelix/irc-client-win16",
+                    IDC_GITHUB_LINK,5,73,142,10
+END
+
+IDD_MAINDIALOG DIALOG DISCARDABLE  0, 0, 274, 167
+STYLE WS_MINIMIZEBOX | WS_MAXIMIZEBOX | WS_POPUP | WS_CAPTION | WS_SYSMENU | 
+    WS_THICKFRAME
+CAPTION "Tinelix IRC for Win16"
+CLASS "Main Window"
+FONT 8, "Helv"
+BEGIN
+    EDITTEXT        IDC_MSGINPUT_EDIT,1,1,272,136,ES_MULTILINE | 
+                    ES_AUTOVSCROLL | ES_READONLY
+    EDITTEXT        IDC_MSG_EDIT,1,139,227,15,ES_AUTOHSCROLL | WS_DISABLED
+    PUSHBUTTON      "Send",IDC_SENDMSG_BTN,230,139,43,15,WS_DISABLED
+END
+
+IDD_CONNMANDIALOG DIALOG DISCARDABLE  0, 0, 211, 162
+STYLE DS_MODALFRAME | WS_POPUP | WS_VISIBLE | WS_CAPTION | WS_SYSMENU
+CAPTION "Connection Manager"
+FONT 8, "Helv"
+BEGIN
+    PUSHBUTTON      "OK",IDOK,166,143,40,14
+    LISTBOX         IDC_PROFILELIST,10,16,191,98,LBS_SORT | 
+                    LBS_NOINTEGRALHEIGHT | WS_VSCROLL | WS_TABSTOP
+    PUSHBUTTON      "Create",IDC_CREATE_PROFILE_BTN,10,116,47,15
+    PUSHBUTTON      "Connect",IDC_CONNECT_BTN,58,116,47,15
+    PUSHBUTTON      "Edit",IDC_EDIT_PROFILE_BTN,106,116,47,15
+    PUSHBUTTON      "Delete",IDC_DELETE_PROFILE_BTN,154,116,47,15
+    GROUPBOX        "Profiles",IDC_PROFILES_GROUP,5,2,201,134
+END
+
+IDD_ENTERTEXTDIALOG DIALOG DISCARDABLE  0, 0, 185, 55
+STYLE DS_MODALFRAME | WS_POPUP | WS_VISIBLE | WS_CAPTION | WS_SYSMENU
+CAPTION "Enter text"
+FONT 8, "Helv"
+BEGIN
+    DEFPUSHBUTTON   "OK",IDOK,92,36,44,14
+    PUSHBUTTON      "Cancel",IDCANCEL,137,36,44,14
+    LTEXT           "Text:",IDC_ENTERTEXTLABEL,4,5,177,9
+    EDITTEXT        IDC_ENTERTEXTBOX,4,17,177,12,ES_AUTOHSCROLL
+END
+
+IDD_PROFILESETTINGSDIALOG DIALOG DISCARDABLE  0, 0, 185, 167
+STYLE DS_MODALFRAME | WS_POPUP | WS_VISIBLE | WS_CAPTION | WS_SYSMENU
+CAPTION "Profile Settings"
+FONT 8, "Helv"
+BEGIN
+    DEFPUSHBUTTON   "OK",IDOK,99,148,40,14
+    PUSHBUTTON      "Cancel",IDCANCEL,140,148,40,14
+    COMBOBOX        IDC_PAGESCOMBO,123,4,57,63,CBS_DROPDOWNLIST | CBS_SORT | 
+                    WS_VSCROLL | WS_TABSTOP
+    RTEXT           "PAGE",IDC_PAGE_LABEL,80,7,39,9
+END
+
+IDD_PMAIN_STGSPAGE DIALOG DISCARDABLE  5, 20, 174, 124
+STYLE WS_CHILD | WS_BORDER
+FONT 8, "Helv"
+BEGIN
+    LTEXT           "Profile name:",IDC_PROFILE_NAME_LABEL,3,4,50,9
+    EDITTEXT        IDC_PROFILE_NAME_EDIT,53,3,117,12,ES_AUTOHSCROLL
+    LTEXT           "Nicknames:",IDC_NICKNAMES_LABEL,3,19,50,9
+    EDITTEXT        IDC_NICKNAMES_EDIT,53,17,117,12,ES_AUTOHSCROLL
+    LTEXT           "Password:",IDC_PASSWORD_LABEL,3,34,50,9
+    EDITTEXT        IDC_PASSWORD_EDIT,53,32,117,12,ES_PASSWORD | 
+                    ES_AUTOHSCROLL
+    LTEXT           "Realname:",IDC_REALNAME_LABEL,3,48,50,9
+    EDITTEXT        IDC_REALNAME_EDIT,53,46,117,12,ES_AUTOHSCROLL
+END
+
+IDD_PCONN_STGSPAGE DIALOG DISCARDABLE  5, 20, 174, 124
+STYLE WS_CHILD | WS_VISIBLE | WS_BORDER
+FONT 8, "Helv"
+BEGIN
+    RTEXT           "Server:",IDC_PROFILE_SERVER_LABEL,4,7,30,9
+    EDITTEXT        IDC_PROFILE_SERVER_EDIT,37,5,75,12,ES_AUTOHSCROLL
+    RTEXT           "Port:",IDC_PROFILE_PORT_LABEL,118,7,23,9
+    EDITTEXT        IDC_PROFILE_PORT_EDIT,143,5,26,12,ES_AUTOHSCROLL
+END
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Accelerator
+//
+
+IDR_ACCELERATOR ACCELERATORS DISCARDABLE 
+BEGIN
+    "a",            ID_ABOUT,               ASCII,  ALT, NOINVERT
+END
+
+
+#ifdef APSTUDIO_INVOKED
+/////////////////////////////////////////////////////////////////////////////
+//
+// TEXTINCLUDE
+//
+
+1 TEXTINCLUDE DISCARDABLE 
+BEGIN
+    "Resource.h\0"
+END
+
+2 TEXTINCLUDE DISCARDABLE 
+BEGIN
+    "#define APSTUDIO_HIDDEN_SYMBOLS\r\n"
+    "#include ""windows.h""\r\n"
+    "#undef APSTUDIO_HIDDEN_SYMBOLS\r\n"
+    "\0"
+END
+
+3 TEXTINCLUDE DISCARDABLE 
+BEGIN
+    "#include ""tlx_irc.ver""\0"
+END
+
+/////////////////////////////////////////////////////////////////////////////
+#endif    // APSTUDIO_INVOKED
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Menu
+//
+
+IDR_APPMENU MENU DISCARDABLE 
+BEGIN
+    POPUP "Client"
+    BEGIN
+        MENUITEM "&Connect",                    ID_CONNECT
+        MENUITEM SEPARATOR
+        MENUITEM "&Quit...",                    ID_QUIT
+    END
+    POPUP "Profile"
+    BEGIN
+        MENUITEM "New...",                      ID_NEW_PROFILE
+        MENUITEM "Open...",                     ID_OPEN_PROFILE
+        MENUITEM SEPARATOR
+        MENUITEM "Edit",                        ID_EDIT_PROFILE, GRAYED
+        MENUITEM "Delete",                      ID_DELETE_PROFILE, GRAYED
+    END
+    POPUP "Help"
+    BEGIN
+        MENUITEM "&About...",                   ID_ABOUT
+    END
+END
+
+
+#ifndef APSTUDIO_INVOKED
+/////////////////////////////////////////////////////////////////////////////
+//
+// Generated from the TEXTINCLUDE 3 resource.
+//
+#include "tlx_irc.ver"
+/////////////////////////////////////////////////////////////////////////////
+#endif    // not APSTUDIO_INVOKED
+

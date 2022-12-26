@@ -1,0 +1,35 @@
+#include <ver.h>
+
+/* Executable version information */
+VS_VERSION_INFO    VERSIONINFO DISCARDABLE
+FILEVERSION        0,0,0,0
+PRODUCTVERSION     0,0,0,0
+FILEFLAGSMASK      VS_FFI_FILEFLAGSMASK
+#ifdef _DEBUG
+  FILEFLAGS        VS_FF_DEBUG | VS_FF_PRERELEASE
+#else
+  FILEFLAGS        0
+#endif
+FILEOS             VOS_DOS_WINDOWS16
+FILETYPE           VFT_APP
+FILESUBTYPE        VFT2_UNKNOWN
+BEGIN
+  BLOCK "StringFileInfo"
+  BEGIN
+    BLOCK "080904E4"
+    BEGIN
+      VALUE "CompanyName", "Tinelix\0"
+      VALUE "FileDescription", "Tinelix IRC for Win16\0"
+      VALUE "FileVersion", "0.0.0\0"
+      VALUE "InternalName", "Tinelix IRC\0"
+      VALUE "LegalCopyright", "\2512022 Dmitry Tretyakov (aka. Tinelix)\0"
+      VALUE "OriginalFilename", "tlx_irc.exe\0"
+      VALUE "ProductName", "2022 Dmitry Tretyakov (aka. Tinelix)\0"
+      VALUE "ProductVersion", "0.0.0\0"
+    END
+  END
+  BLOCK "VarFileInfo"
+  BEGIN
+    VALUE "Translation", 0x809, 1252
+  END
+END
