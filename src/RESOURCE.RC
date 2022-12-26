@@ -26,19 +26,19 @@ CAPTION "About"
 FONT 8, "Helv"
 BEGIN
     ICON            100,IDC_STATIC,7,7,18,20
-    LTEXT           "Tinelix IRC Client (Win16)",IDC_APPNAME,34,7,131,8
+    LTEXT           "Tinelix IRC Client (Win32s)",IDC_APPNAME,34,7,131,8
     CONTROL         "\251 2022 Dmitry Tretyakov (aka. Tinelix)",
                     IDC_CORYRIGHT,"Static",SS_LEFTNOWORDWRAP | WS_GROUP,34,
                     17,135,8
     DEFPUSHBUTTON   "OK",IDOK,153,69,42,14,WS_GROUP
-    LTEXT           "https://github.com/tinelix/irc-client-win16",
+    LTEXT           "https://github.com/tinelix/irc-client-win32s",
                     IDC_GITHUB_LINK,5,73,142,10
 END
 
 IDD_MAINDIALOG DIALOG DISCARDABLE  0, 0, 274, 167
 STYLE WS_MINIMIZEBOX | WS_MAXIMIZEBOX | WS_POPUP | WS_CAPTION | WS_SYSMENU | 
     WS_THICKFRAME
-CAPTION "Tinelix IRC for Win16"
+CAPTION "Tinelix IRC for Win32s"
 CLASS "Main Window"
 FONT 8, "Helv"
 BEGIN
