@@ -2,6 +2,7 @@
 //
 
 #include "stdafx.h"
+#include "afxdisp.h"
 #include "Tinelix IRC.h"
 #include "dialogs\MainDlg.h"
 
@@ -53,6 +54,9 @@ BOOL CIRCApplication::InitInstance()
 #endif
 
 	int nResponse = 0;
+
+	LoadLibrary("stb_w32.dll");
+	AfxEnableControlContainer();
 	CMainDlg dlg;
 	m_pMainWnd = &dlg;
 	nResponse = dlg.DoModal();

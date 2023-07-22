@@ -16,12 +16,12 @@ Resource1=IDD_TABTHREAD
 Resource2=IDR_MAINFRAME
 Resource3=IDD_TINELIXIRC_DIALOG
 Resource4=IDD_ABOUTBOX
-Resource5=IDD_MAINDIALOG
+Resource5=IDR_MAINMENU (English (U.S.))
 Resource6=IDD_TABCHAT
 Class3=CAboutDlg
 Class4=CMainDlgS
 Class5=CAppThreadTab
-Resource7=IDR_MAINMENU (English (U.S.))
+Resource7=IDD_MAINDIALOG
 
 [CLS:CIRCApplication]
 Type=0
@@ -48,13 +48,13 @@ Class=CMainDlg
 
 [MNU:IDR_MAINMENU (English (U.S.))]
 Type=1
+Class=CMainDlg
 Command1=ID_FILE_CONNECT
 Command2=ID_FILE_QUIT
 Command3=ID_CHANNEL_JOIN
 Command4=ID_CHANNEL_LEAVE
 Command5=ID_ABOUT
 CommandCount=5
-Class=CMainDlg
 
 [CLS:CAboutDlg]
 Type=0

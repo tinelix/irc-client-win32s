@@ -44,6 +44,7 @@ BEGIN_MESSAGE_MAP(CMainDlg, CDialog)
 END_MESSAGE_MAP()
 
 CAppThreadTab *thread_tab;
+HINSTANCE wsaWrap;
 
 /////////////////////////////////////////////////////////////////////////////
 // CMainDlg message handlers
@@ -57,6 +58,17 @@ BOOL CMainDlg::OnInitDialog()
 	// IDM_ABOUTBOX must be in the system command range.
 	ASSERT((IDM_ABOUTBOX & 0xFFF0) == IDM_ABOUTBOX);
 	ASSERT(IDM_ABOUTBOX < 0xF000);
+
+	// Loading WSAWrapper library. 
+	// Available in https://github.com/tinelix/WSAWrapper (LGPLv2.1+)
+	wsaWrap = LoadLibrary("wsawrap.dll");
+
+	if(wsaWrap) {
+		TRACE("wsawrap.dll loaded successfully.\r\n");
+	} else {
+		MessageBox("wsawrap.dll loading error", "Error", MB_OK|MB_ICONSTOP);
+	}
+
 
 	CMenu* pSysMenu = GetSystemMenu(FALSE);
 	CString strAboutMenu;
@@ -171,6 +183,10 @@ BOOL CMainDlg::DestroyWindow()
 	if(thread_tab != NULL && thread_tab->m_hWnd != NULL ) {
 		thread_tab->DestroyWindow();
 		delete thread_tab;
+	}
+
+	if(wsaWrap != NULL) {
+		FreeLibrary(wsaWrap);
 	}
 	
 	return CDialog::DestroyWindow();

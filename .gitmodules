@@ -1,0 +1,3 @@
+[submodule "libs/WSAWrapper"]
+	path = libs/WSAWrapper
+	url = https://github.com/tinelix/WSAWrapper.git
