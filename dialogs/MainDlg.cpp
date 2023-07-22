@@ -39,8 +39,11 @@ BEGIN_MESSAGE_MAP(CMainDlg, CDialog)
 	ON_WM_SYSCOMMAND()
 	ON_WM_PAINT()
 	ON_WM_QUERYDRAGICON()
+	ON_COMMAND(ID_ABOUT, OnMenuHelpAbout)
 	//}}AFX_MSG_MAP
 END_MESSAGE_MAP()
+
+CAppThreadTab *thread_tab;
 
 /////////////////////////////////////////////////////////////////////////////
 // CMainDlg message handlers
@@ -71,9 +74,6 @@ BOOL CMainDlg::OnInitDialog()
 	
 	// TODO: Add extra initialization here
 
-	CAboutDlg aboutDlg;
-	aboutDlg.DoModal();
-
 	LPSTR app_name = "";
 	LoadString(GetModuleHandle(NULL), IDS_APP_NAME, app_name, 32);
 
@@ -95,7 +95,6 @@ void CMainDlg::CreateTabs() {
 	LoadString(GetModuleHandle(NULL), IDS_TABS_THREAD, tab_title, 32);
 	tabItem.pszText = tab_title;
 	tabCtrl->InsertItem(0, &tabItem);
-	CAppThreadTab *thread_tab;
 	thread_tab = new CAppThreadTab;
 	thread_tab->Create(IDD_TABTHREAD, this);
 	tabItem.lParam = (LPARAM)thread_tab;
@@ -159,4 +158,20 @@ BOOL CMainDlg::Create(LPCTSTR lpszClassName, LPCTSTR lpszWindowName,
 	// TODO: Add your specialized code here and/or call the base class
 	
 	return CDialog::Create(IDD, pParentWnd);
+}
+
+void CMainDlg::OnMenuHelpAbout() 
+{
+	CAboutDlg aboutDlg;
+	aboutDlg.DoModal();
+}
+
+BOOL CMainDlg::DestroyWindow() 
+{
+	if(thread_tab != NULL && thread_tab->m_hWnd != NULL ) {
+		thread_tab->DestroyWindow();
+		delete thread_tab;
+	}
+	
+	return CDialog::DestroyWindow();
 }

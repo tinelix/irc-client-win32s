@@ -2,7 +2,7 @@
 
 [General Info]
 Version=1
-LastClass=CAppThreadTab
+LastClass=CMainDlg
 LastTemplate=CDialog
 NewFileInclude1=#include "stdafx.h"
 NewFileInclude2=#include "Tinelix IRC.h"
@@ -12,16 +12,16 @@ Class1=CIRCApplication
 Class2=CMainDlg
 
 ResourceCount=7
-Resource1=IDD_TABCHAT
+Resource1=IDD_TABTHREAD
 Resource2=IDR_MAINFRAME
 Resource3=IDD_TINELIXIRC_DIALOG
 Resource4=IDD_ABOUTBOX
-Resource5=IDD_TABTHREAD
-Resource6=IDR_MAINMENU (English (U.S.))
+Resource5=IDD_MAINDIALOG
+Resource6=IDD_TABCHAT
 Class3=CAboutDlg
 Class4=CMainDlgS
 Class5=CAppThreadTab
-Resource7=IDD_MAINDIALOG
+Resource7=IDR_MAINMENU (English (U.S.))
 
 [CLS:CIRCApplication]
 Type=0
@@ -52,8 +52,9 @@ Command1=ID_FILE_CONNECT
 Command2=ID_FILE_QUIT
 Command3=ID_CHANNEL_JOIN
 Command4=ID_CHANNEL_LEAVE
-Command5=ID_HELP_ABOUT
+Command5=ID_ABOUT
 CommandCount=5
+Class=CMainDlg
 
 [CLS:CAboutDlg]
 Type=0
@@ -76,7 +77,7 @@ Control4=IDOK,button,1342373889
 [DLG:IDD_TABCHAT]
 Type=1
 ControlCount=4
-Control1=IDC_CHAT_INPUT,edit,1352728644
+Control1=IDC_CHAT_INPUT,edit,1352730692
 Control2=IDC_CHAT_OUTPUT,edit,1350631424
 Control3=IDC_CHAT_SEND_MSG,button,1342242816
 Control4=IDC_CHAT_MEMBERS,listbox,1352728835
@@ -85,9 +86,9 @@ Control4=IDC_CHAT_MEMBERS,listbox,1352728835
 Type=1
 Class=CAppThreadTab
 ControlCount=3
-Control1=IDC_CHAT_INPUT,edit,1352728644
-Control2=IDC_CHAT_OUTPUT,edit,1350631424
-Control3=IDC_CHAT_SEND_MSG,button,1342242816
+Control1=IDC_CHAT_INPUT,edit,1352730692
+Control2=IDC_CHAT_OUTPUT,edit,1484849152
+Control3=IDC_CHAT_SEND_MSG,button,1476460544
 
 [CLS:CMainDlgS]
 Type=0
@@ -109,5 +110,5 @@ HeaderFile=tabs\appthreadtab.h
 ImplementationFile=tabs\appthreadtab.cpp
 BaseClass=CDialog
 Filter=D
-LastObject=CAppThreadTab
+LastObject=ID_ABOUT
 

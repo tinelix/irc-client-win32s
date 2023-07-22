@@ -22,7 +22,7 @@
 #define IDC_MAINDLG_TABS                1009
 #define ID_FILE_CONNECT                 32771
 #define ID_FILE_QUIT                    32773
-#define ID_HELP_ABOUT                   32774
+#define ID_ABOUT                        32774
 #define ID_CHANNEL_JOIN                 32775
 #define ID_CHANNEL_LEAVE                32776
 
