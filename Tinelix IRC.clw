@@ -2,24 +2,25 @@
 
 [General Info]
 Version=1
-LastClass=CMainDlgS
+LastClass=CAppThreadTab
 LastTemplate=CDialog
 NewFileInclude1=#include "stdafx.h"
 NewFileInclude2=#include "Tinelix IRC.h"
 
-ClassCount=4
+ClassCount=5
 Class1=CIRCApplication
 Class2=CMainDlg
 
 ResourceCount=7
-Resource1=IDD_TABTHREAD
+Resource1=IDD_TABCHAT
 Resource2=IDR_MAINFRAME
 Resource3=IDD_TINELIXIRC_DIALOG
 Resource4=IDD_ABOUTBOX
-Resource5=IDD_TABCHAT
+Resource5=IDD_TABTHREAD
 Resource6=IDR_MAINMENU (English (U.S.))
 Class3=CAboutDlg
 Class4=CMainDlgS
+Class5=CAppThreadTab
 Resource7=IDD_MAINDIALOG
 
 [CLS:CIRCApplication]
@@ -82,10 +83,11 @@ Control4=IDC_CHAT_MEMBERS,listbox,1352728835
 
 [DLG:IDD_TABTHREAD]
 Type=1
+Class=CAppThreadTab
 ControlCount=3
-Control1=IDC_THREAD_INPUT,edit,1352728644
-Control2=IDC_THREAD_OUTPUT,edit,1350631424
-Control3=IDC_THREAD_SEND_MSG,button,1342242816
+Control1=IDC_CHAT_INPUT,edit,1352728644
+Control2=IDC_CHAT_OUTPUT,edit,1350631424
+Control3=IDC_CHAT_SEND_MSG,button,1342242816
 
 [CLS:CMainDlgS]
 Type=0
@@ -100,4 +102,12 @@ VirtualFilter=dWC
 Type=1
 ControlCount=1
 Control1=IDC_MAINDLG_TABS,SysTabControl32,1342177280
+
+[CLS:CAppThreadTab]
+Type=0
+HeaderFile=tabs\appthreadtab.h
+ImplementationFile=tabs\appthreadtab.cpp
+BaseClass=CDialog
+Filter=D
+LastObject=CAppThreadTab
 

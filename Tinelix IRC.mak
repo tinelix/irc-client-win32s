@@ -55,9 +55,10 @@ ALL : "$(OUTDIR)\Tinelix IRC.exe"
 
 CLEAN : 
 	-@erase ".\Release\Tinelix IRC.exe"
+	-@erase ".\Release\AppThreadTab.obj"
+	-@erase ".\Release\Tinelix IRC.pch"
 	-@erase ".\Release\StdAfx.obj"
 	-@erase ".\Release\MainDlg.obj"
-	-@erase ".\Release\Tinelix IRC.pch"
 	-@erase ".\Release\Tinelix IRC.obj"
 	-@erase ".\Release\AboutDlg.obj"
 	-@erase ".\Release\Tinelix IRC.res"
@@ -90,6 +91,7 @@ LINK32_FLAGS=/nologo /subsystem:windows /incremental:no\
  /pdb:"$(OUTDIR)/Tinelix IRC.pdb" /machine:I386 /out:"$(OUTDIR)/Tinelix IRC.exe"\
  
 LINK32_OBJS= \
+	"$(INTDIR)/AppThreadTab.obj" \
 	"$(INTDIR)/StdAfx.obj" \
 	"$(INTDIR)/MainDlg.obj" \
 	"$(INTDIR)/Tinelix IRC.obj" \
@@ -126,6 +128,7 @@ CLEAN :
 	-@erase ".\Debug\MainDlg.obj"
 	-@erase ".\Debug\AboutDlg.obj"
 	-@erase ".\Debug\StdAfx.obj"
+	-@erase ".\Debug\AppThreadTab.obj"
 	-@erase ".\Debug\Tinelix IRC.obj"
 	-@erase ".\Debug\Tinelix IRC.res"
 	-@erase ".\Debug\Tinelix IRC.ilk"
@@ -163,6 +166,7 @@ LINK32_OBJS= \
 	"$(INTDIR)/MainDlg.obj" \
 	"$(INTDIR)/AboutDlg.obj" \
 	"$(INTDIR)/StdAfx.obj" \
+	"$(INTDIR)/AppThreadTab.obj" \
 	"$(INTDIR)/Tinelix IRC.obj" \
 	"$(INTDIR)/Tinelix IRC.res"
 
@@ -220,7 +224,7 @@ SOURCE=.\ReadMe.txt
 
 SOURCE=".\Tinelix IRC.cpp"
 DEP_CPP_TINEL=\
-	".\dialogs\..\stdafx.h"\
+	".\tabs\..\stdafx.h"\
 	".\dialogs\..\Tinelix IRC.h"\
 	".\dialogs\MainDlg.h"\
 	
@@ -235,7 +239,7 @@ DEP_CPP_TINEL=\
 
 SOURCE=.\StdAfx.cpp
 DEP_CPP_STDAF=\
-	".\dialogs\..\stdafx.h"\
+	".\tabs\..\stdafx.h"\
 	
 
 !IF  "$(CFG)" == "Tinelix IRC - Win32 Release"
@@ -310,6 +314,7 @@ NODEP_CPP_ABOUT=\
 SOURCE=.\dialogs\MainDlg.cpp
 DEP_CPP_MAIND=\
 	".\dialogs\..\Tinelix IRC.h"\
+	".\dialogs\..\tabs\AppThreadTab.h"\
 	".\dialogs\AboutDlg.h"\
 	".\dialogs\MainDlg.h"\
 	
@@ -318,6 +323,24 @@ NODEP_CPP_MAIND=\
 	
 
 "$(INTDIR)\MainDlg.obj" : $(SOURCE) $(DEP_CPP_MAIND) "$(INTDIR)"\
+ "$(INTDIR)\Tinelix IRC.pch"
+   $(CPP) $(CPP_PROJ) $(SOURCE)
+
+
+# End Source File
+################################################################################
+# Begin Source File
+
+SOURCE=.\tabs\AppThreadTab.cpp
+DEP_CPP_APPTH=\
+	".\dialogs\..\Tinelix IRC.h"\
+	".\dialogs\..\tabs\AppThreadTab.h"\
+	
+NODEP_CPP_APPTH=\
+	".\tabs\stdafx.h"\
+	
+
+"$(INTDIR)\AppThreadTab.obj" : $(SOURCE) $(DEP_CPP_APPTH) "$(INTDIR)"\
  "$(INTDIR)\Tinelix IRC.pch"
    $(CPP) $(CPP_PROJ) $(SOURCE)
 

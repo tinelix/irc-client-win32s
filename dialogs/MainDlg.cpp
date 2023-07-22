@@ -3,6 +3,7 @@
 
 #include "stdafx.h"
 #include "..\Tinelix IRC.h"
+#include "..\tabs\AppThreadTab.h"
 #include "AboutDlg.h"
 #include "MainDlg.h"
 
@@ -94,6 +95,12 @@ void CMainDlg::CreateTabs() {
 	LoadString(GetModuleHandle(NULL), IDS_TABS_THREAD, tab_title, 32);
 	tabItem.pszText = tab_title;
 	tabCtrl->InsertItem(0, &tabItem);
+	CAppThreadTab *thread_tab;
+	thread_tab = new CAppThreadTab;
+	thread_tab->Create(IDD_TABTHREAD, this);
+	tabItem.lParam = (LPARAM)thread_tab;
+	thread_tab->SetWindowPos(NULL, 4, 24, 0, 0, SWP_NOSIZE|SWP_NOZORDER);
+	thread_tab->ShowWindow(SW_SHOW);
 }
 
 void CMainDlg::OnSysCommand(UINT nID, LPARAM lParam)

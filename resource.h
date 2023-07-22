@@ -15,9 +15,6 @@
 #define IDD_TABCHAT                     131
 #define IDD_TABTHREAD                   132
 #define IDD_MAINDIALOG                  135
-#define IDC_THREAD_INPUT                1001
-#define IDC_THREAD_OUTPUT               1002
-#define IDC_THREAD_SEND_MSG             1003
 #define IDC_CHAT_INPUT                  1004
 #define IDC_CHAT_OUTPUT                 1005
 #define IDC_CHAT_SEND_MSG               1006
