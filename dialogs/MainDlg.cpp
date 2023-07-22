@@ -99,7 +99,7 @@ void CMainDlg::CreateTabs() {
 	thread_tab = new CAppThreadTab;
 	thread_tab->Create(IDD_TABTHREAD, this);
 	tabItem.lParam = (LPARAM)thread_tab;
-	thread_tab->SetWindowPos(NULL, 4, 24, 0, 0, SWP_NOSIZE|SWP_NOZORDER);
+	thread_tab->SetWindowPos(NULL, 6, 24, 0, 0, SWP_NOSIZE|SWP_NOZORDER);
 	thread_tab->ShowWindow(SW_SHOW);
 }
 

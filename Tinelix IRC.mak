@@ -225,7 +225,7 @@ SOURCE=.\ReadMe.txt
 SOURCE=".\Tinelix IRC.cpp"
 DEP_CPP_TINEL=\
 	".\tabs\..\stdafx.h"\
-	".\dialogs\..\Tinelix IRC.h"\
+	".\tabs\..\Tinelix IRC.h"\
 	".\dialogs\MainDlg.h"\
 	
 
@@ -295,7 +295,7 @@ DEP_RSC_TINELI=\
 
 SOURCE=.\dialogs\AboutDlg.cpp
 DEP_CPP_ABOUT=\
-	".\dialogs\..\Tinelix IRC.h"\
+	".\tabs\..\Tinelix IRC.h"\
 	".\dialogs\AboutDlg.h"\
 	
 NODEP_CPP_ABOUT=\
@@ -313,7 +313,7 @@ NODEP_CPP_ABOUT=\
 
 SOURCE=.\dialogs\MainDlg.cpp
 DEP_CPP_MAIND=\
-	".\dialogs\..\Tinelix IRC.h"\
+	".\tabs\..\Tinelix IRC.h"\
 	".\dialogs\..\tabs\AppThreadTab.h"\
 	".\dialogs\AboutDlg.h"\
 	".\dialogs\MainDlg.h"\
@@ -333,7 +333,7 @@ NODEP_CPP_MAIND=\
 
 SOURCE=.\tabs\AppThreadTab.cpp
 DEP_CPP_APPTH=\
-	".\dialogs\..\Tinelix IRC.h"\
+	".\tabs\..\Tinelix IRC.h"\
 	".\dialogs\..\tabs\AppThreadTab.h"\
 	
 NODEP_CPP_APPTH=\
