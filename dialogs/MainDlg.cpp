@@ -70,6 +70,16 @@ BOOL CMainDlg::OnInitDialog()
 	
 	// TODO: Add extra initialization here
 
+	CAboutDlg aboutDlg;
+	aboutDlg.DoModal();
+
+	LPSTR app_name = "";
+	LoadString(GetModuleHandle(NULL), IDS_APP_NAME, app_name, 32);
+
+	SetWindowText(app_name);
+
+	EnableWindow(TRUE);
+
 	CreateTabs();
 	
 	return TRUE;  // return TRUE  unless you set the focus to a control
@@ -133,4 +143,13 @@ void CMainDlg::OnPaint()
 HCURSOR CMainDlg::OnQueryDragIcon()
 {
 	return (HCURSOR) m_hIcon;
+}
+
+BOOL CMainDlg::Create(LPCTSTR lpszClassName, LPCTSTR lpszWindowName, 
+					  DWORD dwStyle, const RECT& rect, CWnd* pParentWnd, 
+					  UINT nID, CCreateContext* pContext) 
+{
+	// TODO: Add your specialized code here and/or call the base class
+	
+	return CDialog::Create(IDD, pParentWnd);
 }

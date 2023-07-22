@@ -32,8 +32,8 @@ NULL=nul
 ################################################################################
 # Begin Project
 # PROP Target_Last_Scanned "Tinelix IRC - Win32 Debug"
-MTL=mktyplib.exe
 CPP=cl.exe
+MTL=mktyplib.exe
 RSC=rc.exe
 
 !IF  "$(CFG)" == "Tinelix IRC - Win32 Release"
@@ -56,11 +56,11 @@ ALL : "$(OUTDIR)\Tinelix IRC.exe"
 CLEAN : 
 	-@erase ".\Release\Tinelix IRC.exe"
 	-@erase ".\Release\StdAfx.obj"
-	-@erase ".\Release\Tinelix IRC.obj"
-	-@erase ".\Release\Tinelix IRC.pch"
-	-@erase ".\Release\Tinelix IRC.res"
-	-@erase ".\Release\AboutDlg.obj"
 	-@erase ".\Release\MainDlg.obj"
+	-@erase ".\Release\Tinelix IRC.pch"
+	-@erase ".\Release\Tinelix IRC.obj"
+	-@erase ".\Release\AboutDlg.obj"
+	-@erase ".\Release\Tinelix IRC.res"
 
 "$(OUTDIR)" :
     if not exist "$(OUTDIR)/$(NULL)" mkdir "$(OUTDIR)"
@@ -85,15 +85,16 @@ BSC32_SBRS=
 LINK32=link.exe
 # ADD BASE LINK32 /nologo /subsystem:windows /machine:I386
 # ADD LINK32 /nologo /subsystem:windows /machine:I386
+# SUBTRACT LINK32 /pdb:none
 LINK32_FLAGS=/nologo /subsystem:windows /incremental:no\
  /pdb:"$(OUTDIR)/Tinelix IRC.pdb" /machine:I386 /out:"$(OUTDIR)/Tinelix IRC.exe"\
  
 LINK32_OBJS= \
-	".\Release\StdAfx.obj" \
-	".\Release\Tinelix IRC.obj" \
-	".\Release\AboutDlg.obj" \
-	".\Release\MainDlg.obj" \
-	".\Release\Tinelix IRC.res"
+	"$(INTDIR)/StdAfx.obj" \
+	"$(INTDIR)/MainDlg.obj" \
+	"$(INTDIR)/Tinelix IRC.obj" \
+	"$(INTDIR)/AboutDlg.obj" \
+	"$(INTDIR)/Tinelix IRC.res"
 
 "$(OUTDIR)\Tinelix IRC.exe" : "$(OUTDIR)" $(DEF_FILE) $(LINK32_OBJS)
     $(LINK32) @<<
@@ -122,11 +123,11 @@ CLEAN :
 	-@erase ".\Debug\Tinelix IRC.pch"
 	-@erase ".\Debug\vc40.idb"
 	-@erase ".\Debug\Tinelix IRC.exe"
+	-@erase ".\Debug\MainDlg.obj"
+	-@erase ".\Debug\AboutDlg.obj"
 	-@erase ".\Debug\StdAfx.obj"
 	-@erase ".\Debug\Tinelix IRC.obj"
 	-@erase ".\Debug\Tinelix IRC.res"
-	-@erase ".\Debug\AboutDlg.obj"
-	-@erase ".\Debug\MainDlg.obj"
 	-@erase ".\Debug\Tinelix IRC.ilk"
 	-@erase ".\Debug\Tinelix IRC.pdb"
 
@@ -154,15 +155,16 @@ BSC32_SBRS=
 LINK32=link.exe
 # ADD BASE LINK32 /nologo /subsystem:windows /debug /machine:I386
 # ADD LINK32 /nologo /subsystem:windows /debug /machine:I386
+# SUBTRACT LINK32 /pdb:none
 LINK32_FLAGS=/nologo /subsystem:windows /incremental:yes\
  /pdb:"$(OUTDIR)/Tinelix IRC.pdb" /debug /machine:I386\
  /out:"$(OUTDIR)/Tinelix IRC.exe" 
 LINK32_OBJS= \
-	".\Debug\StdAfx.obj" \
-	".\Debug\Tinelix IRC.obj" \
-	".\Debug\AboutDlg.obj" \
-	".\Debug\MainDlg.obj" \
-	".\Debug\Tinelix IRC.res"
+	"$(INTDIR)/MainDlg.obj" \
+	"$(INTDIR)/AboutDlg.obj" \
+	"$(INTDIR)/StdAfx.obj" \
+	"$(INTDIR)/Tinelix IRC.obj" \
+	"$(INTDIR)/Tinelix IRC.res"
 
 "$(OUTDIR)\Tinelix IRC.exe" : "$(OUTDIR)" $(DEF_FILE) $(LINK32_OBJS)
     $(LINK32) @<<
@@ -218,9 +220,9 @@ SOURCE=.\ReadMe.txt
 
 SOURCE=".\Tinelix IRC.cpp"
 DEP_CPP_TINEL=\
-	".\StdAfx.h"\
+	".\dialogs\..\stdafx.h"\
 	".\dialogs\..\Tinelix IRC.h"\
-	".\MainDlg.h"\
+	".\dialogs\MainDlg.h"\
 	
 
 "$(INTDIR)\Tinelix IRC.obj" : $(SOURCE) $(DEP_CPP_TINEL) "$(INTDIR)"\
@@ -233,7 +235,7 @@ DEP_CPP_TINEL=\
 
 SOURCE=.\StdAfx.cpp
 DEP_CPP_STDAF=\
-	".\StdAfx.h"\
+	".\dialogs\..\stdafx.h"\
 	
 
 !IF  "$(CFG)" == "Tinelix IRC - Win32 Release"

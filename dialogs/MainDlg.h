@@ -12,12 +12,14 @@ public:
 
 // Dialog Data
 	//{{AFX_DATA(CMainDlg)
-	enum { IDD = IDD_TINELIXIRC_DIALOG };
+	enum { IDD = IDD_MAINDIALOG };
 		// NOTE: the ClassWizard will add data members here
 	//}}AFX_DATA
 
 	// ClassWizard generated virtual function overrides
 	//{{AFX_VIRTUAL(CMainDlg)
+	public:
+	virtual BOOL Create(LPCTSTR lpszClassName, LPCTSTR lpszWindowName, DWORD dwStyle, const RECT& rect, CWnd* pParentWnd, UINT nID, CCreateContext* pContext = NULL);
 	protected:
 	virtual void DoDataExchange(CDataExchange* pDX);	// DDX/DDV support
 	//}}AFX_VIRTUAL
