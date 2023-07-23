@@ -32,9 +32,9 @@ NULL=nul
 ################################################################################
 # Begin Project
 # PROP Target_Last_Scanned "Tinelix IRC - Win32 Debug"
-RSC=rc.exe
 MTL=mktyplib.exe
 CPP=cl.exe
+RSC=rc.exe
 
 !IF  "$(CFG)" == "Tinelix IRC - Win32 Release"
 
@@ -55,8 +55,9 @@ ALL : "$(OUTDIR)\Tinelix IRC.exe"
 
 CLEAN : 
 	-@erase ".\Release\Tinelix IRC.exe"
-	-@erase ".\Release\AppThreadTab.obj"
+	-@erase ".\Release\ConnManDlg.obj"
 	-@erase ".\Release\Tinelix IRC.pch"
+	-@erase ".\Release\AppThreadTab.obj"
 	-@erase ".\Release\StdAfx.obj"
 	-@erase ".\Release\MainDlg.obj"
 	-@erase ".\Release\Tinelix IRC.obj"
@@ -91,6 +92,7 @@ LINK32_FLAGS=/nologo /subsystem:windows /incremental:no\
  /pdb:"$(OUTDIR)/Tinelix IRC.pdb" /machine:I386 /out:"$(OUTDIR)/Tinelix IRC.exe"\
  
 LINK32_OBJS= \
+	"$(INTDIR)/ConnManDlg.obj" \
 	"$(INTDIR)/AppThreadTab.obj" \
 	"$(INTDIR)/StdAfx.obj" \
 	"$(INTDIR)/MainDlg.obj" \
@@ -126,6 +128,7 @@ CLEAN :
 	-@erase ".\Debug\vc40.idb"
 	-@erase ".\Debug\Tinelix IRC.exe"
 	-@erase ".\Debug\MainDlg.obj"
+	-@erase ".\Debug\ConnManDlg.obj"
 	-@erase ".\Debug\AboutDlg.obj"
 	-@erase ".\Debug\StdAfx.obj"
 	-@erase ".\Debug\AppThreadTab.obj"
@@ -164,6 +167,7 @@ LINK32_FLAGS=/nologo /subsystem:windows /incremental:yes\
  /out:"$(OUTDIR)/Tinelix IRC.exe" 
 LINK32_OBJS= \
 	"$(INTDIR)/MainDlg.obj" \
+	"$(INTDIR)/ConnManDlg.obj" \
 	"$(INTDIR)/AboutDlg.obj" \
 	"$(INTDIR)/StdAfx.obj" \
 	"$(INTDIR)/AppThreadTab.obj" \
@@ -224,7 +228,7 @@ SOURCE=.\ReadMe.txt
 
 SOURCE=".\Tinelix IRC.cpp"
 DEP_CPP_TINEL=\
-	".\tabs\..\stdafx.h"\
+	".\dialogs\..\stdafx.h"\
 	".\tabs\..\Tinelix IRC.h"\
 	".\dialogs\MainDlg.h"\
 	
@@ -239,7 +243,7 @@ DEP_CPP_TINEL=\
 
 SOURCE=.\StdAfx.cpp
 DEP_CPP_STDAF=\
-	".\tabs\..\stdafx.h"\
+	".\dialogs\..\stdafx.h"\
 	
 
 !IF  "$(CFG)" == "Tinelix IRC - Win32 Release"
@@ -317,6 +321,7 @@ DEP_CPP_MAIND=\
 	".\dialogs\..\tabs\AppThreadTab.h"\
 	".\dialogs\AboutDlg.h"\
 	".\dialogs\MainDlg.h"\
+	".\dialogs\ConnManDlg.h"\
 	
 NODEP_CPP_MAIND=\
 	".\dialogs\stdafx.h"\
@@ -341,6 +346,25 @@ NODEP_CPP_APPTH=\
 	
 
 "$(INTDIR)\AppThreadTab.obj" : $(SOURCE) $(DEP_CPP_APPTH) "$(INTDIR)"\
+ "$(INTDIR)\Tinelix IRC.pch"
+   $(CPP) $(CPP_PROJ) $(SOURCE)
+
+
+# End Source File
+################################################################################
+# Begin Source File
+
+SOURCE=.\dialogs\ConnManDlg.cpp
+DEP_CPP_CONNM=\
+	".\tabs\..\Tinelix IRC.h"\
+	".\dialogs\MainDlg.h"\
+	".\dialogs\ConnManDlg.h"\
+	
+NODEP_CPP_CONNM=\
+	".\dialogs\stdafx.h"\
+	
+
+"$(INTDIR)\ConnManDlg.obj" : $(SOURCE) $(DEP_CPP_CONNM) "$(INTDIR)"\
  "$(INTDIR)\Tinelix IRC.pch"
    $(CPP) $(CPP_PROJ) $(SOURCE)
 

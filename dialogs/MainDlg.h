@@ -13,7 +13,6 @@ public:
 // Dialog Data
 	//{{AFX_DATA(CMainDlg)
 	enum { IDD = IDD_MAINDIALOG };
-		// NOTE: the ClassWizard will add data members here
 	//}}AFX_DATA
 
 	// ClassWizard generated virtual function overrides
@@ -37,6 +36,9 @@ protected:
 	afx_msg void OnPaint();
 	afx_msg HCURSOR OnQueryDragIcon();
 	afx_msg void OnMenuHelpAbout();
+	afx_msg void OpenConnectionManager();
 	//}}AFX_MSG
 	DECLARE_MESSAGE_MAP()
+
+	friend class CConnManDlg;
 };

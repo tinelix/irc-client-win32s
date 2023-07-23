@@ -6,12 +6,14 @@
 #include "..\tabs\AppThreadTab.h"
 #include "AboutDlg.h"
 #include "MainDlg.h"
+#include "ConnManDlg.h"
 
 #ifdef _DEBUG
 #define new DEBUG_NEW
 #undef THIS_FILE
 static char THIS_FILE[] = __FILE__;
 #endif
+
 
 /////////////////////////////////////////////////////////////////////////////
 // CMainDlg dialog
@@ -40,6 +42,7 @@ BEGIN_MESSAGE_MAP(CMainDlg, CDialog)
 	ON_WM_PAINT()
 	ON_WM_QUERYDRAGICON()
 	ON_COMMAND(ID_ABOUT, OnMenuHelpAbout)
+	ON_COMMAND(ID_FILE_CONNECT, OpenConnectionManager)
 	//}}AFX_MSG_MAP
 END_MESSAGE_MAP()
 
@@ -63,9 +66,7 @@ BOOL CMainDlg::OnInitDialog()
 	// Available in https://github.com/tinelix/WSAWrapper (LGPLv2.1+)
 	wsaWrap = LoadLibrary("wsawrap.dll");
 
-	if(wsaWrap) {
-		TRACE("wsawrap.dll loaded successfully.\r\n");
-	} else {
+	if(!wsaWrap) {
 		MessageBox("wsawrap.dll loading error", "Error", MB_OK|MB_ICONSTOP);
 	}
 
@@ -190,4 +191,10 @@ BOOL CMainDlg::DestroyWindow()
 	}
 	
 	return CDialog::DestroyWindow();
+}
+
+void CMainDlg::OpenConnectionManager() 
+{
+	CConnManDlg connman;
+	connman.DoModal();
 }
