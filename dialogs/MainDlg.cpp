@@ -54,10 +54,10 @@ HINSTANCE wsaWrap;
 
 // WSAWrapper DLL functions;
 
-typedef BOOL (WINAPI *EnableAsyncMessages) (HWND hWnd);
+typedef BOOL (WINAPI *EnableAsyncMessages) (HWND);
 typedef int (WINAPI *GetWSAError) ();
-typedef SOCKET (WINAPI *CreateConnection) (LPSTR address, int port);
-typedef BOOL (WINAPI *SendSocketData) (char* buff);
+typedef BOOL (WINAPI *CreateConnection) (char*, int);
+typedef BOOL (WINAPI *SendSocketData) (char*);
 
 
 /////////////////////////////////////////////////////////////////////////////
@@ -96,8 +96,7 @@ BOOL CMainDlg::OnInitDialog()
 	SetIcon(m_hIcon, TRUE);			// Set big icon
 	SetIcon(m_hIcon, FALSE);		// Set small icon
 
-	LPSTR app_name = "";
-	LoadString(GetModuleHandle(NULL), IDS_APP_NAME, app_name, 32);
+	char* app_name = "Tinelix IRC (Win32s)"; // LoadString is buggy...
 
 	SetWindowText(app_name);
 
@@ -105,7 +104,7 @@ BOOL CMainDlg::OnInitDialog()
 
 	CreateTabs();
 	
-	return TRUE;  // return TRUE  unless you set the focus to a control
+	return TRUE;
 }
 
 
@@ -113,8 +112,7 @@ void CMainDlg::CreateTabs() {
 	CTabCtrl* tabCtrl = (CTabCtrl*)GetDlgItem(IDC_MAINDLG_TABS);
 	TC_ITEM tabItem;
 	tabItem.mask = TCIF_TEXT;
-	LPSTR tab_title = "";
-	LoadString(GetModuleHandle(NULL), IDS_TABS_THREAD, tab_title, 32);
+	char* tab_title = "Thread";
 	tabItem.pszText = tab_title;
 	tabCtrl->InsertItem(0, &tabItem);
 	thread_tab = new CAppThreadTab;
@@ -205,15 +203,20 @@ BOOL CMainDlg::DestroyWindow()
 void CMainDlg::OpenConnectionManager() 
 {
 	CConnManDlg connman;
-	connman.DoModal();
+	if(connman.DoModal() == IDOK) {
+		char* server;
+		sprintf(server, "irc.tinelix.ru");
+		PrepareConnect(server, 6667);
+	}
 }
 
-void CMainDlg::PrepareConnect(LPSTR address, int port) {
+void CMainDlg::PrepareConnect(char* address, int port) {
 	CreateConnection WrapCreateConn;
-	WrapCreateConn = (CreateConnection)GetProcAddress((HMODULE)wsaWrap, "CreateConnection");
-	try {
-		SOCKET s = WrapCreateConn(address, port); 
-	} catch(...) {
-		MessageBox("Unknown error", "Error", MB_OK|MB_ICONSTOP);
-	};
+
+	// Running function in WSAWrapper DLL
+
+	WrapCreateConn = (CreateConnection)GetProcAddress(wsaWrap, MAKEINTRESOURCE(17));
+	if(!(*WrapCreateConn)(address, port)) {
+		MessageBox("Connection error", address, MB_OK|MB_ICONSTOP);
+	}
 }

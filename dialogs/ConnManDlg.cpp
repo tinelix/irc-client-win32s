@@ -44,8 +44,5 @@ END_MESSAGE_MAP()
 
 void CConnManDlg::OnOK() 
 {
-	CMainDlg mainDlg;
-	mainDlg.PrepareConnect("irc.tinelix.ru", 6667);
-	
 	CDialog::OnOK();
 }
