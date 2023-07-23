@@ -2,6 +2,7 @@
 //
 
 #include "stdafx.h"
+#include <winsock.h>
 #include "..\Tinelix IRC.h"
 #include "..\tabs\AppThreadTab.h"
 #include "AboutDlg.h"
@@ -46,8 +47,18 @@ BEGIN_MESSAGE_MAP(CMainDlg, CDialog)
 	//}}AFX_MSG_MAP
 END_MESSAGE_MAP()
 
+// Global variables
+
 CAppThreadTab *thread_tab;
 HINSTANCE wsaWrap;
+
+// WSAWrapper DLL functions;
+
+typedef BOOL (WINAPI *EnableAsyncMessages) (HWND hWnd);
+typedef int (WINAPI *GetWSAError) ();
+typedef SOCKET (WINAPI *CreateConnection) (LPSTR address, int port);
+typedef BOOL (WINAPI *SendSocketData) (char* buff);
+
 
 /////////////////////////////////////////////////////////////////////////////
 // CMainDlg message handlers
@@ -84,8 +95,6 @@ BOOL CMainDlg::OnInitDialog()
 	//  when the application's main window is not a dialog
 	SetIcon(m_hIcon, TRUE);			// Set big icon
 	SetIcon(m_hIcon, FALSE);		// Set small icon
-	
-	// TODO: Add extra initialization here
 
 	LPSTR app_name = "";
 	LoadString(GetModuleHandle(NULL), IDS_APP_NAME, app_name, 32);
@@ -128,7 +137,7 @@ void CMainDlg::OnSysCommand(UINT nID, LPARAM lParam)
 	}
 }
 
-// If you add a minimize button to your dialog, you will need the code below
+//  If you add a minimize button to your dialog, you will need the code below
 //  to draw the icon.  For MFC applications using the document/view model,
 //  this is automatically done for you by the framework.
 
@@ -157,7 +166,7 @@ void CMainDlg::OnPaint()
 	}
 }
 
-// The system calls this to obtain the cursor to display while the user drags
+//  The system calls this to obtain the cursor to display while the user drags
 //  the minimized window.
 HCURSOR CMainDlg::OnQueryDragIcon()
 {
@@ -197,4 +206,14 @@ void CMainDlg::OpenConnectionManager()
 {
 	CConnManDlg connman;
 	connman.DoModal();
+}
+
+void CMainDlg::PrepareConnect(LPSTR address, int port) {
+	CreateConnection WrapCreateConn;
+	WrapCreateConn = (CreateConnection)GetProcAddress((HMODULE)wsaWrap, "CreateConnection");
+	try {
+		SOCKET s = WrapCreateConn(address, port); 
+	} catch(...) {
+		MessageBox("Unknown error", "Error", MB_OK|MB_ICONSTOP);
+	};
 }

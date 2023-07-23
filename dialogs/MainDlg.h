@@ -28,6 +28,7 @@ public:
 protected:
 	HICON m_hIcon;
 	void CreateTabs();
+	void PrepareConnect(LPSTR address, int port);
 
 	// Generated message map functions
 	//{{AFX_MSG(CMainDlg)
