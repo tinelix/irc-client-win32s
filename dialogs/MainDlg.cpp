@@ -226,7 +226,13 @@ void CMainDlg::PrepareConnect(char* address, int port) {
 	// Running CreateConnection function (#17) in WSAWrapper DLL
 	WrapCreateConn = (CreateConnection)GetProcAddress(wsaWrap, MAKEINTRESOURCE(17));
 	if(!(*WrapCreateConn)(address, port)) {
-		MessageBox("Connection error", address, MB_OK|MB_ICONSTOP);
+		// Running GetWSAError function (#16) in WSAWrapper DLL
+		GetWSAError GetWSAErrorFunc;
+		GetWSAErrorFunc = (GetWSAError)GetProcAddress(wsaWrap, MAKEINTRESOURCE(16));
+		int error_code = ((*GetWSAErrorFunc)());
+		char error_msg[32];
+		sprintf(error_msg, "Connection error #%d", error_code);
+		MessageBox(error_msg, address, MB_OK|MB_ICONSTOP);
 	} else {
 		SetWindowText(app_name);
 	}

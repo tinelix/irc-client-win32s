@@ -32,9 +32,9 @@ NULL=nul
 ################################################################################
 # Begin Project
 # PROP Target_Last_Scanned "Tinelix IRC - Win32 Debug"
+RSC=rc.exe
 MTL=mktyplib.exe
 CPP=cl.exe
-RSC=rc.exe
 
 !IF  "$(CFG)" == "Tinelix IRC - Win32 Release"
 
@@ -51,10 +51,10 @@ RSC=rc.exe
 OUTDIR=.\Release
 INTDIR=.\Release
 
-ALL : "$(OUTDIR)\Tinelix IRC.exe"
+ALL : "$(OUTDIR)\tlx_irc.exe"
 
 CLEAN : 
-	-@erase ".\Release\Tinelix IRC.exe"
+	-@erase ".\Release\tlx_irc.exe"
 	-@erase ".\Release\ConnManDlg.obj"
 	-@erase ".\Release\Tinelix IRC.pch"
 	-@erase ".\Release\AppThreadTab.obj"
@@ -86,11 +86,10 @@ BSC32_FLAGS=/nologo /o"$(OUTDIR)/Tinelix IRC.bsc"
 BSC32_SBRS=
 LINK32=link.exe
 # ADD BASE LINK32 /nologo /subsystem:windows /machine:I386
-# ADD LINK32 /nologo /subsystem:windows /machine:I386
+# ADD LINK32 /nologo /subsystem:windows /machine:I386 /out:"Release/tlx_irc.exe"
 # SUBTRACT LINK32 /pdb:none
 LINK32_FLAGS=/nologo /subsystem:windows /incremental:no\
- /pdb:"$(OUTDIR)/Tinelix IRC.pdb" /machine:I386 /out:"$(OUTDIR)/Tinelix IRC.exe"\
- 
+ /pdb:"$(OUTDIR)/tlx_irc.pdb" /machine:I386 /out:"$(OUTDIR)/tlx_irc.exe" 
 LINK32_OBJS= \
 	"$(INTDIR)/ConnManDlg.obj" \
 	"$(INTDIR)/AppThreadTab.obj" \
@@ -100,7 +99,7 @@ LINK32_OBJS= \
 	"$(INTDIR)/AboutDlg.obj" \
 	"$(INTDIR)/Tinelix IRC.res"
 
-"$(OUTDIR)\Tinelix IRC.exe" : "$(OUTDIR)" $(DEF_FILE) $(LINK32_OBJS)
+"$(OUTDIR)\tlx_irc.exe" : "$(OUTDIR)" $(DEF_FILE) $(LINK32_OBJS)
     $(LINK32) @<<
   $(LINK32_FLAGS) $(LINK32_OBJS)
 <<
@@ -120,13 +119,13 @@ LINK32_OBJS= \
 OUTDIR=.\Debug
 INTDIR=.\Debug
 
-ALL : "$(OUTDIR)\Tinelix IRC.exe"
+ALL : "$(OUTDIR)\tlx_irc.exe"
 
 CLEAN : 
 	-@erase ".\Debug\vc40.pdb"
 	-@erase ".\Debug\Tinelix IRC.pch"
 	-@erase ".\Debug\vc40.idb"
-	-@erase ".\Debug\Tinelix IRC.exe"
+	-@erase ".\Debug\tlx_irc.exe"
 	-@erase ".\Debug\MainDlg.obj"
 	-@erase ".\Debug\ConnManDlg.obj"
 	-@erase ".\Debug\AboutDlg.obj"
@@ -134,8 +133,8 @@ CLEAN :
 	-@erase ".\Debug\AppThreadTab.obj"
 	-@erase ".\Debug\Tinelix IRC.obj"
 	-@erase ".\Debug\Tinelix IRC.res"
-	-@erase ".\Debug\Tinelix IRC.ilk"
-	-@erase ".\Debug\Tinelix IRC.pdb"
+	-@erase ".\Debug\tlx_irc.ilk"
+	-@erase ".\Debug\tlx_irc.pdb"
 
 "$(OUTDIR)" :
     if not exist "$(OUTDIR)/$(NULL)" mkdir "$(OUTDIR)"
@@ -160,11 +159,10 @@ BSC32_FLAGS=/nologo /o"$(OUTDIR)/Tinelix IRC.bsc"
 BSC32_SBRS=
 LINK32=link.exe
 # ADD BASE LINK32 /nologo /subsystem:windows /debug /machine:I386
-# ADD LINK32 /nologo /subsystem:windows /debug /machine:I386
+# ADD LINK32 /nologo /subsystem:windows /debug /machine:I386 /out:"Debug/tlx_irc.exe"
 # SUBTRACT LINK32 /pdb:none
 LINK32_FLAGS=/nologo /subsystem:windows /incremental:yes\
- /pdb:"$(OUTDIR)/Tinelix IRC.pdb" /debug /machine:I386\
- /out:"$(OUTDIR)/Tinelix IRC.exe" 
+ /pdb:"$(OUTDIR)/tlx_irc.pdb" /debug /machine:I386 /out:"$(OUTDIR)/tlx_irc.exe" 
 LINK32_OBJS= \
 	"$(INTDIR)/MainDlg.obj" \
 	"$(INTDIR)/ConnManDlg.obj" \
@@ -174,7 +172,7 @@ LINK32_OBJS= \
 	"$(INTDIR)/Tinelix IRC.obj" \
 	"$(INTDIR)/Tinelix IRC.res"
 
-"$(OUTDIR)\Tinelix IRC.exe" : "$(OUTDIR)" $(DEF_FILE) $(LINK32_OBJS)
+"$(OUTDIR)\tlx_irc.exe" : "$(OUTDIR)" $(DEF_FILE) $(LINK32_OBJS)
     $(LINK32) @<<
   $(LINK32_FLAGS) $(LINK32_OBJS)
 <<
