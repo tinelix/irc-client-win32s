@@ -51,6 +51,7 @@ END_MESSAGE_MAP()
 
 CAppThreadTab *thread_tab;
 HINSTANCE wsaWrap;
+CString thread_input;
 
 // WSAWrapper DLL functions;
 
@@ -58,6 +59,7 @@ typedef BOOL (WINAPI *EnableAsyncMessages) (HWND);
 typedef int (WINAPI *GetWSAError) ();
 typedef BOOL (WINAPI *CreateConnection) (char*, int);
 typedef BOOL (WINAPI *SendSocketData) (char*);
+typedef char* (WINAPI *GetInputBuffer) ();
 
 
 /////////////////////////////////////////////////////////////////////////////
@@ -97,7 +99,6 @@ BOOL CMainDlg::OnInitDialog()
 	SetIcon(m_hIcon, FALSE);		// Set small icon
 
 	char* app_name = "Tinelix IRC (Win32s)"; // LoadString is buggy...
-
 	SetWindowText(app_name);
 
 	EnableWindow(TRUE);
@@ -120,6 +121,11 @@ void CMainDlg::CreateTabs() {
 	tabItem.lParam = (LPARAM)thread_tab;
 	thread_tab->SetWindowPos(NULL, 6, 24, 0, 0, SWP_NOSIZE|SWP_NOZORDER);
 	thread_tab->ShowWindow(SW_SHOW);
+	CEdit* thread_input_box = (CEdit*)thread_tab->GetDlgItem(IDC_CHAT_INPUT);
+	font.CreateFont(11, 0, 0, 0, FW_REGULAR, FALSE, FALSE, 0, DEFAULT_CHARSET,
+		0, 0, 0, 0, "Fixedsys");
+	thread_input_box->SetFont(&font);
+
 }
 
 void CMainDlg::OnSysCommand(UINT nID, LPARAM lParam)
@@ -205,18 +211,42 @@ void CMainDlg::OpenConnectionManager()
 	CConnManDlg connman;
 	if(connman.DoModal() == IDOK) {
 		char* server;
-		sprintf(server, "irc.tinelix.ru");
+		sprintf(server, "irc.tinelix.ru"); // for example, because profiles not impemented.
 		PrepareConnect(server, 6667);
 	}
 }
 
 void CMainDlg::PrepareConnect(char* address, int port) {
 	CreateConnection WrapCreateConn;
+	EnableAsyncMessages EnableAsyncMsgs;
 
-	// Running function in WSAWrapper DLL
+	char app_name[80];
+	sprintf(app_name, "Tinelix IRC (Win32s) | %s:%d", address, port); // LoadString is buggy...
 
+	// Running CreateConnection function (#17) in WSAWrapper DLL
 	WrapCreateConn = (CreateConnection)GetProcAddress(wsaWrap, MAKEINTRESOURCE(17));
 	if(!(*WrapCreateConn)(address, port)) {
 		MessageBox("Connection error", address, MB_OK|MB_ICONSTOP);
+	} else {
+		SetWindowText(app_name);
 	}
+	// Running EnableAsyncMessages function (#15) in WSAWrapper DLL
+	EnableAsyncMsgs = (EnableAsyncMessages)GetProcAddress(wsaWrap, MAKEINTRESOURCE(15));
+	EnableAsyncMsgs(m_hWnd);
+}
+
+LRESULT CMainDlg::WindowProc(UINT message, WPARAM wParam, LPARAM lParam) 
+{
+	if(message == 0xAFFF) {
+		GetInputBuffer GetInBuff;
+		char* sock_buffer;
+		// Running GetInputBuffer function (#19) in WSAWrapper DLL
+		GetInBuff = (GetInputBuffer)GetProcAddress(wsaWrap, MAKEINTRESOURCE(19));
+		sock_buffer = (*GetInBuff)();
+		CEdit* thread_input_box = (CEdit*)thread_tab->GetDlgItem(IDC_CHAT_INPUT);
+		thread_input += CString(sock_buffer);
+		thread_input_box->SetWindowText(thread_input);
+	}
+	
+	return CDialog::WindowProc(message, wParam, lParam);
 }

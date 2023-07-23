@@ -4,10 +4,15 @@
 /////////////////////////////////////////////////////////////////////////////
 // CMainDlg dialog
 
+#define WM_SOCKET_READ 0xAFFF;
+
+
 class CMainDlg : public CDialog
 {
 // Construction
 public:
+	BOOL is_connected;
+
 	CMainDlg(CWnd* pParent = NULL);	// standard constructor
 
 // Dialog Data
@@ -22,11 +27,13 @@ public:
 	virtual BOOL DestroyWindow();
 	protected:
 	virtual void DoDataExchange(CDataExchange* pDX);	// DDX/DDV support
+	virtual LRESULT WindowProc(UINT message, WPARAM wParam, LPARAM lParam);
 	//}}AFX_VIRTUAL
 
 // Implementation
 protected:
 	HICON m_hIcon;
+	CFont font;
 	void CreateTabs();
 	void PrepareConnect(LPSTR address, int port);
 

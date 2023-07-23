@@ -2,7 +2,7 @@
 
 [General Info]
 Version=1
-LastClass=CConnManDlg
+LastClass=CMainDlg
 LastTemplate=CDialog
 NewFileInclude1=#include "stdafx.h"
 NewFileInclude2=#include "Tinelix IRC.h"
