@@ -56,6 +56,7 @@ CString thread_input;
 BOOL isWin3x;
 char* conn_server;
 char* app_name;
+int new_unread_messages;
 
 // WSAWrapper DLL functions;
 
@@ -67,9 +68,9 @@ typedef char* (WINAPI *GetInputBuffer) ();
 
 CreateConnection WrapCreateConn;
 EnableAsyncMessages EnableAsyncMsgs;
+SendSocketData SendOutBuff;
 GetInputBuffer GetInBuff;
 GetWSAError GetWSAErrorFunc;
-
 
 /////////////////////////////////////////////////////////////////////////////
 // CMainDlg message handlers
@@ -242,9 +243,9 @@ void CMainDlg::PrepareConnect(char* address, int port) {
 		MessageBox(error_msg, address, MB_OK|MB_ICONSTOP);
 		sprintf(app_name, "Tinelix IRC (Win32s)", address, port); // LoadString is buggy...
 	} else {
+		EnableAsyncMsgs(m_hWnd);
 		SetWindowText(app_name);
 	}
-	EnableAsyncMsgs(m_hWnd);
 }
 
 void CMainDlg::ImportDllFunctions() {
@@ -254,18 +255,61 @@ void CMainDlg::ImportDllFunctions() {
 	GetWSAErrorFunc = (GetWSAError)GetProcAddress(wsaWrap, MAKEINTRESOURCE(16));
 	// Running CreateConnection function (#17) in WSAWrapper DLL
 	WrapCreateConn = (CreateConnection)GetProcAddress(wsaWrap, MAKEINTRESOURCE(17));
+	// Running SendData function (#18) in WSAWrapper DLL
+	SendOutBuff = (SendSocketData)GetProcAddress(wsaWrap, MAKEINTRESOURCE(18));
+	// Running GetInputBuffer function (#19) in WSAWrapper DLL
+	GetInBuff = (GetInputBuffer)GetProcAddress(wsaWrap, MAKEINTRESOURCE(19));
+}
+
+void CMainDlg::IdentificateConnection() {
+	char* ident_str = "";
+	sprintf(ident_str, "USER %s %s %s :Member\r\n",
+		"member", "member", "member");
+	if(!(*SendOutBuff)(ident_str)) {
+		int error_code = ((*GetWSAErrorFunc)());
+		char error_msg[32];
+		sprintf(error_msg, "Identification error #%d", error_code);
+		MessageBox(error_msg, conn_server, MB_OK|MB_ICONSTOP);
+		return;
+	}
+	sprintf(ident_str, "NICK %s\n", "member");
+	if(!(*SendOutBuff)(ident_str)) {
+		int error_code = ((*GetWSAErrorFunc)());
+		char error_msg[32];
+		sprintf(error_msg, "Identification error #%d", error_code);
+		MessageBox(error_msg, conn_server, MB_OK|MB_ICONSTOP);
+		return;
+	} else {
+		CEdit* thread_output_box = (CEdit*)thread_tab->GetDlgItem(IDC_CHAT_OUTPUT);
+		thread_output_box->EnableWindow(TRUE);
+		CButton* thread_send_btn = (CButton*)thread_tab->GetDlgItem(IDC_CHAT_SEND_MSG);
+		thread_send_btn->EnableWindow(TRUE);
+	}
+}
+
+void CMainDlg::SendPing(CString ping_hexcode) {	
+	CString ping_str = "";
+	ping_str.Format("PING %s\r\n", ping_hexcode);
+	(*SendOutBuff)(ping_str.GetBuffer(ping_str.GetLength()));
 }
 
 LRESULT CMainDlg::WindowProc(UINT message, WPARAM wParam, LPARAM lParam) 
 {
 	if(message == 0xAFFF) {
+		new_unread_messages += 1;
+		if(new_unread_messages == 1) {
+			IdentificateConnection();
+		}
 		char* sock_buffer;
-		// Running GetInputBuffer function (#19) in WSAWrapper DLL
-		GetInBuff = (GetInputBuffer)GetProcAddress(wsaWrap, MAKEINTRESOURCE(19));
 		sock_buffer = (*GetInBuff)();
 		CEdit* thread_input_box = (CEdit*)thread_tab->GetDlgItem(IDC_CHAT_INPUT);
-		thread_input += CString(sock_buffer);
-		thread_input_box->SetWindowText(thread_input);
+		CString sock_buff_str = CString(sock_buffer);
+		if(sock_buff_str.Left(4) == "PING") {
+			SendPing(sock_buff_str.Right(sock_buff_str.GetLength() - 5));
+		} else {
+			thread_input += CString(sock_buffer);
+			thread_input_box->SetWindowText(thread_input);
+		}
 	} else if(message == 0xE0001) {
 		MessageBox("Connection closed", conn_server, MB_OK|MB_ICONINFORMATION);
 		app_name = "Tinelix IRC (Win32s)";
