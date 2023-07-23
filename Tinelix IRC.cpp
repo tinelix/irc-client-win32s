@@ -54,9 +54,6 @@ BOOL CIRCApplication::InitInstance()
 #endif
 
 	int nResponse = 0;
-
-	LoadLibrary("stb_w32.dll");
-	AfxEnableControlContainer();
 	CMainDlg dlg;
 	m_pMainWnd = &dlg;
 	nResponse = dlg.DoModal();

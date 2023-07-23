@@ -214,18 +214,6 @@ LINK32_OBJS= \
 ################################################################################
 # Begin Source File
 
-SOURCE=.\ReadMe.txt
-
-!IF  "$(CFG)" == "Tinelix IRC - Win32 Release"
-
-!ELSEIF  "$(CFG)" == "Tinelix IRC - Win32 Debug"
-
-!ENDIF 
-
-# End Source File
-################################################################################
-# Begin Source File
-
 SOURCE=".\Tinelix IRC.cpp"
 DEP_CPP_TINEL=\
 	".\dialogs\..\stdafx.h"\
