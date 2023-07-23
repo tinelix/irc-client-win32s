@@ -243,6 +243,7 @@ void CMainDlg::PrepareConnect(char* address, int port) {
 		MessageBox(error_msg, address, MB_OK|MB_ICONSTOP);
 		sprintf(app_name, "Tinelix IRC (Win32s)", address, port); // LoadString is buggy...
 	} else {
+		IdentificateConnection();
 		EnableAsyncMsgs(m_hWnd);
 		SetWindowText(app_name);
 	}
@@ -297,18 +298,22 @@ LRESULT CMainDlg::WindowProc(UINT message, WPARAM wParam, LPARAM lParam)
 {
 	if(message == 0xAFFF) {
 		new_unread_messages += 1;
-		if(new_unread_messages == 1) {
-			IdentificateConnection();
-		}
 		char* sock_buffer;
 		sock_buffer = (*GetInBuff)();
 		CEdit* thread_input_box = (CEdit*)thread_tab->GetDlgItem(IDC_CHAT_INPUT);
 		CString sock_buff_str = CString(sock_buffer);
-		if(sock_buff_str.Left(4) == "PING") {
-			SendPing(sock_buff_str.Right(sock_buff_str.GetLength() - 5));
+		if(sock_buff_str.GetLength() > 0) {
+			if(sock_buff_str.Left(4) == "PING") {
+				SendPing(sock_buff_str.Right(sock_buff_str.GetLength() - 3));
+			} else {
+				thread_input += CString(sock_buffer);
+				thread_input_box->SetWindowText(thread_input);
+			}
 		} else {
-			thread_input += CString(sock_buffer);
-			thread_input_box->SetWindowText(thread_input);
+			MessageBox("Connection closed", conn_server, MB_OK|MB_ICONINFORMATION);
+			app_name = "Tinelix IRC (Win32s)";
+			conn_server = "";
+			SetWindowText(app_name);
 		}
 	} else if(message == 0xE0001) {
 		MessageBox("Connection closed", conn_server, MB_OK|MB_ICONINFORMATION);
