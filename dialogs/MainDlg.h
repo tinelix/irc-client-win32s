@@ -36,6 +36,7 @@ protected:
 	CFont font;
 	void CreateTabs();
 	void PrepareConnect(LPSTR address, int port);
+	void CMainDlg::ImportDllFunctions();
 
 	// Generated message map functions
 	//{{AFX_MSG(CMainDlg)
@@ -45,6 +46,7 @@ protected:
 	afx_msg HCURSOR OnQueryDragIcon();
 	afx_msg void OnMenuHelpAbout();
 	afx_msg void OpenConnectionManager();
+	afx_msg void OnSize(UINT nType, int cx, int cy);
 	//}}AFX_MSG
 	DECLARE_MESSAGE_MAP()
 

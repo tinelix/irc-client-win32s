@@ -44,6 +44,7 @@ BEGIN_MESSAGE_MAP(CMainDlg, CDialog)
 	ON_WM_QUERYDRAGICON()
 	ON_COMMAND(ID_ABOUT, OnMenuHelpAbout)
 	ON_COMMAND(ID_FILE_CONNECT, OpenConnectionManager)
+	ON_WM_SIZE()
 	//}}AFX_MSG_MAP
 END_MESSAGE_MAP()
 
@@ -52,6 +53,9 @@ END_MESSAGE_MAP()
 CAppThreadTab *thread_tab;
 HINSTANCE wsaWrap;
 CString thread_input;
+BOOL isWin3x;
+char* conn_server;
+char* app_name;
 
 // WSAWrapper DLL functions;
 
@@ -61,6 +65,11 @@ typedef BOOL (WINAPI *CreateConnection) (char*, int);
 typedef BOOL (WINAPI *SendSocketData) (char*);
 typedef char* (WINAPI *GetInputBuffer) ();
 
+CreateConnection WrapCreateConn;
+EnableAsyncMessages EnableAsyncMsgs;
+GetInputBuffer GetInBuff;
+GetWSAError GetWSAErrorFunc;
+
 
 /////////////////////////////////////////////////////////////////////////////
 // CMainDlg message handlers
@@ -68,6 +77,8 @@ typedef char* (WINAPI *GetInputBuffer) ();
 BOOL CMainDlg::OnInitDialog()
 {
 	CDialog::OnInitDialog();
+
+	isWin3x = (GetVersion() & 0xFF) == 3;
 
 	// Add "About..." menu item to system menu.
 
@@ -78,9 +89,14 @@ BOOL CMainDlg::OnInitDialog()
 	// Loading WSAWrapper library. 
 	// Available in https://github.com/tinelix/WSAWrapper (LGPLv2.1+)
 	wsaWrap = LoadLibrary("wsawrap.dll");
+	conn_server = "";
 
 	if(!wsaWrap) {
 		MessageBox("wsawrap.dll loading error", "Error", MB_OK|MB_ICONSTOP);
+		DestroyWindow();
+		return FALSE;
+	} else {
+		ImportDllFunctions();
 	}
 
 
@@ -98,7 +114,7 @@ BOOL CMainDlg::OnInitDialog()
 	SetIcon(m_hIcon, TRUE);			// Set big icon
 	SetIcon(m_hIcon, FALSE);		// Set small icon
 
-	char* app_name = "Tinelix IRC (Win32s)"; // LoadString is buggy...
+	app_name = "Tinelix IRC (Win32s)"; // LoadString is buggy...
 	SetWindowText(app_name);
 
 	EnableWindow(TRUE);
@@ -217,34 +233,32 @@ void CMainDlg::OpenConnectionManager()
 }
 
 void CMainDlg::PrepareConnect(char* address, int port) {
-	CreateConnection WrapCreateConn;
-	EnableAsyncMessages EnableAsyncMsgs;
-
-	char app_name[80];
 	sprintf(app_name, "Tinelix IRC (Win32s) | %s:%d", address, port); // LoadString is buggy...
-
-	// Running CreateConnection function (#17) in WSAWrapper DLL
-	WrapCreateConn = (CreateConnection)GetProcAddress(wsaWrap, MAKEINTRESOURCE(17));
+	sprintf(conn_server, "%s:%d", address, port);
 	if(!(*WrapCreateConn)(address, port)) {
-		// Running GetWSAError function (#16) in WSAWrapper DLL
-		GetWSAError GetWSAErrorFunc;
-		GetWSAErrorFunc = (GetWSAError)GetProcAddress(wsaWrap, MAKEINTRESOURCE(16));
 		int error_code = ((*GetWSAErrorFunc)());
 		char error_msg[32];
 		sprintf(error_msg, "Connection error #%d", error_code);
 		MessageBox(error_msg, address, MB_OK|MB_ICONSTOP);
+		sprintf(app_name, "Tinelix IRC (Win32s)", address, port); // LoadString is buggy...
 	} else {
 		SetWindowText(app_name);
 	}
+	EnableAsyncMsgs(m_hWnd);
+}
+
+void CMainDlg::ImportDllFunctions() {
 	// Running EnableAsyncMessages function (#15) in WSAWrapper DLL
 	EnableAsyncMsgs = (EnableAsyncMessages)GetProcAddress(wsaWrap, MAKEINTRESOURCE(15));
-	EnableAsyncMsgs(m_hWnd);
+	// Running GetWSAError function (#16) in WSAWrapper DLL
+	GetWSAErrorFunc = (GetWSAError)GetProcAddress(wsaWrap, MAKEINTRESOURCE(16));
+	// Running CreateConnection function (#17) in WSAWrapper DLL
+	WrapCreateConn = (CreateConnection)GetProcAddress(wsaWrap, MAKEINTRESOURCE(17));
 }
 
 LRESULT CMainDlg::WindowProc(UINT message, WPARAM wParam, LPARAM lParam) 
 {
 	if(message == 0xAFFF) {
-		GetInputBuffer GetInBuff;
 		char* sock_buffer;
 		// Running GetInputBuffer function (#19) in WSAWrapper DLL
 		GetInBuff = (GetInputBuffer)GetProcAddress(wsaWrap, MAKEINTRESOURCE(19));
@@ -252,7 +266,27 @@ LRESULT CMainDlg::WindowProc(UINT message, WPARAM wParam, LPARAM lParam)
 		CEdit* thread_input_box = (CEdit*)thread_tab->GetDlgItem(IDC_CHAT_INPUT);
 		thread_input += CString(sock_buffer);
 		thread_input_box->SetWindowText(thread_input);
+	} else if(message == 0xE0001) {
+		MessageBox("Connection closed", conn_server, MB_OK|MB_ICONINFORMATION);
+		app_name = "Tinelix IRC (Win32s)";
+		conn_server = "";
+		SetWindowText(app_name);
 	}
 	
 	return CDialog::WindowProc(message, wParam, lParam);
+}
+
+void CMainDlg::OnSize(UINT nType, int cx, int cy) 
+{
+	CDialog::OnSize(nType, cx, cy);
+	
+	if(isWin3x) {  
+		// Setting window title in Win3.x / WinNT3.x 
+		// for greater compactness.
+		if(nType != SIZE_MINIMIZED) {
+			SetWindowText(app_name);
+		} else if(strlen(conn_server) > 0) {
+			SetWindowText(conn_server);
+		}
+	}
 }
