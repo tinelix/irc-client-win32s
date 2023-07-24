@@ -265,7 +265,7 @@ void CMainDlg::ImportDllFunctions() {
 void CMainDlg::IdentificateConnection() {
 	char* ident_str = "";
 	sprintf(ident_str, "USER %s %s %s :Member\r\n",
-		"member", "member", "member");
+		"irc_member", "irc_member", "irc_member");
 	if(!(*SendOutBuff)(ident_str)) {
 		int error_code = ((*GetWSAErrorFunc)());
 		char error_msg[32];
@@ -273,7 +273,7 @@ void CMainDlg::IdentificateConnection() {
 		MessageBox(error_msg, conn_server, MB_OK|MB_ICONSTOP);
 		return;
 	}
-	sprintf(ident_str, "NICK %s\n", "member");
+	sprintf(ident_str, "NICK %s\r\n", "irc_member");
 	if(!(*SendOutBuff)(ident_str)) {
 		int error_code = ((*GetWSAErrorFunc)());
 		char error_msg[32];
@@ -290,7 +290,7 @@ void CMainDlg::IdentificateConnection() {
 
 void CMainDlg::SendPing(CString ping_hexcode) {	
 	CString ping_str = "";
-	ping_str.Format("PING %s\r\n", ping_hexcode);
+	ping_str.Format("PONG %s\r\n", ping_hexcode);
 	(*SendOutBuff)(ping_str.GetBuffer(ping_str.GetLength()));
 }
 
