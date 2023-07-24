@@ -69,7 +69,7 @@ EXPORT char* CALLBACK ParsePacket(char* packet) {
 	char* parsed_packet = "";
 	char* token_s = "";
 
-	if(packet != NULL && strlen(packet) > 4 && packet[0] >= 0) {
+	if(packet != NULL && packet[0] >= 0) {
 		token = strtok(packet, "\n");
 
 		while(token != NULL) {

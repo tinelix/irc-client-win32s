@@ -272,6 +272,8 @@ void CMainDlg::ImportDllFunctions() {
 	// Running GetInputBuffer function (#19) in WSAWrapper DLL
 	GetInBuff = (GetInputBuffer)GetProcAddress(wsaWrap, MAKEINTRESOURCE(19));
 
+	ParseIRCPacket = (ParseIRCPacketFunc)GetProcAddress(ircParser, MAKEINTRESOURCE(2));
+
 }
 
 void CMainDlg::IdentificateConnection() {
@@ -323,9 +325,9 @@ LRESULT CMainDlg::WindowProc(UINT message, WPARAM wParam, LPARAM lParam)
 			if(sock_buff_str.Left(4) == "PING") {
 				SendPing(sock_buff_str.Right(sock_buff_str.GetLength() - 3));
 			} else {
-				if(sock_buffer != NULL && ircParser != NULL) {
-					CString parsed_str = "";
-					parsed_str = ParseMessage(sock_buff_str.GetBuffer(sock_buff_str.GetLength()));
+				if(ircParser != NULL) {
+					CString parsed_str = CString("");
+					parsed_str = ParseMessage(sock_buffer);
 					thread_input += parsed_str;
 					thread_input_box->SetWindowText(thread_input);
 				} else {
@@ -361,7 +363,7 @@ void CMainDlg::OnSize(UINT nType, int cx, int cy)
 
 CString CMainDlg::ParseMessage(char* irc_packet) {
 	char* parsed_packet = "";
-	ParseIRCPacket = (ParseIRCPacketFunc)GetProcAddress(ircParser, MAKEINTRESOURCE(2));
 	parsed_packet = (*ParseIRCPacket)(irc_packet);
+
 	return CString(parsed_packet);
 }
