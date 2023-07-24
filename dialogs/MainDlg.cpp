@@ -52,6 +52,7 @@ END_MESSAGE_MAP()
 
 CAppThreadTab *thread_tab;
 HINSTANCE wsaWrap;
+HINSTANCE ircParser;
 CString thread_input;
 BOOL isWin3x;
 char* conn_server;
@@ -71,6 +72,12 @@ EnableAsyncMessages EnableAsyncMsgs;
 SendSocketData SendOutBuff;
 GetInputBuffer GetInBuff;
 GetWSAError GetWSAErrorFunc;
+
+// Tinelix IRC Parser functions:
+
+typedef char* (WINAPI *ParseIRCPacketFunc) (char*);
+
+ParseIRCPacketFunc ParseIRCPacket;
 
 /////////////////////////////////////////////////////////////////////////////
 // CMainDlg message handlers
@@ -100,6 +107,10 @@ BOOL CMainDlg::OnInitDialog()
 		ImportDllFunctions();
 	}
 
+	ircParser = LoadLibrary("ircpars.dll");
+	if(!ircParser) {
+		MessageBox("ircpars.dll loading error", "Error", MB_OK|MB_ICONSTOP);
+	}
 
 	CMenu* pSysMenu = GetSystemMenu(FALSE);
 	CString strAboutMenu;
@@ -260,6 +271,7 @@ void CMainDlg::ImportDllFunctions() {
 	SendOutBuff = (SendSocketData)GetProcAddress(wsaWrap, MAKEINTRESOURCE(18));
 	// Running GetInputBuffer function (#19) in WSAWrapper DLL
 	GetInBuff = (GetInputBuffer)GetProcAddress(wsaWrap, MAKEINTRESOURCE(19));
+
 }
 
 void CMainDlg::IdentificateConnection() {
@@ -302,18 +314,25 @@ LRESULT CMainDlg::WindowProc(UINT message, WPARAM wParam, LPARAM lParam)
 		sock_buffer = (*GetInBuff)();
 		CEdit* thread_input_box = (CEdit*)thread_tab->GetDlgItem(IDC_CHAT_INPUT);
 		CString sock_buff_str = CString(sock_buffer);
-		if(sock_buff_str.GetLength() > 0) {
-			if(sock_buff_str.Left(4) == "PING") {
-				SendPing(sock_buff_str.Right(sock_buff_str.GetLength() - 3));
-			} else {
-				thread_input += CString(sock_buffer);
-				thread_input_box->SetWindowText(thread_input);
-			}
-		} else if(sock_buff_str == "[WSAWrapper] 0xE0001") {
+		if(sock_buff_str == "[WSAWrapper] 0xE0001\r\n") {
 			MessageBox("Connection closed", conn_server, MB_OK|MB_ICONINFORMATION);
 			app_name = "Tinelix IRC (Win32s)";
 			conn_server = "";
 			SetWindowText(app_name);
+		} else if(sock_buff_str.GetLength() > 0) {
+			if(sock_buff_str.Left(4) == "PING") {
+				SendPing(sock_buff_str.Right(sock_buff_str.GetLength() - 3));
+			} else {
+				if(sock_buffer != NULL && ircParser != NULL) {
+					CString parsed_str = "";
+					parsed_str = ParseMessage(sock_buff_str.GetBuffer(sock_buff_str.GetLength()));
+					thread_input += parsed_str;
+					thread_input_box->SetWindowText(thread_input);
+				} else {
+					thread_input += CString(sock_buffer);
+					thread_input_box->SetWindowText(thread_input);
+				}
+			}
 		}
 	} else if(message == 0xE0001) {
 		MessageBox("Connection closed", conn_server, MB_OK|MB_ICONINFORMATION);
@@ -338,4 +357,11 @@ void CMainDlg::OnSize(UINT nType, int cx, int cy)
 			SetWindowText(conn_server);
 		}
 	}
+}
+
+CString CMainDlg::ParseMessage(char* irc_packet) {
+	char* parsed_packet = "";
+	ParseIRCPacket = (ParseIRCPacketFunc)GetProcAddress(ircParser, MAKEINTRESOURCE(2));
+	parsed_packet = (*ParseIRCPacket)(irc_packet);
+	return CString(parsed_packet);
 }
