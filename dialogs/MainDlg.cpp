@@ -309,7 +309,7 @@ LRESULT CMainDlg::WindowProc(UINT message, WPARAM wParam, LPARAM lParam)
 				thread_input += CString(sock_buffer);
 				thread_input_box->SetWindowText(thread_input);
 			}
-		} else {
+		} else if(sock_buff_str == "[WSAWrapper] 0xE0001") {
 			MessageBox("Connection closed", conn_server, MB_OK|MB_ICONINFORMATION);
 			app_name = "Tinelix IRC (Win32s)";
 			conn_server = "";
