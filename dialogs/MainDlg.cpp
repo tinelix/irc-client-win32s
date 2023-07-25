@@ -103,14 +103,14 @@ BOOL CMainDlg::OnInitDialog()
 		MessageBox("wsawrap.dll loading error", "Error", MB_OK|MB_ICONSTOP);
 		DestroyWindow();
 		return FALSE;
-	} else {
-		ImportDllFunctions();
 	}
 
 	ircParser = LoadLibrary("ircpars.dll");
 	if(!ircParser) {
 		MessageBox("ircpars.dll loading error", "Error", MB_OK|MB_ICONSTOP);
 	}
+
+	ImportDllFunctions();
 
 	CMenu* pSysMenu = GetSystemMenu(FALSE);
 	CString strAboutMenu;

@@ -219,7 +219,7 @@ DEP_CPP_IRCPA=\
 	".\IRCParser.h"\
 	
 NODEP_CPP_IRCPA=\
-	"..\..\..\..\..\..\..\r\n[IRC Parser] [%s] %s"\
+	".\[IRC Parser] Parsing command response (20%)"\
 	
 
 "$(INTDIR)\IRCParser.obj" : $(SOURCE) $(DEP_CPP_IRCPA) "$(INTDIR)"

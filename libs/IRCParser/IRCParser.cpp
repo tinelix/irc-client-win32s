@@ -34,25 +34,49 @@ int WINAPI DllMain(HINSTANCE hInst, DWORD fdReas, PVOID pvRes) {
 }
 
 EXPORT char* CALLBACK ParseLine(char* original_line) {
-	char* line = original_line;
-	char* parsed_line = "";
-	char* debug_parsed_line = "";
+	char line[4096];
+	strcpy(line, original_line);
+	char parsed_line[4096];
+	char debug_parsed_line[4096];
+	char words[512][256];
 	try {
-		char prefix[256], command[12], params[40], body[512];
-		sscanf(line, "%255s", prefix);
-		if(prefix == "ERROR") {
-			sscanf(line, "%*s %511[^\n]", body);
-			sprintf(debug_parsed_line, "\r\n[IRC Parser] [%s] %s", prefix, body);
-			sprintf(parsed_line, "[%s] %s\r\n", prefix, body);
-		} else {
-			sscanf(line, "%*s %11s %39s :%511[^\n]", command, params, body);
-			sprintf(debug_parsed_line, "\r\n[IRC Parser] [%s] %s", command, body);
+		char prefix[60];
+		char command[60];
+		char params[256];
+		char body[1024];
+		char* token = strtok(line, " ");
+		int spaces = 0;
+		int body_index;
+		while(token != NULL) {
+			if(token[0] == ':') {
+				sprintf(words[spaces], token + 1);
+			} else {
+				sprintf(words[spaces], token);
+			}
+			if(spaces == 0) {
+				sprintf(prefix, words[spaces]);
+			} else if(spaces == 1) {
+				sprintf(command, words[spaces]);
+			} else if(spaces == 2) {
+				sprintf(params, words[spaces]);
+			} else if(spaces == 3) {
+				sprintf(body, words[spaces]);
+				body_index = strlen(body);
+			} else {
+				body_index += sprintf(body + body_index, " %s", words[spaces]);
+			}
+			token = strtok(NULL, " ");
+			spaces++;
+		}
+		if(spaces > 2) {
 			sprintf(parsed_line, "[%s] %s\r\n", command, body);
+		} else {
+			sprintf(parsed_line, "[Parsing error]\r\n");
 		}
 		return parsed_line;
 	} catch(...) {
-		sprintf(line, "[Parsing error]");
-		return line;
+		sprintf(parsed_line, "[Parsing error]\r\n");
+		return parsed_line;
 	}
 }
 
@@ -70,22 +94,20 @@ EXPORT char* CALLBACK ParsePacket(char* packet) {
 	char* token_s = "";
 
 	if(packet != NULL && packet[0] >= 0) {
-		token = strtok(packet, "\n");
+		token = strtok(packet, "\r\n");
 
 		while(token != NULL) {
-			sprintf(token_s, "%s\r\n", token);
-			lines[lines_count++] = ParseLine(token_s);
-			token = strtok(NULL, "\n");
+			lines[lines_count++] = ParseLine(token);
+			token = strtok(NULL, "\r\n");
 		}
 		
-		for(int i = 0; i < lines_count - 1; i++) {
-			line_index += sprintf(parsed_packet + line_index, "%s", lines[i]);
-		}
-		if(!is_win32s) {
-			sprintf(debug_parsed_line, "\r\n[IRC Parser] Parsed!"
-				"\r\n[IRC Parser] Before: [%s]"
-				"\r\n[IRC Parser] After: [%s]", packet, parsed_packet); 
-			OutputDebugString(debug_parsed_line);
+		for(int i = 0; i < lines_count; i++) {
+			if(line_index == 0) {
+				parsed_packet = lines[i];
+				line_index = strlen(parsed_packet);
+			} else {
+				strcpy(lines[i], parsed_packet);
+			}
 		}
 	} else {
 		parsed_packet = "[IRC Parser] Parsing Error\r\n";
