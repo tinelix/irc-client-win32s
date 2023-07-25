@@ -62,6 +62,7 @@ CLEAN :
 	-@erase ".\Release\MainDlg.obj"
 	-@erase ".\Release\ProgressDlg.obj"
 	-@erase ".\Release\Tinelix IRC.obj"
+	-@erase ".\Release\StatisticsDlg.obj"
 	-@erase ".\Release\AboutDlg.obj"
 	-@erase ".\Release\Tinelix IRC.res"
 
@@ -98,6 +99,7 @@ LINK32_OBJS= \
 	"$(INTDIR)/MainDlg.obj" \
 	"$(INTDIR)/ProgressDlg.obj" \
 	"$(INTDIR)/Tinelix IRC.obj" \
+	"$(INTDIR)/StatisticsDlg.obj" \
 	"$(INTDIR)/AboutDlg.obj" \
 	"$(INTDIR)/Tinelix IRC.res"
 
@@ -134,6 +136,7 @@ CLEAN :
 	-@erase ".\Debug\AboutDlg.obj"
 	-@erase ".\Debug\StdAfx.obj"
 	-@erase ".\Debug\AppThreadTab.obj"
+	-@erase ".\Debug\StatisticsDlg.obj"
 	-@erase ".\Debug\Tinelix IRC.obj"
 	-@erase ".\Debug\Tinelix IRC.res"
 	-@erase ".\Debug\tlx_irc.ilk"
@@ -173,6 +176,7 @@ LINK32_OBJS= \
 	"$(INTDIR)/AboutDlg.obj" \
 	"$(INTDIR)/StdAfx.obj" \
 	"$(INTDIR)/AppThreadTab.obj" \
+	"$(INTDIR)/StatisticsDlg.obj" \
 	"$(INTDIR)/Tinelix IRC.obj" \
 	"$(INTDIR)/Tinelix IRC.res"
 
@@ -313,6 +317,7 @@ DEP_CPP_MAIND=\
 	".\dialogs\MainDlg.h"\
 	".\dialogs\ConnManDlg.h"\
 	".\dialogs\ProgressDlg.h"\
+	".\dialogs\StatisticsDlg.h"\
 	
 NODEP_CPP_MAIND=\
 	".\dialogs\stdafx.h"\
@@ -374,6 +379,24 @@ NODEP_CPP_PROGR=\
 	
 
 "$(INTDIR)\ProgressDlg.obj" : $(SOURCE) $(DEP_CPP_PROGR) "$(INTDIR)"\
+ "$(INTDIR)\Tinelix IRC.pch"
+   $(CPP) $(CPP_PROJ) $(SOURCE)
+
+
+# End Source File
+################################################################################
+# Begin Source File
+
+SOURCE=.\dialogs\StatisticsDlg.cpp
+DEP_CPP_STATI=\
+	".\tabs\..\Tinelix IRC.h"\
+	".\dialogs\StatisticsDlg.h"\
+	
+NODEP_CPP_STATI=\
+	".\dialogs\stdafx.h"\
+	
+
+"$(INTDIR)\StatisticsDlg.obj" : $(SOURCE) $(DEP_CPP_STATI) "$(INTDIR)"\
  "$(INTDIR)\Tinelix IRC.pch"
    $(CPP) $(CPP_PROJ) $(SOURCE)
 

@@ -9,13 +9,13 @@
 #include "MainDlg.h"
 #include "ConnManDlg.h"
 #include "ProgressDlg.h"
+#include "StatisticsDlg.h"
 
 #ifdef _DEBUG
 #define new DEBUG_NEW
 #undef THIS_FILE
 static char THIS_FILE[] = __FILE__;
 #endif
-
 
 /////////////////////////////////////////////////////////////////////////////
 // CMainDlg dialog
@@ -46,6 +46,7 @@ BEGIN_MESSAGE_MAP(CMainDlg, CDialog)
 	ON_COMMAND(ID_ABOUT, OnMenuHelpAbout)
 	ON_COMMAND(ID_FILE_CONNECT, OpenConnectionManager)
 	ON_WM_SIZE()
+	ON_COMMAND(ID_CONNECTION_STATISTICS, OnConnectionStatistics)
 	//}}AFX_MSG_MAP
 END_MESSAGE_MAP()
 
@@ -62,6 +63,7 @@ int new_unread_messages;
 char g_address[256];
 int g_port;
 CProgressDlg progressDlg;
+CStatisticsDlg statisticsDlg;
 
 // WSAWrapper DLL functions;
 
@@ -70,12 +72,14 @@ typedef int (WINAPI *GetWSAError) ();
 typedef int (WINAPI *CreateAsyncConnection) (char*, int, int, int, HWND);
 typedef BOOL (WINAPI *SendSocketData) (char*);
 typedef char* (WINAPI *GetInputBuffer) ();
+typedef NetworkStatistics (WINAPI *GetNetworkStatistics) ();
 
 CreateAsyncConnection WrapCreateConn;
 EnableAsyncMessages EnableAsyncMsgs;
 SendSocketData SendOutBuff;
 GetInputBuffer GetInBuff;
 GetWSAError GetWSAErrorFunc;
+GetNetworkStatistics GetNetworkStats;
 
 // Tinelix IRC Parser functions:
 
@@ -133,6 +137,8 @@ BOOL CMainDlg::OnInitDialog()
 	app_name = "Tinelix IRC (Win32s)"; // LoadString is buggy...
 	SetWindowText(app_name);
 	progressDlg.Create(CProgressDlg::IDD, this);
+	statisticsDlg.Create(CStatisticsDlg::IDD, this);
+	statisticsDlg.SetWSAWrapper(wsaWrap);
 
 	EnableWindow(TRUE);
 
@@ -297,6 +303,8 @@ void CMainDlg::ImportDllFunctions() {
 	SendOutBuff = (SendSocketData)GetProcAddress(wsaWrap, MAKEINTRESOURCE(19));
 	// Running GetInputBuffer function (#20) in WSAWrapper DLL
 	GetInBuff = (GetInputBuffer)GetProcAddress(wsaWrap, MAKEINTRESOURCE(20));
+	// Running GetInputBuffer function (#21) in WSAWrapper DLL
+	GetNetworkStats = (GetNetworkStatistics)GetProcAddress(wsaWrap, MAKEINTRESOURCE(21));
 
 	ParseIRCPacket = (ParseIRCPacketFunc)GetProcAddress(ircParser, MAKEINTRESOURCE(2));
 
@@ -411,4 +419,13 @@ CString CMainDlg::ParseMessage(char* irc_packet) {
 	parsed_packet = (*ParseIRCPacket)(irc_packet);
 
 	return CString(parsed_packet);
+};
+
+void CMainDlg::OnConnectionStatistics() 
+{
+	NetworkStatistics stats;
+	stats = (NetworkStatistics)(*GetNetworkStats)();
+	statisticsDlg.CenterWindow();
+	statisticsDlg.ShowWindow(SW_SHOW);
+	statisticsDlg.SetStatisticsData(stats);
 }

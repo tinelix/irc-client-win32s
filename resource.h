@@ -18,6 +18,7 @@
 #define IDD_CONNMANDIALOG               136
 #define IDD_TEXTDIALOG                  137
 #define IDD_CONNECTION_PROGRESS         138
+#define IDD_STATSDIALOG                 139
 #define IDC_CHAT_INPUT                  1004
 #define IDC_CHAT_OUTPUT                 1005
 #define IDC_CHAT_SEND_MSG               1006
@@ -33,19 +34,32 @@
 #define IDC_EDITTEXTAREA                1018
 #define IDC_PROGRESS                    1019
 #define IDC_STATUS                      1020
+#define IDC_PACKETS_GROUP               1023
+#define IDC_PACKETS_SENT_LABEL          1024
+#define IDC_PACKETS_SENT_VALUE          1025
+#define IDC_PACKETS_READ_LABEL          1026
+#define IDC_PACKETS_READ_VALUE          1027
+#define IDC_DATA_GROUP                  1028
+#define IDC_BYTES_SENT_LABEL            1032
+#define IDC_BYTES_SEND_VALUE            1033
+#define IDC_READ_BYTES_LABEL            1034
+#define IDC_BYTES_READ_VALUE            1035
+#define IDC_TOTAL_BYTES_LABEL2          1036
+#define IDC_TOTAL_BYTES_VALUE           1037
 #define ID_FILE_CONNECT                 32771
 #define ID_FILE_QUIT                    32773
 #define ID_ABOUT                        32774
 #define ID_CHANNEL_JOIN                 32775
 #define ID_CHANNEL_LEAVE                32776
+#define ID_CONNECTION_STATISTICS        32777
 
 // Next default values for new objects
 // 
 #ifdef APSTUDIO_INVOKED
 #ifndef APSTUDIO_READONLY_SYMBOLS
-#define _APS_NEXT_RESOURCE_VALUE        139
-#define _APS_NEXT_COMMAND_VALUE         32777
-#define _APS_NEXT_CONTROL_VALUE         1023
+#define _APS_NEXT_RESOURCE_VALUE        140
+#define _APS_NEXT_COMMAND_VALUE         32778
+#define _APS_NEXT_CONTROL_VALUE         1025
 #define _APS_NEXT_SYMED_VALUE           101
 #endif
 #endif

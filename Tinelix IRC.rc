@@ -166,6 +166,26 @@ BEGIN
     LTEXT           "Connecting with [server]...",IDC_STATUS,7,7,175,10
 END
 
+IDD_STATSDIALOG DIALOG DISCARDABLE  0, 0, 153, 108
+STYLE DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "Statistics"
+FONT 8, "MS Sans Serif"
+BEGIN
+    DEFPUSHBUTTON   "OK",IDOK,98,90,50,14
+    GROUPBOX        "Packets",IDC_PACKETS_GROUP,5,5,143,34
+    LTEXT           "Packets sent:",IDC_PACKETS_SENT_LABEL,13,16,75,8
+    LTEXT           "0",IDC_PACKETS_SENT_VALUE,96,16,48,8
+    LTEXT           "Packets read:",IDC_PACKETS_READ_LABEL,13,26,75,8
+    LTEXT           "0",IDC_PACKETS_READ_VALUE,96,26,48,8
+    LTEXT           "Bytes sent:",IDC_BYTES_SENT_LABEL,13,54,75,8
+    LTEXT           "0",IDC_BYTES_SEND_VALUE,96,54,48,8
+    LTEXT           "Bytes read:",IDC_READ_BYTES_LABEL,13,64,75,8
+    LTEXT           "0",IDC_BYTES_READ_VALUE,96,64,48,8
+    LTEXT           "Total bytes:",IDC_TOTAL_BYTES_LABEL2,13,74,75,8
+    LTEXT           "0",IDC_TOTAL_BYTES_VALUE,96,74,48,8
+    GROUPBOX        "Data",IDC_DATA_GROUP,5,43,143,43
+END
+
 
 /////////////////////////////////////////////////////////////////////////////
 //
@@ -229,6 +249,14 @@ BEGIN
         RIGHTMARGIN, 182
         TOPMARGIN, 7
         BOTTOMMARGIN, 31
+    END
+
+    IDD_STATSDIALOG, DIALOG
+    BEGIN
+        LEFTMARGIN, 5
+        RIGHTMARGIN, 148
+        TOPMARGIN, 5
+        BOTTOMMARGIN, 104
     END
 END
 #endif    // APSTUDIO_INVOKED
@@ -300,6 +328,10 @@ BEGIN
         MENUITEM "Connect...",                  ID_FILE_CONNECT
         MENUITEM SEPARATOR
         MENUITEM "Quit",                        ID_FILE_QUIT
+    END
+    POPUP "Connection"
+    BEGIN
+        MENUITEM "Statistics...",               ID_CONNECTION_STATISTICS
     END
     POPUP "Channel", GRAYED
     BEGIN

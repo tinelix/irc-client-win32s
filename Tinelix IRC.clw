@@ -2,16 +2,16 @@
 
 [General Info]
 Version=1
-LastClass=CProgressDlg
+LastClass=CStatisticsDlg
 LastTemplate=CDialog
 NewFileInclude1=#include "stdafx.h"
 NewFileInclude2=#include "Tinelix IRC.h"
 
-ClassCount=6
+ClassCount=7
 Class1=CIRCApplication
 Class2=CMainDlg
 
-ResourceCount=10
+ResourceCount=11
 Resource1=IDD_TABTHREAD
 Resource2=IDR_MAINFRAME
 Resource3=IDD_TINELIXIRC_DIALOG
@@ -26,6 +26,8 @@ Class5=CConnManDlg
 Resource9=IDD_CONNMANDIALOG
 Class6=CProgressDlg
 Resource10=IDD_CONNECTION_PROGRESS
+Class7=CStatisticsDlg
+Resource11=IDD_STATSDIALOG
 
 [CLS:CIRCApplication]
 Type=0
@@ -55,10 +57,11 @@ Type=1
 Class=CMainDlg
 Command1=ID_FILE_CONNECT
 Command2=ID_FILE_QUIT
-Command3=ID_CHANNEL_JOIN
-Command4=ID_CHANNEL_LEAVE
-Command5=ID_ABOUT
-CommandCount=5
+Command3=ID_CONNECTION_STATISTICS
+Command4=ID_CHANNEL_JOIN
+Command5=ID_CHANNEL_LEAVE
+Command6=ID_ABOUT
+CommandCount=6
 
 [CLS:CAboutDlg]
 Type=0
@@ -151,5 +154,32 @@ ImplementationFile=dialogs\ProgressDlg.cpp
 BaseClass=CDialog
 Filter=D
 LastObject=CProgressDlg
+VirtualFilter=dWC
+
+[DLG:IDD_STATSDIALOG]
+Type=1
+Class=CStatisticsDlg
+ControlCount=13
+Control1=IDOK,button,1342242817
+Control2=IDC_PACKETS_GROUP,button,1342177287
+Control3=IDC_PACKETS_SENT_LABEL,static,1342308352
+Control4=IDC_PACKETS_SENT_VALUE,static,1342308352
+Control5=IDC_PACKETS_READ_LABEL,static,1342308352
+Control6=IDC_PACKETS_READ_VALUE,static,1342308352
+Control7=IDC_BYTES_SENT_LABEL,static,1342308352
+Control8=IDC_BYTES_SEND_VALUE,static,1342308352
+Control9=IDC_READ_BYTES_LABEL,static,1342308352
+Control10=IDC_BYTES_READ_VALUE,static,1342308352
+Control11=IDC_TOTAL_BYTES_LABEL2,static,1342308352
+Control12=IDC_TOTAL_BYTES_VALUE,static,1342308352
+Control13=IDC_DATA_GROUP,button,1342177287
+
+[CLS:CStatisticsDlg]
+Type=0
+HeaderFile=dialogs\StatisticsDlg.h
+ImplementationFile=dialogs\StatisticsDlg.cpp
+BaseClass=CDialog
+Filter=D
+LastObject=CStatisticsDlg
 VirtualFilter=dWC
 
