@@ -36,6 +36,7 @@ protected:
 	CFont font;
 	void CreateTabs();
 	void PrepareConnect(LPSTR address, int port);
+	void PrepareConnect(int result);
 	void ImportDllFunctions();
 	void IdentificateConnection();
 	void SendPing(CString ping_hexcode);

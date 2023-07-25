@@ -40,10 +40,10 @@ EXPORT char* CALLBACK ParseLine(char* original_line) {
 	char debug_parsed_line[4096];
 	char words[512][256];
 	try {
-		char prefix[60];
+		char prefix[80];
 		char command[60];
 		char params[256];
-		char body[1024];
+		char body[1536];
 		char* token = strtok(line, " ");
 		int spaces = 0;
 		int body_index;
@@ -69,9 +69,34 @@ EXPORT char* CALLBACK ParseLine(char* original_line) {
 			spaces++;
 		}
 		if(spaces > 2) {
-			sprintf(parsed_line, "[%s] %s\r\n", command, body);
+			if(strcmp(command, "372") == 0) {
+				sprintf(parsed_line, "[MOTD] %s\r\n", body);
+			} else if(strcmp(command, "396") == 0) {
+				sprintf(parsed_line, "[396] **%s** %s\r\n", params, body);
+			} else if(strcmp(command, "001") == 0) {
+				sprintf(parsed_line, "[001] %s\r\n", body);
+			} else if(strcmp(command, "002") == 0) {
+				sprintf(parsed_line, "[002] %s\r\n", body);
+			} else if(strcmp(command, "003") == 0) {
+				sprintf(parsed_line, "[003] %s\r\n", body);
+			} else if(strcmp(command, "004") == 0) {
+				sprintf(parsed_line, "[004] %s\r\n", body);
+			} else if(strcmp(command, "005") == 0) {
+				sprintf(parsed_line, "[005] %s\r\n", body);
+			} else if(strcmp(command, "End") == 0) {
+				sprintf(parsed_line, "-------------------------------\r\n");
+			} else if(strcmp(prefix, "ERROR") == 0) {
+				sprintf(parsed_line, "[%s] %s %s\r\n", prefix, command, body);
+			} else if(strlen(command) == 3 && isdigit(command[0]) != 0 
+				&& isdigit(command[1]) != 0 && isdigit(command[2]) != 0) {
+				sprintf(parsed_line, "[%s] %s %s\r\n", command, params, body);
+			} else {
+				sprintf(parsed_line, "[%s] %s\r\n", command, body);
+			} 
+		} else if(spaces > 0) {
+			sprintf(parsed_line, "[RAW] [%s]\r\n", original_line);
 		} else {
-			sprintf(parsed_line, "[Parsing error]\r\n");
+			sprintf(parsed_line, "[Parsing error | Size: %d]\r\n", spaces);
 		}
 		return parsed_line;
 	} catch(...) {
@@ -81,16 +106,13 @@ EXPORT char* CALLBACK ParseLine(char* original_line) {
 }
 
 EXPORT char* CALLBACK ParsePacket(char* packet) {
-	if(!is_win32s) {
-		OutputDebugString("\r\n[IRC Parser] Parsing IRC packet...");
-	}
 	char* line = "";
 	char* token = "";
 	char* debug_parsed_line = "";
 	int lines_count = 0;
 	int line_index = 0;
 	char* lines[80];
-	char* parsed_packet = "";
+	char parsed_packet[8192];
 	char* token_s = "";
 
 	if(packet != NULL && packet[0] >= 0) {
@@ -103,14 +125,13 @@ EXPORT char* CALLBACK ParsePacket(char* packet) {
 		
 		for(int i = 0; i < lines_count; i++) {
 			if(line_index == 0) {
-				parsed_packet = lines[i];
-				line_index = strlen(parsed_packet);
+				line_index = sprintf(parsed_packet, lines[i]);
 			} else {
-				strcpy(lines[i], parsed_packet);
+				line_index += sprintf(parsed_packet + line_index, lines[i]);
 			}
 		}
 	} else {
-		parsed_packet = "[IRC Parser] Parsing Error\r\n";
+		sprintf(parsed_packet, "[IRC Parser] Parsing Error\r\n");
 	}
 	return parsed_packet;
 }

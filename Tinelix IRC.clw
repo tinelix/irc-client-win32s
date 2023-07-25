@@ -2,16 +2,16 @@
 
 [General Info]
 Version=1
-LastClass=CMainDlg
+LastClass=CProgressDlg
 LastTemplate=CDialog
 NewFileInclude1=#include "stdafx.h"
 NewFileInclude2=#include "Tinelix IRC.h"
 
-ClassCount=5
+ClassCount=6
 Class1=CIRCApplication
 Class2=CMainDlg
 
-ResourceCount=9
+ResourceCount=10
 Resource1=IDD_TABTHREAD
 Resource2=IDR_MAINFRAME
 Resource3=IDD_TINELIXIRC_DIALOG
@@ -24,6 +24,8 @@ Resource7=IDD_MAINDIALOG
 Resource8=IDD_TEXTDIALOG
 Class5=CConnManDlg
 Resource9=IDD_CONNMANDIALOG
+Class6=CProgressDlg
+Resource10=IDD_CONNECTION_PROGRESS
 
 [CLS:CIRCApplication]
 Type=0
@@ -133,5 +135,21 @@ ImplementationFile=dialogs\ConnManDlg.cpp
 BaseClass=CDialog
 Filter=D
 LastObject=IDOK
+VirtualFilter=dWC
+
+[DLG:IDD_CONNECTION_PROGRESS]
+Type=1
+Class=CProgressDlg
+ControlCount=2
+Control1=IDC_PROGRESS,msctls_progress32,1350565888
+Control2=IDC_STATUS,static,1342308352
+
+[CLS:CProgressDlg]
+Type=0
+HeaderFile=dialogs\ProgressDlg.h
+ImplementationFile=dialogs\ProgressDlg.cpp
+BaseClass=CDialog
+Filter=D
+LastObject=CProgressDlg
 VirtualFilter=dWC
 

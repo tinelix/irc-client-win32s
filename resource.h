@@ -17,6 +17,7 @@
 #define IDD_MAINDIALOG                  135
 #define IDD_CONNMANDIALOG               136
 #define IDD_TEXTDIALOG                  137
+#define IDD_CONNECTION_PROGRESS         138
 #define IDC_CHAT_INPUT                  1004
 #define IDC_CHAT_OUTPUT                 1005
 #define IDC_CHAT_SEND_MSG               1006
@@ -30,6 +31,8 @@
 #define IDC_PROFILES_GROUP              1016
 #define IDC_EDITTEXT                    1017
 #define IDC_EDITTEXTAREA                1018
+#define IDC_PROGRESS                    1019
+#define IDC_STATUS                      1020
 #define ID_FILE_CONNECT                 32771
 #define ID_FILE_QUIT                    32773
 #define ID_ABOUT                        32774
@@ -40,9 +43,9 @@
 // 
 #ifdef APSTUDIO_INVOKED
 #ifndef APSTUDIO_READONLY_SYMBOLS
-#define _APS_NEXT_RESOURCE_VALUE        138
+#define _APS_NEXT_RESOURCE_VALUE        139
 #define _APS_NEXT_COMMAND_VALUE         32777
-#define _APS_NEXT_CONTROL_VALUE         1019
+#define _APS_NEXT_CONTROL_VALUE         1023
 #define _APS_NEXT_SYMED_VALUE           101
 #endif
 #endif
