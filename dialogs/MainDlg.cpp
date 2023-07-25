@@ -132,6 +132,7 @@ BOOL CMainDlg::OnInitDialog()
 
 	app_name = "Tinelix IRC (Win32s)"; // LoadString is buggy...
 	SetWindowText(app_name);
+	progressDlg.Create(CProgressDlg::IDD, this);
 
 	EnableWindow(TRUE);
 
@@ -249,9 +250,9 @@ void CMainDlg::OpenConnectionManager()
 void CMainDlg::PrepareConnect(char* address, int port) {
 	sprintf(g_address, address);
 	g_port = port;
+	progressDlg.SetProgress(0);
 	sprintf(app_name, "Tinelix IRC (Win32s) | %s:%d", address, port); // LoadString is buggy...
 	sprintf(conn_server, "%s:%d", address, port);
-	progressDlg.Create(CProgressDlg::IDD, this);
 	progressDlg.CenterWindow();
 	progressDlg.ShowWindow(SW_SHOW);
 	int result = (*WrapCreateConn)(address, port, 0, 0xB001, m_hWnd);

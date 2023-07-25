@@ -219,7 +219,7 @@ LINK32_OBJS= \
 SOURCE=".\Tinelix IRC.cpp"
 DEP_CPP_TINEL=\
 	".\dialogs\..\stdafx.h"\
-	".\dialogs\..\Tinelix IRC.h"\
+	".\tabs\..\Tinelix IRC.h"\
 	".\dialogs\MainDlg.h"\
 	
 
@@ -289,7 +289,7 @@ DEP_RSC_TINELI=\
 
 SOURCE=.\dialogs\AboutDlg.cpp
 DEP_CPP_ABOUT=\
-	".\dialogs\..\Tinelix IRC.h"\
+	".\tabs\..\Tinelix IRC.h"\
 	".\dialogs\AboutDlg.h"\
 	
 NODEP_CPP_ABOUT=\
@@ -307,7 +307,7 @@ NODEP_CPP_ABOUT=\
 
 SOURCE=.\dialogs\MainDlg.cpp
 DEP_CPP_MAIND=\
-	".\dialogs\..\Tinelix IRC.h"\
+	".\tabs\..\Tinelix IRC.h"\
 	".\dialogs\..\tabs\AppThreadTab.h"\
 	".\dialogs\AboutDlg.h"\
 	".\dialogs\MainDlg.h"\
@@ -329,7 +329,7 @@ NODEP_CPP_MAIND=\
 
 SOURCE=.\tabs\AppThreadTab.cpp
 DEP_CPP_APPTH=\
-	".\dialogs\..\Tinelix IRC.h"\
+	".\tabs\..\Tinelix IRC.h"\
 	".\dialogs\..\tabs\AppThreadTab.h"\
 	
 NODEP_CPP_APPTH=\
@@ -347,7 +347,7 @@ NODEP_CPP_APPTH=\
 
 SOURCE=.\dialogs\ConnManDlg.cpp
 DEP_CPP_CONNM=\
-	".\dialogs\..\Tinelix IRC.h"\
+	".\tabs\..\Tinelix IRC.h"\
 	".\dialogs\MainDlg.h"\
 	".\dialogs\ConnManDlg.h"\
 	
@@ -366,7 +366,7 @@ NODEP_CPP_CONNM=\
 
 SOURCE=.\dialogs\ProgressDlg.cpp
 DEP_CPP_PROGR=\
-	".\dialogs\..\Tinelix IRC.h"\
+	".\tabs\..\Tinelix IRC.h"\
 	".\dialogs\ProgressDlg.h"\
 	
 NODEP_CPP_PROGR=\
