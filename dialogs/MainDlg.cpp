@@ -373,9 +373,10 @@ LRESULT CMainDlg::WindowProc(UINT message, WPARAM wParam, LPARAM lParam)
 		CEdit* thread_input_box = (CEdit*)thread_tab->GetDlgItem(IDC_CHAT_INPUT);
 		CString sock_buff_str = CString(sock_buffer);
 		if(sock_buff_str == "[WSAWrapper] 0xE0001\r\n") {
-			char* error_str;
+			char error_str[80];
+			int error_code = (*GetWSAErrorFunc)();
 			sprintf(error_str, "Connection with %s closed.\r\n\r\nError code: #%d", 
-				g_address, (*GetWSAErrorFunc)());
+				conn_server, error_code);
 			MessageBox(error_str, conn_server, MB_OK|MB_ICONINFORMATION);
 			app_name = "Tinelix IRC (Win32s)";
 			conn_server = "";
