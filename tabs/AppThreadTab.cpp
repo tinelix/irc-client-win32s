@@ -68,9 +68,9 @@ void CAppThreadTab::OnSize(UINT nType, int cx, int cy)
 	CEdit* chat_output = (CEdit*)GetDlgItem(IDC_CHAT_OUTPUT);
 	CButton* chat_send_message = (CButton*)GetDlgItem(IDC_CHAT_SEND_MSG);
 	if(chat_input != NULL) {
-		chat_input->MoveWindow(6, 3, rect.Width() - 12, rect.Height() - 34);
-		chat_output->MoveWindow(6, rect.Height() - 26, rect.Width() - 78, 23);
-		chat_send_message->MoveWindow(rect.Width() - 68, rect.Height() - 27, 63, 24);
+		chat_input->MoveWindow(6, 5, rect.Width() - 12, rect.Height() - 38);
+		chat_output->MoveWindow(6, rect.Height() - 28, rect.Width() - 78, 23);
+		chat_send_message->MoveWindow(rect.Width() - 68, rect.Height() - 29, 63, 24);
 	}
 	
 }

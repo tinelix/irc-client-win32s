@@ -424,7 +424,7 @@ void CMainDlg::OnSize(UINT nType, int cx, int cy)
 	CTabCtrl* tabCtrl = (CTabCtrl*)GetDlgItem(IDC_MAINDLG_TABS);
 	if(tabCtrl != NULL) {
 		tabCtrl->MoveWindow(4, 3, rect.Width() - 16, rect.Height() - 54);
-		thread_tab->MoveWindow(6, 24, rect.Width() - 20, rect.Height() - 80);
+		thread_tab->MoveWindow(6, 26, rect.Width() - 20, rect.Height() - 80);
 	}
 
 	if(isWin3x) {  
