@@ -382,17 +382,22 @@ LRESULT CMainDlg::WindowProc(UINT message, WPARAM wParam, LPARAM lParam)
 			if(sock_buff_str.Left(4) == "PING") {
 				SendPing(sock_buff_str.Right(sock_buff_str.GetLength() - 3));
 			} else {
-				if(ircParser != NULL) {
-					CString parsed_str = CString("");
-					parsed_str = CString(
-						ParseMessage(sock_buff_str.GetBuffer(sock_buff_str.GetLength()))
-					);
-					thread_input += parsed_str;
-					thread_input_box->SetWindowText(thread_input);
-				} else {
-					thread_input += CString(sock_buffer);
-					thread_input_box->SetWindowText(thread_input);
-				}
+				//  Doesn't work with multiline packets.
+				//
+				//	if(ircParser != NULL) {
+				//		CString parsed_str = CString("");
+				//		parsed_str = CString(
+				//			ParseMessage(sock_buff_str.GetBuffer(sock_buff_str.GetLength()))
+				//		);
+				//		thread_input += parsed_str;
+				//		thread_input_box->SetWindowText(thread_input);
+				//	} else {
+				//		thread_input += CString(sock_buffer);
+				//		thread_input_box->SetWindowText(thread_input);
+				//	}
+				//
+				thread_input += CString(sock_buffer);
+				thread_input_box->SetWindowText(thread_input);
 			}
 		}
 	} else if(message == 0xAFFE) {
