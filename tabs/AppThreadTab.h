@@ -31,6 +31,8 @@ protected:
 	//{{AFX_MSG(CAppThreadTab)
 	afx_msg void OnChatSendMsg();
 	afx_msg void OnSize(UINT nType, int cx, int cy);
+	virtual void OnOK();
+	virtual void OnCancel();
 	//}}AFX_MSG
 	DECLARE_MESSAGE_MAP()
 };

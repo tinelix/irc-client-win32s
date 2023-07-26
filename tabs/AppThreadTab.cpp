@@ -47,7 +47,12 @@ END_MESSAGE_MAP()
 void CAppThreadTab::OnChatSendMsg() 
 {
 	CMainDlg mainDlg;
-	mainDlg.SendIRCMessage();
+	CEdit* chat_output = (CEdit*)GetDlgItem(IDC_CHAT_OUTPUT);
+	CString message;
+	chat_output->GetWindowText(message);
+	if(message.GetLength() > 0) {
+		mainDlg.SendIRCMessage();
+	}
 	
 }
 
@@ -68,4 +73,17 @@ void CAppThreadTab::OnSize(UINT nType, int cx, int cy)
 		chat_send_message->MoveWindow(rect.Width() - 68, rect.Height() - 27, 63, 24);
 	}
 	
+}
+
+void CAppThreadTab::OnOK() 
+{
+	OnChatSendMsg();
+	
+	//CDialog::OnOK();
+}
+
+void CAppThreadTab::OnCancel() 
+{
+	
+	//CDialog::OnCancel();
 }

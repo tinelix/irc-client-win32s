@@ -12,7 +12,7 @@ Class1=CIRCApplication
 Class2=CMainDlg
 
 ResourceCount=11
-Resource1=IDD_TABTHREAD
+Resource1=IDD_STATSDIALOG
 Resource2=IDR_MAINFRAME
 Resource3=IDD_TINELIXIRC_DIALOG
 Resource4=IDD_ABOUTBOX
@@ -27,7 +27,7 @@ Resource9=IDD_CONNMANDIALOG
 Class6=CProgressDlg
 Resource10=IDD_CONNECTION_PROGRESS
 Class7=CStatisticsDlg
-Resource11=IDD_STATSDIALOG
+Resource11=IDD_TABTHREAD
 
 [CLS:CIRCApplication]
 Type=0
@@ -109,7 +109,7 @@ HeaderFile=tabs\appthreadtab.h
 ImplementationFile=tabs\appthreadtab.cpp
 BaseClass=CDialog
 Filter=D
-LastObject=CAppThreadTab
+LastObject=IDCANCEL
 VirtualFilter=dWC
 
 [DLG:IDD_CONNMANDIALOG]
