@@ -74,8 +74,12 @@ void CStatisticsDlg::SetWSAWrapper(HINSTANCE wrapper) {
 }
 
 void CStatisticsDlg::SetStatisticsData(NetworkStatistics stats) {
+	int total_bytes = stats.total_bytes_sent + stats.total_bytes_read;
+	int total_packets = stats.packets_sent + stats.packets_read;
+
 	CWnd* packets_sent_counter = (CWnd*)GetDlgItem(IDC_PACKETS_SENT_VALUE);
 	CWnd* packets_read_counter = (CWnd*)GetDlgItem(IDC_PACKETS_READ_VALUE);
+	CWnd* total_packets_counter = (CWnd*)GetDlgItem(IDC_TOTAL_PACKETS_VALUE);
 
 	CWnd* bytes_sent_counter = (CWnd*)GetDlgItem(IDC_BYTES_SENT_VALUE);
 	CWnd* bytes_read_counter = (CWnd*)GetDlgItem(IDC_BYTES_READ_VALUE);
@@ -83,29 +87,36 @@ void CStatisticsDlg::SetStatisticsData(NetworkStatistics stats) {
 
 	CString packets_sent = CString("");
 	CString packets_read = CString("");
+	CString total_packets_str = CString("");
 	CString bytes_sent = CString("");
 	CString bytes_read = CString("");
-	CString total_bytes = CString("");
+	CString total_bytes_str = CString("");
 
 	packets_sent.Format("%d packet(s)", stats.packets_sent);
 	packets_read.Format("%d packet(s)", stats.packets_read);
+	total_packets_str.Format("%d packet(s)", total_packets);
 	
-	if(stats.total_bytes_sent > 1024 || stats.total_bytes_read > 1024) {
-		bytes_sent.Format("%.2f kB", (float)(stats.total_bytes_sent / 1024));
-		bytes_read.Format("%.2f kB", (float)(stats.total_bytes_read / 1024));
-		total_bytes.Format("%.2f kB", (float)((stats.total_bytes_sent + stats.total_bytes_read) / 1024));
+	if(total_bytes >= 1048576) {
+		bytes_sent.Format("%.2f MB", (float)(stats.total_bytes_sent) / 1048576);
+		bytes_read.Format("%.2f MB", (float)(stats.total_bytes_read) / 1048576);
+		total_bytes_str.Format("%.2f MB", (float)(total_bytes) / 1048576);
+	} else if(total_bytes >= 1024) {
+		bytes_sent.Format("%.2f kB", (float)(stats.total_bytes_sent) / 1024);
+		bytes_read.Format("%.2f kB", (float)(stats.total_bytes_read) / 1024);
+		total_bytes_str.Format("%.2f kB", (float)(total_bytes) / 1024);
 	} else {
 		bytes_sent.Format("%d bytes", stats.total_bytes_sent);
 		bytes_read.Format("%d bytes", stats.total_bytes_read);
-		total_bytes.Format("%d bytes", stats.total_bytes_sent + stats.total_bytes_read);
+		total_bytes_str.Format("%d bytes", total_bytes);
 	}
 
 	packets_sent_counter->SetWindowText(packets_sent);
 	packets_read_counter->SetWindowText(packets_read);
+	total_packets_counter->SetWindowText(total_packets_str);
 	
 	bytes_read_counter->SetWindowText(bytes_read);
 	bytes_sent_counter->SetWindowText(bytes_sent);
-	total_bytes_counter->SetWindowText(total_bytes);
+	total_bytes_counter->SetWindowText(total_bytes_str);
 }
 
 void CStatisticsDlg::SetConnectionQuality(int ping_value) {

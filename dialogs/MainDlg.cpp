@@ -344,13 +344,11 @@ void CMainDlg::IdentificateConnection() {
 void CMainDlg::SendPing(CString ping_hexcode) {	
 	CString ping_str = "";
 	ping_str.Format("PONG %s\r\n", ping_hexcode);
-	struct _timeb until_pong;
-	_ftime(&until_pong);
+	int until_pong = GetTickCount();
 	if((*SendOutBuff)(ping_str.GetBuffer(ping_str.GetLength()))) {
-		struct _timeb after_pong;
-		_ftime(&after_pong);
-		TRACE("Difference: %d ms", after_pong.millitm - until_pong.millitm);
-		statisticsDlg.SetConnectionQuality(after_pong.millitm - until_pong.millitm);
+		int after_pong = GetTickCount();
+		TRACE("Difference: %d ms", after_pong - until_pong);
+		statisticsDlg.SetConnectionQuality(after_pong - until_pong);
 	}
 }
 

@@ -311,8 +311,8 @@ NODEP_CPP_ABOUT=\
 
 SOURCE=.\dialogs\MainDlg.cpp
 DEP_CPP_MAIND=\
-	{$(INCLUDE)}"\sys\types.h"\
-	{$(INCLUDE)}"\sys\timeb.h"\
+	{$(INCLUDE)}"\sys\TYPES.H"\
+	{$(INCLUDE)}"\sys\TIMEB.H"\
 	".\dialogs\..\Tinelix IRC.h"\
 	".\dialogs\..\tabs\AppThreadTab.h"\
 	".\dialogs\AboutDlg.h"\
