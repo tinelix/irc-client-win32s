@@ -67,6 +67,7 @@ char g_address[256];
 int g_port;
 CProgressDlg progressDlg;
 CStatisticsDlg statisticsDlg;
+int until_pong;
 
 // WSAWrapper DLL functions;
 
@@ -259,7 +260,7 @@ void CMainDlg::PrepareConnect(char* address, int port) {
 	sprintf(g_address, address);
 	g_port = port;
 	progressDlg.SetProgress(0);
-	sprintf(app_name, "Tinelix IRC (Win32s) | %s:%d", address, port); // LoadString is buggy...
+	sprintf(app_name, "Tinelix IRC (Win32s) | %s:%d", g_address, port); // LoadString is buggy...
 	sprintf(conn_server, "%s:%d", address, port);
 	progressDlg.CenterWindow();
 	progressDlg.ShowWindow(SW_SHOW);
@@ -344,10 +345,10 @@ void CMainDlg::IdentificateConnection() {
 void CMainDlg::SendPing(CString ping_hexcode) {	
 	CString ping_str = "";
 	ping_str.Format("PONG %s\r\n", ping_hexcode);
-	int until_pong = GetTickCount();
 	if((*SendOutBuff)(ping_str.GetBuffer(ping_str.GetLength()))) {
+		Sleep(5);
 		int after_pong = GetTickCount();
-		TRACE("Difference: %d ms", after_pong - until_pong);
+		TRACE("\r\n[IRC Client] Pong: %d ms", after_pong - until_pong - 5);
 		statisticsDlg.SetConnectionQuality(after_pong - until_pong);
 	}
 }
@@ -359,6 +360,7 @@ LRESULT CMainDlg::WindowProc(UINT message, WPARAM wParam, LPARAM lParam)
 		int result = (*WrapCreateConn)("", 0, 1, 0xB001, m_hWnd);
 		PrepareConnect(result);
 	} else if(message == 0xAFFF) {
+		until_pong = GetTickCount();
 		new_unread_messages += 1;
 		char* sock_buffer;
 		sock_buffer = (*GetInBuff)();
