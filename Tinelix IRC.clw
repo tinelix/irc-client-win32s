@@ -2,7 +2,7 @@
 
 [General Info]
 Version=1
-LastClass=CAppThreadTab
+LastClass=CIRCApplication
 LastTemplate=CDialog
 NewFileInclude1=#include "stdafx.h"
 NewFileInclude2=#include "Tinelix IRC.h"
@@ -12,7 +12,7 @@ Class1=CIRCApplication
 Class2=CMainDlg
 
 ResourceCount=11
-Resource1=IDD_STATSDIALOG
+Resource1=IDD_TABTHREAD
 Resource2=IDR_MAINFRAME
 Resource3=IDD_TINELIXIRC_DIALOG
 Resource4=IDD_ABOUTBOX
@@ -27,13 +27,14 @@ Resource9=IDD_CONNMANDIALOG
 Class6=CProgressDlg
 Resource10=IDD_CONNECTION_PROGRESS
 Class7=CStatisticsDlg
-Resource11=IDD_TABTHREAD
+Resource11=IDD_STATSDIALOG
 
 [CLS:CIRCApplication]
 Type=0
 HeaderFile=Tinelix IRC.h
 ImplementationFile=Tinelix IRC.cpp
 Filter=N
+LastObject=CIRCApplication
 
 [CLS:CMainDlg]
 Type=0

@@ -73,3 +73,15 @@ BOOL CIRCApplication::InitInstance()
 	//  application, rather than start the application's message pump.
 	return FALSE;
 }
+
+BOOL CIRCApplication::CheckIsWin32s() {
+	BOOL is_win32s = FALSE;
+
+	if(GetVersion() & 0x80000000 && (GetVersion() & 0xFF) == 3) {
+		is_win32s = TRUE;
+	} else {
+		is_win32s = FALSE;
+	}
+
+	return is_win32s;
+}

@@ -16,6 +16,7 @@ class CIRCApplication : public CWinApp
 {
 public:
 	CIRCApplication();
+	BOOL CheckIsWin32s();
 
 // Overrides
 	// ClassWizard generated virtual function overrides

@@ -120,11 +120,17 @@ void CStatisticsDlg::SetStatisticsData(NetworkStatistics stats) {
 }
 
 void CStatisticsDlg::SetConnectionQuality(int ping_value) {
+	if(CIRCApplication::CheckIsWin32s) {
+		if(wsaWrapper) {
+			GetNetworkStats = (GetNetworkStatistics)GetProcAddress(wsaWrapper, MAKEINTRESOURCE(21));
+			stats = (NetworkStatistics)(*GetNetworkStats)();
+			SetStatisticsData(stats);
+		}
+	}
 	CString quality_percent = CString("");
 	int reserve_value = 10000 - ping_value;
 	if(reserve_value < 0) {
 		reserve_value = -reserve_value;
-		TRACE("Value: %d", reserve_value);
 	}
 	int ping_strength = reserve_value / 100;
 	CProgressCtrl* ping_strength_progress = (CProgressCtrl*)GetDlgItem(IDC_PING_STRENGTH);
