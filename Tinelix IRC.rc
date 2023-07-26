@@ -292,9 +292,9 @@ VS_VERSION_INFO VERSIONINFO
  PRODUCTVERSION 0,2,0,1
  FILEFLAGSMASK 0x3fL
 #ifdef _DEBUG
- FILEFLAGS 0x3L
+ FILEFLAGS 0x23L
 #else
- FILEFLAGS 0x2L
+ FILEFLAGS 0x22L
 #endif
  FILEOS 0x4L
  FILETYPE 0x1L
@@ -305,13 +305,14 @@ BEGIN
         BLOCK "080004e4"
         BEGIN
             VALUE "CompanyName", "\0"
-            VALUE "FileDescription", "Tinelix IRC Client for Win32s\0"
+            VALUE "FileDescription", "Tinelix IRC Client compatible version with Win32s, Windows 95/98, Windows NT and 64-bit (AMD64) Windows editions.\0"
             VALUE "FileVersion", "0.2.0-b001\0"
-            VALUE "InternalName", "Tinelix IRC Client for Win32s\0"
-            VALUE "LegalCopyright", "Copyright © 2023 Dmitry Tretyakov (aka. tretdm)\0"
-            VALUE "OriginalFilename", "tlxirc.exe\0"
-            VALUE "ProductName", "Tinelix IRC Client for Win32s\0"
+            VALUE "InternalName", "Tinelix IRC for Win32s\0"
+            VALUE "LegalCopyright", "Copyright © 2023 Dmitry Tretyakov (aka. tretdm). Licensed under GPLv3.\0"
+            VALUE "OriginalFilename", "tlx_irc.exe\0"
+            VALUE "ProductName", "Tinelix IRC for Win32s\0"
             VALUE "ProductVersion", "0.2.0-b001\0"
+            VALUE "SpecialBuild", "Source code: https://github.com/tinelix/irc-client-win32s\0"
         END
     END
     BLOCK "VarFileInfo"

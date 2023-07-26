@@ -34,9 +34,9 @@ int WINAPI DllMain(HINSTANCE hInst, DWORD fdReas, PVOID pvRes) {
 			if(!is_win32s) {
 				OutputDebugString("\r\nTinelix IRC Parser - Win32 DLL"
 				"\r\nCopyright © 2023 Dmitry Tretyakov (aka. Tinelix)."
-				"\r\nLicensed as part of Tinelix IRC under GPLv3."
+				"\r\nLicensed as part of Tinelix IRC Client under GPLv3."
 				"\r\nSource code: "
-				"https://github.com/tinelix/irc-client-win32s/tree/alpha/libs/IRCParser\r\n");
+				"https://github.com/tinelix/irc-client-win32s\r\n");
 			}
 			break;
 		case DLL_PROCESS_DETACH:
