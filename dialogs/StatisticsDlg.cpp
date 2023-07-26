@@ -132,7 +132,6 @@ void CStatisticsDlg::SetConnectionQuality(int ping_value) {
 	CWnd* ping_strength_counter = GetDlgItem(IDC_CONNQUALITY_VALUE);
 	quality_percent.Format("%d%%", ping_strength);
 	ping_strength_counter->SetWindowText(quality_percent);
-
 }
 
 void CStatisticsDlg::OnTimer(UINT nIDEvent) 

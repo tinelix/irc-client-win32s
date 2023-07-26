@@ -1,6 +1,7 @@
-LIBRARY			"Tinelix IRC Parser"
-DESCRIPTION		"IRC Parser special for Tinelix IRC"
+LIBRARY					"Tinelix IRC Parser"
+DESCRIPTION				"IRC Parser special for Tinelix IRC"
 
 EXPORTS
-ParseLine		@1 
-ParsePacket		@2 
+ParseLine				@1
+ParsePacket				@2
+ParseSendingMessage		@3

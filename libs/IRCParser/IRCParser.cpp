@@ -135,3 +135,53 @@ EXPORT char* CALLBACK ParsePacket(char* packet) {
 	}
 	return parsed_packet;
 }
+
+EXPORT char* CALLBACK ParseSendingMessage(char* message, char* channel) {
+	char line[4096];
+	strcpy(line, message);
+	char parsed_line[4096];
+	char debug_parsed_line[4096];
+	char words[512][256];
+	if(message != NULL && message[0] >= 0) {
+		try {
+			char command[60];
+			char params[4096];
+			char body[4096];
+			char* token = strtok(line, " ");
+			int spaces = 0;
+			int body_index;
+			while(token != NULL) {
+				if(spaces == 0) {
+					sprintf(command, words[spaces]);
+				} else if(spaces == 1) {
+					sprintf(params, words[spaces]);
+				} else if(spaces == 2) {
+					sprintf(body, words[spaces]);
+					body_index = strlen(body);
+				} else {
+					body_index += sprintf(body + body_index, " %s", words[spaces]);
+				}
+				token = strtok(NULL, " ");
+				spaces++;
+			}
+			if(spaces > 2) {
+				if(strcmp(command, "/join") == 0 || strcmp(command, "/JOIN") == 0) {
+					sprintf(parsed_line, "JOIN %s\r\n", params);
+				} else if(strcmp(command, "/privmsg") == 0 
+					|| strcmp(command, "/PRIVMSG") == 0) {
+					sprintf(parsed_line, "PRIVMSG %s :%s\r\n", params, body);
+				}
+			} else {
+				if(strlen(channel) > 0 && channel[0] >= 0) {
+					sprintf(parsed_line, "PRIVMSG %s :%s\r\n", channel, message);
+				} else {
+					sprintf(parsed_line, "%s\r\n", message + 1);
+				}
+			}
+		
+		} catch(...) {
+
+		}
+	}
+	return parsed_line;
+}

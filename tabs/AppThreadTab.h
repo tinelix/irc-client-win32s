@@ -26,10 +26,11 @@ public:
 
 // Implementation
 protected:
-
+	
 	// Generated message map functions
 	//{{AFX_MSG(CAppThreadTab)
-		// NOTE: the ClassWizard will add member functions here
+	afx_msg void OnChatSendMsg();
+	afx_msg void OnSize(UINT nType, int cx, int cy);
 	//}}AFX_MSG
 	DECLARE_MESSAGE_MAP()
 };

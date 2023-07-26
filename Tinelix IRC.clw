@@ -2,7 +2,7 @@
 
 [General Info]
 Version=1
-LastClass=CStatisticsDlg
+LastClass=CAppThreadTab
 LastTemplate=CDialog
 NewFileInclude1=#include "stdafx.h"
 NewFileInclude2=#include "Tinelix IRC.h"
@@ -42,7 +42,7 @@ ImplementationFile=dialogs\maindlg.cpp
 BaseClass=CDialog
 Filter=D
 VirtualFilter=dWC
-LastObject=CMainDlg
+LastObject=IDC_CHAT_SEND_MSG
 
 [DLG:IDD_TINELIXIRC_DIALOG]
 Type=1
@@ -109,7 +109,8 @@ HeaderFile=tabs\appthreadtab.h
 ImplementationFile=tabs\appthreadtab.cpp
 BaseClass=CDialog
 Filter=D
-LastObject=ID_ABOUT
+LastObject=CAppThreadTab
+VirtualFilter=dWC
 
 [DLG:IDD_CONNMANDIALOG]
 Type=1

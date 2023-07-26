@@ -12,6 +12,8 @@ class CMainDlg : public CDialog
 public:
 	BOOL is_connected;
 
+	void SendIRCMessage();
+
 	CMainDlg(CWnd* pParent = NULL);	// standard constructor
 
 // Dialog Data

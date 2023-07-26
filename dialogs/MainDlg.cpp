@@ -87,8 +87,10 @@ GetWSAError GetWSAErrorFunc;
 // Tinelix IRC Parser functions:
 
 typedef char* (WINAPI *ParseIRCPacketFunc) (char*);
+typedef char* (WINAPI *ParseIRCSendingMessageFunc) (char*, char*);
 
 ParseIRCPacketFunc ParseIRCPacket;
+ParseIRCSendingMessageFunc ParseIRCSendingMsg;
 
 /////////////////////////////////////////////////////////////////////////////
 // CMainDlg message handlers
@@ -308,6 +310,7 @@ void CMainDlg::ImportDllFunctions() {
 	GetInBuff = (GetInputBuffer)GetProcAddress(wsaWrap, MAKEINTRESOURCE(20));
 
 	ParseIRCPacket = (ParseIRCPacketFunc)GetProcAddress(ircParser, MAKEINTRESOURCE(2));
+	ParseIRCSendingMsg = (ParseIRCSendingMessageFunc)GetProcAddress(ircParser, MAKEINTRESOURCE(3));
 
 }
 
@@ -316,6 +319,10 @@ void CMainDlg::IdentificateConnection() {
 	sprintf(ident_str, "USER %s %s %s :Member\r\n",
 		"irc_member", "irc_member", "irc_member");
 	if(!(*SendOutBuff)(ident_str)) {
+		if(progressDlg.m_hWnd) {
+			progressDlg.Close();
+			EnableWindow(TRUE);
+		}
 		int error_code = ((*GetWSAErrorFunc)());
 		char error_msg[32];
 		sprintf(error_msg, "Identification error #%d", error_code);
@@ -346,7 +353,7 @@ void CMainDlg::SendPing(CString ping_hexcode) {
 	CString ping_str = "";
 	ping_str.Format("PONG %s\r\n", ping_hexcode);
 	if((*SendOutBuff)(ping_str.GetBuffer(ping_str.GetLength()))) {
-		Sleep(5);
+		Sleep(5); // for real PONG effect
 		int after_pong = GetTickCount();
 		TRACE("\r\n[IRC Client] Pong: %d ms", after_pong - until_pong - 5);
 		statisticsDlg.SetConnectionQuality(after_pong - until_pong);
@@ -409,7 +416,17 @@ LRESULT CMainDlg::WindowProc(UINT message, WPARAM wParam, LPARAM lParam)
 void CMainDlg::OnSize(UINT nType, int cx, int cy) 
 {
 	CDialog::OnSize(nType, cx, cy);
-	
+
+	CRect rect;
+
+	GetWindowRect(&rect);
+
+	CTabCtrl* tabCtrl = (CTabCtrl*)GetDlgItem(IDC_MAINDLG_TABS);
+	if(tabCtrl != NULL) {
+		tabCtrl->MoveWindow(4, 3, rect.Width() - 16, rect.Height() - 54);
+		thread_tab->MoveWindow(6, 24, rect.Width() - 20, rect.Height() - 80);
+	}
+
 	if(isWin3x) {  
 		// Setting window title in Win3.x / WinNT3.x 
 		// for greater compactness.
@@ -432,4 +449,15 @@ void CMainDlg::OnConnectionStatistics()
 {
 	statisticsDlg.CenterWindow();
 	statisticsDlg.ShowWindow(SW_SHOW);
+}
+
+void CMainDlg::SendIRCMessage() {
+	CEdit* thread_output_box = (CEdit*)thread_tab->GetDlgItem(IDC_CHAT_OUTPUT);
+	CString command;
+	thread_output_box->GetWindowText(command);
+	char* parsed_message = (*ParseIRCSendingMsg)(command.GetBuffer(command.GetLength()), "");
+	TRACE("Command: [%s]\r\n", parsed_message);
+	if((*SendOutBuff)(parsed_message)) {
+		thread_output_box->SetWindowText("");
+	}
 }
