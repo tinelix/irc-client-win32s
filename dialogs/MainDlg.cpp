@@ -355,8 +355,7 @@ void CMainDlg::SendPing(CString ping_hexcode) {
 	if((*SendOutBuff)(ping_str.GetBuffer(ping_str.GetLength()))) {
 		Sleep(5); // for real PONG effect
 		int after_pong = GetTickCount();
-		TRACE("\r\n[IRC Client] Pong: %d ms", after_pong - until_pong - 5);
-		statisticsDlg.SetConnectionQuality(after_pong - until_pong);
+		statisticsDlg.SetConnectionQuality(after_pong - until_pong - 5);
 	}
 }
 
@@ -374,7 +373,10 @@ LRESULT CMainDlg::WindowProc(UINT message, WPARAM wParam, LPARAM lParam)
 		CEdit* thread_input_box = (CEdit*)thread_tab->GetDlgItem(IDC_CHAT_INPUT);
 		CString sock_buff_str = CString(sock_buffer);
 		if(sock_buff_str == "[WSAWrapper] 0xE0001\r\n") {
-			MessageBox("Connection closed", conn_server, MB_OK|MB_ICONINFORMATION);
+			char* error_str;
+			sprintf(error_str, "Connection with %s closed.\r\n\r\nError code: #%d", 
+				g_address, (*GetWSAErrorFunc)());
+			MessageBox(error_str, conn_server, MB_OK|MB_ICONINFORMATION);
 			app_name = "Tinelix IRC (Win32s)";
 			conn_server = "";
 			SetWindowText(app_name);
@@ -461,7 +463,6 @@ void CMainDlg::SendIRCMessage() {
 	CString command;
 	thread_output_box->GetWindowText(command);
 	char* parsed_message = (*ParseIRCSendingMsg)(command.GetBuffer(command.GetLength()), "");
-	TRACE("Command: [%s]\r\n", parsed_message);
 	if((*SendOutBuff)(parsed_message)) {
 		thread_output_box->SetWindowText("");
 	}
