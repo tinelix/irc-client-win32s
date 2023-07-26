@@ -6,7 +6,6 @@
 
 #define WM_SOCKET_READ 0xAFFF;
 
-
 class CMainDlg : public CDialog
 {
 // Construction
@@ -40,6 +39,7 @@ protected:
 	void ImportDllFunctions();
 	void IdentificateConnection();
 	void SendPing(CString ping_hexcode);
+
 	CString ParseMessage(char* irc_packet);
 
 	// Generated message map functions

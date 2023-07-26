@@ -4,16 +4,10 @@
 /////////////////////////////////////////////////////////////////////////////
 // CStatisticsDlg dialog
 
-struct NetworkStatistics {
-	int packets_read;
-	int packets_sent;
-	int total_send_bytes;
-	int total_read_bytes;
-} NetworkStats;
-
 class CStatisticsDlg : public CDialog
 {
 // Construction
+
 public:
 	CStatisticsDlg(CWnd* pParent = NULL);   // standard constructor
 
@@ -36,6 +30,7 @@ protected:
 
 public:
 	void SetStatisticsData(struct NetworkStatistics stats);
+	void SetConnectionQuality(int ping_value);
 	void SetWSAWrapper(HINSTANCE wrapper);
 	// Generated message map functions
 	//{{AFX_MSG(CStatisticsDlg)

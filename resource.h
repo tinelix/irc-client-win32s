@@ -40,12 +40,18 @@
 #define IDC_PACKETS_READ_LABEL          1026
 #define IDC_PACKETS_READ_VALUE          1027
 #define IDC_DATA_GROUP                  1028
+#define IDC_TOTAL_PACKETS_LABEL         1029
+#define IDC_TOTAL_PACKETS_VALUE         1030
+#define IDC_CONNECTION_GROUP            1031
 #define IDC_BYTES_SENT_LABEL            1032
-#define IDC_BYTES_SEND_VALUE            1033
+#define IDC_BYTES_SENT_VALUE            1033
 #define IDC_READ_BYTES_LABEL            1034
 #define IDC_BYTES_READ_VALUE            1035
 #define IDC_TOTAL_BYTES_LABEL2          1036
 #define IDC_TOTAL_BYTES_VALUE           1037
+#define IDC_CONNQUALITY_LABEL           1038
+#define IDC_PING_STRENGTH               1039
+#define IDC_CONNQUALITY_VALUE           1040
 #define ID_FILE_CONNECT                 32771
 #define ID_FILE_QUIT                    32773
 #define ID_ABOUT                        32774
@@ -59,7 +65,7 @@
 #ifndef APSTUDIO_READONLY_SYMBOLS
 #define _APS_NEXT_RESOURCE_VALUE        140
 #define _APS_NEXT_COMMAND_VALUE         32778
-#define _APS_NEXT_CONTROL_VALUE         1025
+#define _APS_NEXT_CONTROL_VALUE         1040
 #define _APS_NEXT_SYMED_VALUE           101
 #endif
 #endif

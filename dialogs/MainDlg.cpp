@@ -3,6 +3,9 @@
 
 #include "stdafx.h"
 #include <winsock.h>
+#include <time.h>
+#include <sys/types.h>
+#include <sys/timeb.h>
 #include "..\Tinelix IRC.h"
 #include "..\tabs\AppThreadTab.h"
 #include "AboutDlg.h"
@@ -72,14 +75,13 @@ typedef int (WINAPI *GetWSAError) ();
 typedef int (WINAPI *CreateAsyncConnection) (char*, int, int, int, HWND);
 typedef BOOL (WINAPI *SendSocketData) (char*);
 typedef char* (WINAPI *GetInputBuffer) ();
-typedef NetworkStatistics (WINAPI *GetNetworkStatistics) ();
 
 CreateAsyncConnection WrapCreateConn;
 EnableAsyncMessages EnableAsyncMsgs;
 SendSocketData SendOutBuff;
 GetInputBuffer GetInBuff;
 GetWSAError GetWSAErrorFunc;
-GetNetworkStatistics GetNetworkStats;
+
 
 // Tinelix IRC Parser functions:
 
@@ -303,8 +305,6 @@ void CMainDlg::ImportDllFunctions() {
 	SendOutBuff = (SendSocketData)GetProcAddress(wsaWrap, MAKEINTRESOURCE(19));
 	// Running GetInputBuffer function (#20) in WSAWrapper DLL
 	GetInBuff = (GetInputBuffer)GetProcAddress(wsaWrap, MAKEINTRESOURCE(20));
-	// Running GetInputBuffer function (#21) in WSAWrapper DLL
-	GetNetworkStats = (GetNetworkStatistics)GetProcAddress(wsaWrap, MAKEINTRESOURCE(21));
 
 	ParseIRCPacket = (ParseIRCPacketFunc)GetProcAddress(ircParser, MAKEINTRESOURCE(2));
 
@@ -344,7 +344,14 @@ void CMainDlg::IdentificateConnection() {
 void CMainDlg::SendPing(CString ping_hexcode) {	
 	CString ping_str = "";
 	ping_str.Format("PONG %s\r\n", ping_hexcode);
-	(*SendOutBuff)(ping_str.GetBuffer(ping_str.GetLength()));
+	struct _timeb until_pong;
+	_ftime(&until_pong);
+	if((*SendOutBuff)(ping_str.GetBuffer(ping_str.GetLength()))) {
+		struct _timeb after_pong;
+		_ftime(&after_pong);
+		TRACE("Difference: %d ms", after_pong.millitm - until_pong.millitm);
+		statisticsDlg.SetConnectionQuality(after_pong.millitm - until_pong.millitm);
+	}
 }
 
 LRESULT CMainDlg::WindowProc(UINT message, WPARAM wParam, LPARAM lParam) 
@@ -423,9 +430,6 @@ CString CMainDlg::ParseMessage(char* irc_packet) {
 
 void CMainDlg::OnConnectionStatistics() 
 {
-	NetworkStatistics stats;
-	stats = (NetworkStatistics)(*GetNetworkStats)();
 	statisticsDlg.CenterWindow();
 	statisticsDlg.ShowWindow(SW_SHOW);
-	statisticsDlg.SetStatisticsData(stats);
 }
