@@ -75,7 +75,7 @@ typedef BOOL (WINAPI *EnableAsyncMessages) (HWND);
 typedef int (WINAPI *GetWSAError) ();
 typedef int (WINAPI *CreateAsyncConnection) (char*, int, int, int, HWND);
 typedef BOOL (WINAPI *SendSocketData) (char*);
-typedef char* (WINAPI *GetInputBuffer) ();
+typedef char* (WINAPI *GetInputBuffer) (SOCKET s);
 
 CreateAsyncConnection WrapCreateConn;
 EnableAsyncMessages EnableAsyncMsgs;
@@ -369,7 +369,7 @@ LRESULT CMainDlg::WindowProc(UINT message, WPARAM wParam, LPARAM lParam)
 		until_pong = GetTickCount();
 		new_unread_messages += 1;
 		char* sock_buffer;
-		sock_buffer = (*GetInBuff)();
+		sock_buffer = (*GetInBuff)((SOCKET)wParam);
 		CEdit* thread_input_box = (CEdit*)thread_tab->GetDlgItem(IDC_CHAT_INPUT);
 		CString sock_buff_str = CString(sock_buffer);
 		if(sock_buff_str == "[WSAWrapper] 0xE0001\r\n") {
