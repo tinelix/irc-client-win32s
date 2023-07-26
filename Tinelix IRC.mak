@@ -32,8 +32,8 @@ NULL=nul
 ################################################################################
 # Begin Project
 # PROP Target_Last_Scanned "Tinelix IRC - Win32 Debug"
-MTL=mktyplib.exe
 CPP=cl.exe
+MTL=mktyplib.exe
 RSC=rc.exe
 
 !IF  "$(CFG)" == "Tinelix IRC - Win32 Release"
