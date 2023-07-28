@@ -55,7 +55,7 @@ EXPORT char* CALLBACK ParseLine(char* original_line) {
 	strcpy(line, original_line);
 	char parsed_line[4096];
 	char debug_parsed_line[4096];
-	char words[512][256];
+	char words[512][512];
 	try {
 		char prefix[80];
 		char command[60];
@@ -87,6 +87,8 @@ EXPORT char* CALLBACK ParseLine(char* original_line) {
 		}
 		if(spaces > 2) {
 			if(strcmp(command, "372") == 0) {
+				sprintf(body, original_line + 
+					strlen(prefix) + strlen(command) + strlen(params));
 				sprintf(parsed_line, "[MOTD] %s\r\n", body);
 			} else if(strcmp(command, "396") == 0) {
 				sprintf(parsed_line, "[396] **%s** %s\r\n", params, body);
@@ -113,7 +115,8 @@ EXPORT char* CALLBACK ParseLine(char* original_line) {
 		} else if(spaces > 0) {
 			sprintf(parsed_line, "[RAW] [%s]\r\n", original_line);
 		} else {
-			sprintf(parsed_line, "[Parsing error | Size: %d]\r\n", spaces);
+			sprintf(parsed_line, "[Parsing error | "
+				"Size: %d chars / %d spaces]\r\n", strlen(original_line), spaces);
 		}
 		return parsed_line;
 	} catch(...) {
@@ -122,33 +125,39 @@ EXPORT char* CALLBACK ParseLine(char* original_line) {
 	}
 }
 
-EXPORT char* CALLBACK ParsePacket(char* packet) {
+EXPORT char* CALLBACK ParsePacket(char original_packet[4096]) {
+	char* packet = "";
 	char* line = "";
 	char* token = "";
-	char* debug_parsed_line = "";
+	char debug_parsed_line[800];
 	int lines_count = 0;
-	int line_index = 0;
-	char* lines[80];
-	char parsed_packet[8192];
+	int lines_index = 0;
+	int parsed_lines_count = 0;
+	char lines[64][4096];
+	char parsed_lines[64][4096];
+	char parsed_packet[4096];
 	char* token_s = "";
 
-	if(packet != NULL && packet[0] >= 0) {
-		token = strtok(packet, "\r\n");
+	for(int i = 0; i < strlen(original_packet); i++) {
+		if(original_packet[i] == '\r') {
+			lines_count++;
+			lines_index = 0;
+		} else if(original_packet[i] == '\n') {
+			
+		} else {
+			lines[lines_count][lines_index] = original_packet[i];
+			lines_index++;
+		}
+	}
 
-		while(token != NULL) {
-			lines[lines_count++] = ParseLine(token);
-			token = strtok(NULL, "\r\n");
+	for(int line_index = 0; line_index < lines_count; line_index++) {
+		char* line = "";
+		line = lines[line_index];
+		if(line != NULL) {
+			parsed_lines_count += 
+				sprintf(parsed_packet + parsed_lines_count, 
+				ParseLine(line));
 		}
-		
-		for(int i = 0; i < lines_count; i++) {
-			if(line_index == 0) {
-				line_index = sprintf(parsed_packet, lines[i]);
-			} else {
-				line_index += sprintf(parsed_packet + line_index, lines[i]);
-			}
-		}
-	} else {
-		sprintf(parsed_packet, "[IRC Parser] Parsing Error\r\n");
 	}
 	return parsed_packet;
 }
