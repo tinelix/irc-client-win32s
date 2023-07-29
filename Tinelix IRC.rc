@@ -304,8 +304,9 @@ BEGIN
     BEGIN
         BLOCK "080004e4"
         BEGIN
-            VALUE "CompanyName", "\0"
-            VALUE "FileDescription", "Tinelix IRC Client compatible version with Win32s, Windows 95/98, Windows NT and 64-bit (AMD64) Windows editions.\0"
+            VALUE "Comments", "Tinelix IRC Client compatible version with Win32s, Windows 95/98, Windows NT and 64-bit (AMD64) Windows editions.\0"
+            VALUE "CompanyName", "Tinelix\0"
+            VALUE "FileDescription", "Tinelix IRC\0"
             VALUE "FileVersion", "0.2.0-b001\0"
             VALUE "InternalName", "Tinelix IRC for Win32s\0"
             VALUE "LegalCopyright", "Copyright © 2023 Dmitry Tretyakov (aka. tretdm). Licensed under GPLv3.\0"
