@@ -87,11 +87,16 @@ EXPORT char* CALLBACK ParseLine(char* original_line) {
 		}
 		if(spaces > 2) {
 			if(strcmp(command, "372") == 0) {
-				sprintf(body, original_line + 
-					strlen(prefix) + strlen(command) + strlen(params));
+				if(original_line[0] == ':') {
+					sprintf(body, original_line + 
+						strlen(prefix) + strlen(command) + strlen(params) + 5);
+				} else {
+					sprintf(body, original_line + 
+						strlen(prefix) + strlen(command) + strlen(params) + 4);
+				}
 				sprintf(parsed_line, "[MOTD] %s\r\n", body);
 			} else if(strcmp(command, "396") == 0) {
-				sprintf(parsed_line, "[396] **%s** %s\r\n", params, body);
+				sprintf(parsed_line, "[396] %s@%s\r\n", params, body);
 			} else if(strcmp(command, "001") == 0) {
 				sprintf(parsed_line, "[001] %s\r\n", body);
 			} else if(strcmp(command, "002") == 0) {
@@ -103,7 +108,7 @@ EXPORT char* CALLBACK ParseLine(char* original_line) {
 			} else if(strcmp(command, "005") == 0) {
 				sprintf(parsed_line, "[005] %s\r\n", body);
 			} else if(strcmp(command, "End") == 0) {
-				sprintf(parsed_line, "-------------------------------\r\n");
+				sprintf(parsed_line, "---------------------------------------------------\r\n");
 			} else if(strcmp(prefix, "ERROR") == 0) {
 				sprintf(parsed_line, "[%s] %s %s\r\n", prefix, command, body);
 			} else if(strlen(command) == 3 && isdigit(command[0]) != 0 
