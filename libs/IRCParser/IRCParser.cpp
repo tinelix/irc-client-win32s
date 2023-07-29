@@ -50,13 +50,14 @@ int WINAPI DllMain(HINSTANCE hInst, DWORD fdReas, PVOID pvRes) {
 	return TRUE;
 }
 
-EXPORT char* CALLBACK ParseLine(char* original_line) {
-	char line[4096];
+EXPORT char* CALLBACK ParseLine(char* original_line, int length) {
+	char* line = new char[length];
+	original_line[length] = 0;
 	strcpy(line, original_line);
-	char parsed_line[4096];
 	char debug_parsed_line[4096];
+	char parsed_line[4096];
 	char words[512][512];
-	try {
+	//try {
 		char prefix[80];
 		char command[60];
 		char params[256];
@@ -94,6 +95,8 @@ EXPORT char* CALLBACK ParseLine(char* original_line) {
 					sprintf(body, original_line + 
 						strlen(prefix) + strlen(command) + strlen(params) + 4);
 				}
+				body[strlen(original_line) - 
+					(strlen(prefix) + strlen(command) + strlen(params) + 5)] = '\0';
 				sprintf(parsed_line, "[MOTD] %s\r\n", body);
 			} else if(strcmp(command, "396") == 0) {
 				sprintf(parsed_line, "[396] %s@%s\r\n", params, body);
@@ -124,10 +127,10 @@ EXPORT char* CALLBACK ParseLine(char* original_line) {
 				"Size: %d chars / %d spaces]\r\n", strlen(original_line), spaces);
 		}
 		return parsed_line;
-	} catch(...) {
-		sprintf(parsed_line, "[Parsing error]\r\n");
-		return parsed_line;
-	}
+	//} catch(...) {
+		//sprintf(parsed_line, "[Parsing error]\r\n");
+		//return parsed_line;
+	//}
 }
 
 EXPORT char* CALLBACK ParsePacket(char original_packet[4096]) {
@@ -137,6 +140,7 @@ EXPORT char* CALLBACK ParsePacket(char original_packet[4096]) {
 	char debug_parsed_line[800];
 	int lines_count = 0;
 	int lines_index = 0;
+	int lnlen[64];
 	int parsed_lines_count = 0;
 	char lines[64][4096];
 	char parsed_lines[64][4096];
@@ -145,10 +149,11 @@ EXPORT char* CALLBACK ParsePacket(char original_packet[4096]) {
 
 	for(int i = 0; i < strlen(original_packet); i++) {
 		if(original_packet[i] == '\r') {
+
+		} else if(original_packet[i] == '\n') {
+			lnlen[lines_count] = lines_index;
 			lines_count++;
 			lines_index = 0;
-		} else if(original_packet[i] == '\n') {
-			
 		} else {
 			lines[lines_count][lines_index] = original_packet[i];
 			lines_index++;
@@ -156,12 +161,15 @@ EXPORT char* CALLBACK ParsePacket(char original_packet[4096]) {
 	}
 
 	for(int line_index = 0; line_index < lines_count; line_index++) {
-		char* line = "";
+		char* line;
+		line = new char[lnlen[lines_count]];
 		line = lines[line_index];
 		if(line != NULL) {
-			parsed_lines_count += 
-				sprintf(parsed_packet + parsed_lines_count, 
-				ParseLine(line));
+			if(line_index == 0) {
+				strcpy(parsed_packet, ParseLine(line, lnlen[line_index]));
+			} else {
+				strcat(parsed_packet, ParseLine(line, lnlen[line_index]));
+			}
 		}
 	}
 	return parsed_packet;

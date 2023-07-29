@@ -212,29 +212,12 @@ SOURCE=.\IRCParser.h
 # Begin Source File
 
 SOURCE=.\IRCParser.cpp
-
-!IF  "$(CFG)" == "Tinelix IRC Parser - Win32 Release"
-
-DEP_CPP_IRCPA=\
-	".\IRCParser.h"\
-	
-NODEP_CPP_IRCPA=\
-	".\ + n"\
-	
-
-"$(INTDIR)\IRCParser.obj" : $(SOURCE) $(DEP_CPP_IRCPA) "$(INTDIR)"
-
-
-!ELSEIF  "$(CFG)" == "Tinelix IRC Parser - Win32 Debug"
-
 DEP_CPP_IRCPA=\
 	".\IRCParser.h"\
 	
 
 "$(INTDIR)\IRCParser.obj" : $(SOURCE) $(DEP_CPP_IRCPA) "$(INTDIR)"
 
-
-!ENDIF 
 
 # End Source File
 ################################################################################

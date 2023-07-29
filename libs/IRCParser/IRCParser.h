@@ -17,5 +17,5 @@
 
 #define EXPORT extern "C" __declspec (dllexport)
 
-EXPORT char* CALLBACK ParseLine(char* original_line);
+EXPORT char* CALLBACK ParseLine(char* original_line, int length);
 EXPORT char* CALLBACK ParsePacket(char original_packet[4096]);
