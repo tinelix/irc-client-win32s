@@ -132,6 +132,7 @@ EXPORT char* CALLBACK ParseLine(char* original_line, int length) {
 			return parsed_line;
 		}
 	} else {
+		sprintf(parsed_line, "");
 		return parsed_line;
 	}
 }
