@@ -128,20 +128,29 @@ BOOL CMainDlg::OnInitDialog()
 	ASSERT((IDM_ABOUTBOX & 0xFFF0) == IDM_ABOUTBOX);
 	ASSERT(IDM_ABOUTBOX < 0xF000);
 
+	char app_path[640];
+	sprintf(app_path, app->GetAppPath());
+
 	// Loading WSAWrapper library. 
 	// Available in https://github.com/tinelix/WSAWrapper (LGPLv2.1+)
-	wsaWrap = LoadLibrary("wsawrap.dll");
+	char wsawrap_path[640];
+	sprintf(wsawrap_path, "%s\\wsawrap.dll", app_path);
+	char ircpars_path[640];
+	sprintf(ircpars_path, "%s\\ircpars.dll", app_path);
+	wsaWrap = LoadLibrary(wsawrap_path);
 	conn_server = "";
 
 	if(!wsaWrap) {
 		MessageBox("wsawrap.dll loading error", "Error", MB_OK|MB_ICONSTOP);
-		DestroyWindow();
+		EnableWindow(FALSE);
 		return FALSE;
 	}
 
-	ircParser = LoadLibrary("ircpars.dll");
+	ircParser = LoadLibrary(ircpars_path);
 	if(!ircParser) {
 		MessageBox("ircpars.dll loading error", "Error", MB_OK|MB_ICONSTOP);
+		EnableWindow(FALSE);
+		return FALSE;
 	}
 
 	ImportDllFunctions();
