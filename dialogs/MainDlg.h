@@ -60,6 +60,7 @@ protected:
 	CString ParseMessage(char* irc_packet);
 	void LoadSettings(char* ini_filename);
 	void LoadProfileSettings(char* ini_filename);
+	void LoadProfileSettingsF(char* address);
 
 	// Generated message map functions
 	//{{AFX_MSG(CMainDlg)

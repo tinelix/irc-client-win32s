@@ -539,3 +539,17 @@ void CMainDlg::LoadProfileSettings(char* ini_filename) {
 	}
 	PrepareConnect(g_address, g_port);
 }
+
+void CMainDlg::LoadProfileSettingsF(char* address) {
+	char g_port_str[6];
+	GetPrivateProfileString("Main", "Server", "irc.tinelix.ru", g_address,
+		MAX_PATH, address);
+	GetPrivateProfileString("Main", "Port", "6667", g_port_str,
+		6, address);
+	GetPrivateProfileString("Main", "MainNick", "irc_member", main_nick,
+		20, address);
+	if(isdigit(g_port_str[0])) {
+		g_port = atoi(g_port_str);
+	}
+	PrepareConnect(g_address, g_port);
+}
