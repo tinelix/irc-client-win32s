@@ -58,6 +58,7 @@ CLEAN :
 	-@erase ".\Release\ConnManDlg.obj"
 	-@erase ".\Release\Tinelix IRC.pch"
 	-@erase ".\Release\AppThreadTab.obj"
+	-@erase ".\Release\TextBoxDlg.obj"
 	-@erase ".\Release\StdAfx.obj"
 	-@erase ".\Release\MainDlg.obj"
 	-@erase ".\Release\ProgressDlg.obj"
@@ -95,6 +96,7 @@ LINK32_FLAGS=/nologo /subsystem:windows /incremental:no\
 LINK32_OBJS= \
 	"$(INTDIR)/ConnManDlg.obj" \
 	"$(INTDIR)/AppThreadTab.obj" \
+	"$(INTDIR)/TextBoxDlg.obj" \
 	"$(INTDIR)/StdAfx.obj" \
 	"$(INTDIR)/MainDlg.obj" \
 	"$(INTDIR)/ProgressDlg.obj" \
@@ -134,6 +136,7 @@ CLEAN :
 	-@erase ".\Debug\MainDlg.obj"
 	-@erase ".\Debug\ConnManDlg.obj"
 	-@erase ".\Debug\AboutDlg.obj"
+	-@erase ".\Debug\TextBoxDlg.obj"
 	-@erase ".\Debug\StdAfx.obj"
 	-@erase ".\Debug\AppThreadTab.obj"
 	-@erase ".\Debug\StatisticsDlg.obj"
@@ -174,6 +177,7 @@ LINK32_OBJS= \
 	"$(INTDIR)/MainDlg.obj" \
 	"$(INTDIR)/ConnManDlg.obj" \
 	"$(INTDIR)/AboutDlg.obj" \
+	"$(INTDIR)/TextBoxDlg.obj" \
 	"$(INTDIR)/StdAfx.obj" \
 	"$(INTDIR)/AppThreadTab.obj" \
 	"$(INTDIR)/StatisticsDlg.obj" \
@@ -358,6 +362,7 @@ DEP_CPP_CONNM=\
 	".\tabs\..\Tinelix IRC.h"\
 	".\tabs\..\dialogs\MainDlg.h"\
 	".\dialogs\ConnManDlg.h"\
+	".\dialogs\TextBoxDlg.h"\
 	
 NODEP_CPP_CONNM=\
 	".\dialogs\stdafx.h"\
@@ -401,6 +406,24 @@ NODEP_CPP_STATI=\
 	
 
 "$(INTDIR)\StatisticsDlg.obj" : $(SOURCE) $(DEP_CPP_STATI) "$(INTDIR)"\
+ "$(INTDIR)\Tinelix IRC.pch"
+   $(CPP) $(CPP_PROJ) $(SOURCE)
+
+
+# End Source File
+################################################################################
+# Begin Source File
+
+SOURCE=.\dialogs\TextBoxDlg.cpp
+DEP_CPP_TEXTB=\
+	".\tabs\..\Tinelix IRC.h"\
+	".\dialogs\TextBoxDlg.h"\
+	
+NODEP_CPP_TEXTB=\
+	".\dialogs\stdafx.h"\
+	
+
+"$(INTDIR)\TextBoxDlg.obj" : $(SOURCE) $(DEP_CPP_TEXTB) "$(INTDIR)"\
  "$(INTDIR)\Tinelix IRC.pch"
    $(CPP) $(CPP_PROJ) $(SOURCE)
 

@@ -57,8 +57,9 @@ protected:
 	void ImportDllFunctions();
 	void IdentificateConnection();
 	void SendPing(CString ping_hexcode);
-
 	CString ParseMessage(char* irc_packet);
+	void LoadSettings(char* ini_filename);
+	void LoadProfileSettings(char* ini_filename);
 
 	// Generated message map functions
 	//{{AFX_MSG(CMainDlg)

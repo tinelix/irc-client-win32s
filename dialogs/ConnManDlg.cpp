@@ -1,4 +1,4 @@
-// ConnManDlg.cpp : implementation file
+//  ConnManDlg.cpp : implementation file
 //
 //  Copyright © 2023 Dmitry Tretyakov (aka. Tinelix)
 //  
@@ -21,12 +21,15 @@
 #include "..\Tinelix IRC.h"
 #include "MainDlg.h"
 #include "ConnManDlg.h"
+#include "TextBoxDlg.h"
 
 #ifdef _DEBUG
 #define new DEBUG_NEW
 #undef THIS_FILE
 static char THIS_FILE[] = __FILE__;
 #endif
+
+WIN32_FIND_DATA ffd;
 
 /////////////////////////////////////////////////////////////////////////////
 // CConnManDlg dialog
@@ -52,13 +55,74 @@ void CConnManDlg::DoDataExchange(CDataExchange* pDX)
 
 BEGIN_MESSAGE_MAP(CConnManDlg, CDialog)
 	//{{AFX_MSG_MAP(CConnManDlg)
+	ON_BN_CLICKED(IDC_CREATE_PROFILE, OnCreateProfileBtn)
+	ON_LBN_SELCHANGE(IDC_PROFILE_LIST, OnProfileListSelection)
 	//}}AFX_MSG_MAP
 END_MESSAGE_MAP()
 
 /////////////////////////////////////////////////////////////////////////////
 // CConnManDlg message handlers
 
+BOOL CConnManDlg::OnInitDialog() 
+{
+	CDialog::OnInitDialog();
+	
+	LoadProfileList();
+	
+	return TRUE;  // return TRUE unless you set the focus to a control
+	              // EXCEPTION: OCX Property Pages should return FALSE
+}
+
 void CConnManDlg::OnOK() 
 {
+	char* server = "";
 	CDialog::OnOK();
+	CListBox* profileList = (CListBox*)GetDlgItem(IDC_PROFILE_LIST);
+	CMainDlg* parent = (CMainDlg*)AfxGetMainWnd();
+	char profile[256];
+	profileList->GetText(profileList->GetCurSel(), profile);
+	parent->LoadProfileSettings(profile);
+}
+
+void CConnManDlg::LoadProfileList() {
+	char dir_path[460];
+	CIRCApplication* app = (CIRCApplication*)app;
+	sprintf(dir_path, app->GetAppPath());
+	strcat(dir_path, "\\profiles");
+	if(CreateDirectory(dir_path, NULL) > 0 || GetLastError() == ERROR_ALREADY_EXISTS) {
+		CListBox* profileList = (CListBox*)GetDlgItem(IDC_PROFILE_LIST);
+		HANDLE hFindProfiles = INVALID_HANDLE_VALUE;
+		char folder_list_path[460];
+		sprintf(folder_list_path, "%s\\*.ini", dir_path);
+		hFindProfiles = FindFirstFile(folder_list_path, &ffd);
+		CString strText = "";
+		int items_count;
+		if(hFindProfiles != INVALID_HANDLE_VALUE) {
+			try {
+				items_count++;
+				do {
+					strText.Format("%s", ffd.cFileName);
+					profileList->AddString(strText.Left(strText.GetLength() - 4));
+					items_count++;
+				} while (FindNextFile(hFindProfiles, &ffd) != 0);
+			} catch(...) {
+
+			}
+		}
+	}
+	CButton* ok_btn = (CButton*)GetDlgItem(IDOK);
+	ok_btn->EnableWindow(FALSE);
+}
+
+void CConnManDlg::OnCreateProfileBtn() 
+{
+	CTextBoxDlg textBoxDlg;
+	textBoxDlg.SetAction(0);
+	textBoxDlg.DoModal();
+}
+
+void CConnManDlg::OnProfileListSelection() 
+{
+	CButton* ok_btn = (CButton*)GetDlgItem(IDOK);
+	ok_btn->EnableWindow(TRUE);
 }

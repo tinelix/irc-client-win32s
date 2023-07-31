@@ -112,9 +112,21 @@ EXPORT char* CALLBACK ParseLine(char* original_line, int length) {
 				} else if(strcmp(command, "005") == 0) {
 					sprintf(parsed_line, "[005] %s\r\n", body);
 				} else if(strcmp(command, "End") == 0) {
-					sprintf(parsed_line, "---------------------------------------------------\r\n");
+					sprintf(parsed_line, "--------------------"
+						"------------------------------\r\n");
 				} else if(strcmp(prefix, "ERROR") == 0) {
 					sprintf(parsed_line, "[%s] %s %s\r\n", prefix, command, body);
+				} else if(strcmp(command, "PRIVMSG") == 0) {
+					for(int prefix_index = 0; prefix_index < strlen(prefix); 
+						prefix_index++) {
+							if(prefix_index > 0) {
+								if(prefix[prefix_index] == '!') {
+									prefix[prefix_index] = '\0';
+								}
+							}
+							prefix_index++;
+					}
+					sprintf(parsed_line, "[%s] %s: %s\r\n", params, prefix, body);
 				} else if(strlen(command) == 3 && isdigit(command[0]) != 0 
 					&& isdigit(command[1]) != 0 && isdigit(command[2]) != 0) {
 					sprintf(parsed_line, "[%s] %s %s\r\n", command, params, body);
@@ -215,7 +227,7 @@ EXPORT char* CALLBACK ParseSendingMessage(char* message, char* channel) {
 					sprintf(parsed_line, "PRIVMSG %s :%s\r\n", params, body);
 				}
 			} else {
-				if(strlen(channel) > 0 && channel[0] >= 0) {
+				if((strlen(channel) > 0 && channel[0] >= 0) || message[0] != '/') {
 					sprintf(parsed_line, "PRIVMSG %s :%s\r\n", channel, message);
 				} else {
 					sprintf(parsed_line, "%s\r\n", message + 1);

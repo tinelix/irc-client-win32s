@@ -101,3 +101,29 @@ BOOL CIRCApplication::CheckIsWin32s() {
 
 	return is_win32s;
 }
+
+char* CIRCApplication::GetAppPath() {
+	char exe_path[MAX_PATH];
+	GetModuleFileName(NULL, exe_path, MAX_PATH);
+	char* token;
+	char path_array[64][256];
+	int path_count = 0;
+	int path_index;
+	token = strtok(exe_path, "\\");
+	char app_path[480];
+
+	while(token != NULL) {
+		sprintf(path_array[path_count], token);
+		path_count++;
+		token = strtok(NULL, "\\");
+	}
+
+	for(int i = 0; i < path_count - 1; i++) {
+		if(i == 0) {
+			path_index = sprintf(app_path, path_array[i]);
+		} else {
+			path_index += sprintf(app_path + path_index, "\\%s", path_array[i]);
+		}
+	}
+	return app_path;
+}

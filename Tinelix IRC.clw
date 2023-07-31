@@ -2,12 +2,12 @@
 
 [General Info]
 Version=1
-LastClass=CIRCApplication
+LastClass=CConnManDlg
 LastTemplate=CDialog
 NewFileInclude1=#include "stdafx.h"
 NewFileInclude2=#include "Tinelix IRC.h"
 
-ClassCount=7
+ClassCount=8
 Class1=CIRCApplication
 Class2=CMainDlg
 
@@ -21,13 +21,14 @@ Resource6=IDD_TABCHAT
 Class3=CAboutDlg
 Class4=CAppThreadTab
 Resource7=IDD_MAINDIALOG
-Resource8=IDD_TEXTDIALOG
+Resource8=IDD_CONNMANDIALOG
 Class5=CConnManDlg
-Resource9=IDD_CONNMANDIALOG
+Resource9=IDD_STATSDIALOG
 Class6=CProgressDlg
 Resource10=IDD_CONNECTION_PROGRESS
 Class7=CStatisticsDlg
-Resource11=IDD_STATSDIALOG
+Class8=CTextBoxDlg
+Resource11=IDD_TEXTDIALOG
 
 [CLS:CIRCApplication]
 Type=0
@@ -119,14 +120,15 @@ Class=CConnManDlg
 ControlCount=7
 Control1=IDOK,button,1342242817
 Control2=IDCANCEL,button,1342242816
-Control3=IDC_PROFILE_LIST,listbox,1352728835
-Control4=IDC_CREATE_PROFILE,button,1342242816
-Control5=IDC_REMOVE_PROFILE,button,1342242816
-Control6=IDC_EDIT_PROFILE,button,1342242816
-Control7=IDC_PROFILES_GROUP,button,1342177287
+Control3=IDC_CREATE_PROFILE,button,1342242816
+Control4=IDC_REMOVE_PROFILE,button,1342242816
+Control5=IDC_EDIT_PROFILE,button,1342242816
+Control6=IDC_PROFILES_GROUP,button,1342177287
+Control7=IDC_PROFILE_LIST,listbox,1352728835
 
 [DLG:IDD_TEXTDIALOG]
 Type=1
+Class=CTextBoxDlg
 ControlCount=4
 Control1=IDOK,button,1342242817
 Control2=IDCANCEL,button,1342242816
@@ -139,7 +141,7 @@ HeaderFile=dialogs\ConnManDlg.h
 ImplementationFile=dialogs\ConnManDlg.cpp
 BaseClass=CDialog
 Filter=D
-LastObject=IDOK
+LastObject=IDC_PROFILE_LIST
 VirtualFilter=dWC
 
 [DLG:IDD_CONNECTION_PROGRESS]
@@ -190,4 +192,13 @@ BaseClass=CDialog
 Filter=D
 LastObject=CStatisticsDlg
 VirtualFilter=dWC
+
+[CLS:CTextBoxDlg]
+Type=0
+HeaderFile=dialogs\TextBoxDlg.h
+ImplementationFile=dialogs\TextBoxDlg.cpp
+BaseClass=CDialog
+Filter=D
+VirtualFilter=dWC
+LastObject=CTextBoxDlg
 

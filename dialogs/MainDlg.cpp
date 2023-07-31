@@ -80,10 +80,14 @@ char* conn_server;
 char* app_name;
 int new_unread_messages;
 char g_address[256];
+char settings_ini_path[MAX_PATH];
+char profile_ini_path[MAX_PATH];
+char main_nick[20];
 int g_port;
 CProgressDlg progressDlg;
 CStatisticsDlg statisticsDlg;
 int until_pong;
+CIRCApplication* app;
 
 // WSAWrapper DLL functions;
 
@@ -92,13 +96,14 @@ typedef int (WINAPI *GetWSAError) ();
 typedef int (WINAPI *CreateAsyncConnection) (char*, int, int, int, HWND);
 typedef BOOL (WINAPI *SendSocketData) (char*);
 typedef char* (WINAPI *GetInputBuffer) (SOCKET s);
+typedef void (WINAPI *CloseConnection) ();
 
 CreateAsyncConnection WrapCreateConn;
 EnableAsyncMessages EnableAsyncMsgs;
 SendSocketData SendOutBuff;
 GetInputBuffer GetInBuff;
 GetWSAError GetWSAErrorFunc;
-
+CloseConnection WrapCloseConn;
 
 // Tinelix IRC Parser functions:
 
@@ -115,7 +120,7 @@ BOOL CMainDlg::OnInitDialog()
 {
 	CDialog::OnInitDialog();
 
-	isWin3x = (GetVersion() & 0xFF) == 3;
+	isWin3x = (GetVersion() & 0xFF) == 3; // check if it's Windows (or WinNT) 3.x
 
 	// Add "About..." menu item to system menu.
 
@@ -164,6 +169,11 @@ BOOL CMainDlg::OnInitDialog()
 	EnableWindow(TRUE);
 
 	CreateTabs();
+
+	app = (CIRCApplication*)AfxGetApp();
+
+	sprintf(settings_ini_path, "%s\\settings.ini", app->GetAppPath());
+	LoadSettings(settings_ini_path);
 	
 	return TRUE;
 }
@@ -267,11 +277,7 @@ BOOL CMainDlg::DestroyWindow()
 void CMainDlg::OpenConnectionManager() 
 {
 	CConnManDlg connman;
-	if(connman.DoModal() == IDOK) {
-		char* server;
-		sprintf(server, "irc.tinelix.ru"); // for example, because profiles not impemented.
-		PrepareConnect(server, 6667);
-	}
+	connman.DoModal();
 }
 
 void CMainDlg::PrepareConnect(char* address, int port) {
@@ -324,6 +330,8 @@ void CMainDlg::ImportDllFunctions() {
 	SendOutBuff = (SendSocketData)GetProcAddress(wsaWrap, MAKEINTRESOURCE(19));
 	// Running GetInputBuffer function (#20) in WSAWrapper DLL
 	GetInBuff = (GetInputBuffer)GetProcAddress(wsaWrap, MAKEINTRESOURCE(20));
+	// Running CloseConnection function (#21) in WSAWrapper DLL
+	WrapCloseConn = (CloseConnection)GetProcAddress(wsaWrap, MAKEINTRESOURCE(21));
 
 	ParseIRCPacket = (ParseIRCPacketFunc)GetProcAddress(ircParser, MAKEINTRESOURCE(2));
 	ParseIRCSendingMsg = (ParseIRCSendingMessageFunc)GetProcAddress(ircParser, MAKEINTRESOURCE(3));
@@ -332,8 +340,13 @@ void CMainDlg::ImportDllFunctions() {
 
 void CMainDlg::IdentificateConnection() {
 	char* ident_str = "";
-	sprintf(ident_str, "USER %s %s %s :Member\r\n",
-		"irc_member", "irc_member", "irc_member");
+	if(strlen(main_nick) == 0) {
+		sprintf(ident_str, "USER %s %s %s :Member\r\n",
+			"main_nick", "main_nick", "main_nick");
+	} else {
+		sprintf(ident_str, "USER %s %s %s :Member\r\n",
+			main_nick, main_nick, main_nick);	
+	}
 	if(!(*SendOutBuff)(ident_str)) {
 		if(progressDlg.m_hWnd) {
 			progressDlg.Close();
@@ -345,7 +358,7 @@ void CMainDlg::IdentificateConnection() {
 		MessageBox(error_msg, conn_server, MB_OK|MB_ICONSTOP);
 		return;
 	}
-	sprintf(ident_str, "NICK %s\r\n", "irc_member");
+	sprintf(ident_str, "NICK %s\r\n", main_nick);
 	BOOL result = (*SendOutBuff)(ident_str);
 	if(progressDlg.m_hWnd) {
 		progressDlg.Close();
@@ -402,7 +415,6 @@ LRESULT CMainDlg::WindowProc(UINT message, WPARAM wParam, LPARAM lParam)
 				SendPing(sock_buff_str.Right(sock_buff_str.GetLength() - 3));
 			} else {
 				if(ircParser != NULL) {
-					TRACE("LENGTH: %d\r\n", sock_buff_str.GetLength());
 					CString parsed_str = CString("");
 					parsed_str = CString(
 						(*ParseIRCPacket)(sock_buffer)
@@ -415,7 +427,10 @@ LRESULT CMainDlg::WindowProc(UINT message, WPARAM wParam, LPARAM lParam)
 				}
 			}
 		}
+		thread_input_box->SetSel(thread_input.GetLength(), thread_input.GetLength());
 	} else if(message == 0xAFFE) {
+		CEdit* thread_input_box = (CEdit*)thread_tab->GetDlgItem(IDC_CHAT_INPUT);
+		thread_input_box->Clear();
 		EnableWindow(FALSE);
 		char status[48];
 		sprintf(status, "Connecting with %s...", conn_server);
@@ -443,8 +458,13 @@ void CMainDlg::OnSize(UINT nType, int cx, int cy)
 
 	CTabCtrl* tabCtrl = (CTabCtrl*)GetDlgItem(IDC_MAINDLG_TABS);
 	if(tabCtrl != NULL) {
-		tabCtrl->MoveWindow(4, 3, rect.Width() - 16, rect.Height() - 54);
-		thread_tab->MoveWindow(6, 26, rect.Width() - 20, rect.Height() - 80);
+		if(isWin3x) {
+			tabCtrl->MoveWindow(4, 3, rect.Width() - 16, rect.Height() - 54);
+			thread_tab->MoveWindow(6, 26, rect.Width() - 20, rect.Height() - 80);
+		} else {
+			tabCtrl->MoveWindow(4, 3, rect.Width() - 24, rect.Height() - 66);
+			thread_tab->MoveWindow(6, 26, rect.Width() - 28, rect.Height() - 92);
+		}
 	}
 
 	if(isWin3x) {  
@@ -472,11 +492,41 @@ void CMainDlg::OnConnectionStatistics()
 }
 
 void CMainDlg::SendIRCMessage() {
+	CEdit* thread_input_box = (CEdit*)thread_tab->GetDlgItem(IDC_CHAT_INPUT);
 	CEdit* thread_output_box = (CEdit*)thread_tab->GetDlgItem(IDC_CHAT_OUTPUT);
 	CString command;
 	thread_output_box->GetWindowText(command);
 	char* parsed_message = (*ParseIRCSendingMsg)(command.GetBuffer(command.GetLength()), "");
-	if((*SendOutBuff)(parsed_message)) {
-		thread_output_box->SetWindowText("");
+	if(command == "/quit") {
+		if((*SendOutBuff)(parsed_message)) {
+			thread_output_box->SetWindowText("");
+			thread_input = "";
+			thread_input_box->SetWindowText("");
+		}
+	} else {
+		if((*SendOutBuff)(parsed_message)) {
+			thread_output_box->SetWindowText("");
+		}
 	}
+}
+
+void CMainDlg::LoadSettings(char* ini_filename) {
+	
+}
+
+void CMainDlg::LoadProfileSettings(char* ini_filename) {
+	char g_port_str[6];
+	char app_path[460];
+	sprintf(app_path, app->GetAppPath());
+	sprintf(profile_ini_path, "%s\\profiles\\%s.ini", app_path, ini_filename);
+	GetPrivateProfileString("Main", "Server", "irc.tinelix.ru", g_address,
+		MAX_PATH, profile_ini_path);
+	GetPrivateProfileString("Main", "Port", "6667", g_port_str,
+		6, profile_ini_path);
+	GetPrivateProfileString("Main", "MainNick", "irc_member", main_nick,
+		20, profile_ini_path);
+	if(isdigit(g_port_str[0])) {
+		g_port = atoi(g_port_str);
+	}
+	PrepareConnect(g_address, g_port);
 }

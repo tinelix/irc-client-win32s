@@ -42,10 +42,27 @@ public:
 
 // Implementation
 protected:
-
+	typedef struct _LV_ITEMA {
+		UINT mask;
+		int iItem;
+		int iSubItem;
+		UINT state;
+		UINT stateMask;
+		LPTSTR pszText;
+		int cchTextMax;
+		int iImage;
+		LPARAM lParam;
+		#if(_WIN32_IE >= 0x0300)
+			int iIndent;
+		#endif
+	} LVITEM, FAR *LPLVITEM;
+	void LoadProfileList();
 	// Generated message map functions
 	//{{AFX_MSG(CConnManDlg)
 	virtual void OnOK();
+	virtual BOOL OnInitDialog();
+	afx_msg void OnCreateProfileBtn();
+	afx_msg void OnProfileListSelection();
 	//}}AFX_MSG
 	DECLARE_MESSAGE_MAP()
 };

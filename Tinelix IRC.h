@@ -33,6 +33,7 @@ class CIRCApplication : public CWinApp
 public:
 	CIRCApplication();
 	BOOL CheckIsWin32s();
+	char* GetAppPath();
 
 // Overrides
 	// ClassWizard generated virtual function overrides
