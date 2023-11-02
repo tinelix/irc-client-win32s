@@ -84,17 +84,24 @@ END
 // Dialog
 //
 
-IDD_ABOUTBOX DIALOG DISCARDABLE  0, 0, 217, 58
+IDD_ABOUTBOX DIALOGEX 0, 0, 241, 156
 STYLE DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
 CAPTION "About Tinelix IRC"
 FONT 8, "MS Sans Serif"
 BEGIN
-    ICON            IDR_APPICON,IDC_STATIC,7,7,21,20
-    LTEXT           "Tinelix IRC Client 0.2.0-b001 for Win32s",IDC_STATIC,35,
-                    7,156,8,SS_NOPREFIX
+    ICON            IDR_APPICON,IDC_STATIC,5,6,21,20
+    LTEXT           "Tinelix IRC Client 0.2.0-b002 for Win32s",IDC_STATIC,35,
+                    6,156,8,SS_NOPREFIX
     LTEXT           "Copyright © 2023 Dmitry Tretyakov (Tinelix)",IDC_STATIC,
-                    35,19,170,10
-    DEFPUSHBUTTON   "OK",IDOK,164,37,46,14,WS_GROUP
+                    35,17,170,10
+    DEFPUSHBUTTON   "OK",IDOK,190,137,46,14,WS_GROUP
+    LTEXT           "This is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.",
+                    IDC_LICENSE,35,36,201,36
+    LTEXT           "Tinelix IRC Client is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY, without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.",
+                    IDC_LICENSE2,35,74,201,36
+    EDITTEXT        IDC_SRC_CODE_ADDR,93,115,137,12,ES_AUTOHSCROLL | 
+                    ES_READONLY,WS_EX_TRANSPARENT
+    LTEXT           "Source code:",IDC_SRC_CODE,35,117,53,10
 END
 
 IDD_TABTHREAD DIALOG DISCARDABLE  0, 0, 266, 147
@@ -204,10 +211,10 @@ GUIDELINES DESIGNINFO DISCARDABLE
 BEGIN
     IDD_ABOUTBOX, DIALOG
     BEGIN
-        LEFTMARGIN, 7
-        RIGHTMARGIN, 210
-        TOPMARGIN, 7
-        BOTTOMMARGIN, 51
+        LEFTMARGIN, 5
+        RIGHTMARGIN, 236
+        TOPMARGIN, 6
+        BOTTOMMARGIN, 151
     END
 
     IDD_TABTHREAD, DIALOG
@@ -288,8 +295,8 @@ LANGUAGE LANG_ENGLISH, SUBLANG_ENGLISH_US
 //
 
 VS_VERSION_INFO VERSIONINFO
- FILEVERSION 0,2,0,1
- PRODUCTVERSION 0,2,0,1
+ FILEVERSION 0,2,0,2
+ PRODUCTVERSION 0,2,0,2
  FILEFLAGSMASK 0x3fL
 #ifdef _DEBUG
  FILEFLAGS 0x23L
@@ -307,12 +314,12 @@ BEGIN
             VALUE "Comments", "Tinelix IRC Client compatible version with Win32s, Windows 95/98, Windows NT and 64-bit (AMD64) Windows editions.\0"
             VALUE "CompanyName", "Tinelix\0"
             VALUE "FileDescription", "Tinelix IRC\0"
-            VALUE "FileVersion", "0.2.0-b001\0"
+            VALUE "FileVersion", "0.2.0-b002\0"
             VALUE "InternalName", "Tinelix IRC for Win32s\0"
             VALUE "LegalCopyright", "Copyright © 2023 Dmitry Tretyakov (aka. tretdm). Licensed under GPLv3.\0"
             VALUE "OriginalFilename", "tlx_irc.exe\0"
             VALUE "ProductName", "Tinelix IRC for Win32s\0"
-            VALUE "ProductVersion", "0.2.0-b001\0"
+            VALUE "ProductVersion", "0.2.0-b002\0"
             VALUE "SpecialBuild", "Source code: https://github.com/tinelix/irc-client-win32s\0"
         END
     END

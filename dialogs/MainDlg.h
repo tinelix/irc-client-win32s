@@ -28,7 +28,7 @@ class CMainDlg : public CDialog
 public:
 	BOOL is_connected;
 
-	void SendIRCMessage();
+	void SendIRCMessage(CWnd* parent);
 
 	CMainDlg(CWnd* pParent = NULL);	// standard constructor
 

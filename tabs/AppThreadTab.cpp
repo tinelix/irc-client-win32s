@@ -28,6 +28,8 @@
 static char THIS_FILE[] = __FILE__;
 #endif
 
+CWnd* parent;
+
 /////////////////////////////////////////////////////////////////////////////
 // CAppThreadTab dialog
 
@@ -60,14 +62,18 @@ END_MESSAGE_MAP()
 /////////////////////////////////////////////////////////////////////////////
 // CAppThreadTab message handlers
 
+void CAppThreadTab::SetParentWnd(CWnd* _parent) {
+	parent = _parent;
+}
+
 void CAppThreadTab::OnChatSendMsg() 
 {
-	CMainDlg mainDlg;
+	CMainDlg mainDlg = AfxGetMainWnd();
 	CEdit* chat_output = (CEdit*)GetDlgItem(IDC_CHAT_OUTPUT);
 	CString message;
 	chat_output->GetWindowText(message);
 	if(message.GetLength() > 0) {
-		mainDlg.SendIRCMessage();
+		mainDlg.SendIRCMessage(parent);
 	}
 	
 }

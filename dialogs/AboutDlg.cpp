@@ -28,6 +28,8 @@
 static char THIS_FILE[] = __FILE__;
 #endif
 
+CString src_code_repo;
+
 /////////////////////////////////////////////////////////////////////////////
 // CAboutDlg dialog
 
@@ -52,7 +54,6 @@ void CAboutDlg::DoDataExchange(CDataExchange* pDX)
 
 BEGIN_MESSAGE_MAP(CAboutDlg, CDialog)
 	//{{AFX_MSG_MAP(CAboutDlg)
-		// NOTE: the ClassWizard will add message map macros here
 	//}}AFX_MSG_MAP
 END_MESSAGE_MAP()
 
@@ -63,7 +64,18 @@ BOOL CAboutDlg::Create(LPCTSTR lpszClassName, LPCTSTR lpszWindowName,
 					   DWORD dwStyle, const RECT& rect, CWnd* pParentWnd, 
 					   UINT nID, CCreateContext* pContext) 
 {
-	// TODO: Add your specialized code here and/or call the base class
 	
 	return CDialog::Create(IDD, pParentWnd);
+}
+
+BOOL CAboutDlg::OnInitDialog() 
+{
+	CDialog::OnInitDialog();
+	
+	src_code_repo = CString("https://github.com/tinelix/irc-client-win32s");
+	CEdit* source_code_addr = (CEdit*)GetDlgItem(IDC_SRC_CODE_ADDR);
+	source_code_addr->SetWindowText(src_code_repo);
+	
+	return TRUE;  // return TRUE unless you set the focus to a control
+	              // EXCEPTION: OCX Property Pages should return FALSE
 }

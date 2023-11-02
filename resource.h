@@ -52,6 +52,10 @@
 #define IDC_CONNQUALITY_LABEL           1038
 #define IDC_PING_STRENGTH               1039
 #define IDC_CONNQUALITY_VALUE           1040
+#define IDC_LICENSE                     1043
+#define IDC_LICENSE2                    1044
+#define IDC_SRC_CODE_ADDR               1045
+#define IDC_SRC_CODE                    1046
 #define ID_FILE_CONNECT                 32771
 #define ID_FILE_QUIT                    32773
 #define ID_ABOUT                        32774
@@ -65,7 +69,7 @@
 #ifndef APSTUDIO_READONLY_SYMBOLS
 #define _APS_NEXT_RESOURCE_VALUE        140
 #define _APS_NEXT_COMMAND_VALUE         32778
-#define _APS_NEXT_CONTROL_VALUE         1043
+#define _APS_NEXT_CONTROL_VALUE         1047
 #define _APS_NEXT_SYMED_VALUE           101
 #endif
 #endif

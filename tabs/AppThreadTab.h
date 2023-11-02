@@ -25,6 +25,7 @@ class CAppThreadTab : public CDialog
 // Construction
 public:
 	CAppThreadTab(CWnd* pParent = NULL);   // standard constructor
+	void SetParentWnd(CWnd*);
 
 // Dialog Data
 	//{{AFX_DATA(CAppThreadTab)

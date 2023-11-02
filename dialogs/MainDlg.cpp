@@ -91,6 +91,7 @@ CIRCApplication* app;
 
 // WSAWrapper DLL functions;
 
+typedef void (WINAPI *EnableDebugging) (BOOL);
 typedef BOOL (WINAPI *EnableAsyncMessages) (HWND);
 typedef int (WINAPI *GetWSAError) ();
 typedef int (WINAPI *CreateAsyncConnection) (char*, int, int, int, HWND);
@@ -98,6 +99,7 @@ typedef BOOL (WINAPI *SendSocketData) (char*);
 typedef char* (WINAPI *GetInputBuffer) (SOCKET s);
 typedef void (WINAPI *CloseConnection) ();
 
+EnableDebugging EnableDebug;
 CreateAsyncConnection WrapCreateConn;
 EnableAsyncMessages EnableAsyncMsgs;
 SendSocketData SendOutBuff;
@@ -154,6 +156,7 @@ BOOL CMainDlg::OnInitDialog()
 	}
 
 	ImportDllFunctions();
+	(EnableDebug)(TRUE);
 
 	CMenu* pSysMenu = GetSystemMenu(FALSE);
 	CString strAboutMenu;
@@ -164,10 +167,8 @@ BOOL CMainDlg::OnInitDialog()
 		pSysMenu->AppendMenu(MF_STRING, IDM_ABOUTBOX, strAboutMenu);
 	}
 
-	// Set the icon for this dialog.  The framework does this automatically
-	//  when the application's main window is not a dialog
-	SetIcon(m_hIcon, TRUE);			// Set big icon
-	SetIcon(m_hIcon, FALSE);		// Set small icon
+	SetIcon(m_hIcon, TRUE);	
+	SetIcon(m_hIcon, FALSE);
 
 	app_name = "Tinelix IRC (Win32s)"; // LoadString is buggy...
 	SetWindowText(app_name);
@@ -204,6 +205,7 @@ void CMainDlg::CreateTabs() {
 	font.CreateFont(11, 0, 0, 0, FW_REGULAR, FALSE, FALSE, 0, DEFAULT_CHARSET,
 		0, 0, 0, 0, "Fixedsys");
 	thread_input_box->SetFont(&font);
+	thread_tab->SetParentWnd(this);
 
 }
 
@@ -217,10 +219,6 @@ void CMainDlg::OnSysCommand(UINT nID, LPARAM lParam)
 		CDialog::OnSysCommand(nID, lParam);
 	}
 }
-
-//  If you add a minimize button to your dialog, you will need the code below
-//  to draw the icon.  For MFC applications using the document/view model,
-//  this is automatically done for you by the framework.
 
 void CMainDlg::OnPaint() 
 {
@@ -247,8 +245,6 @@ void CMainDlg::OnPaint()
 	}
 }
 
-//  The system calls this to obtain the cursor to display while the user drags
-//  the minimized window.
 HCURSOR CMainDlg::OnQueryDragIcon()
 {
 	return (HCURSOR) m_hIcon;
@@ -329,6 +325,8 @@ void CMainDlg::PrepareConnect(int result) {
 }
 
 void CMainDlg::ImportDllFunctions() {
+	// Running EnableDebugging function (#14) in WSAWrapper DLL
+	EnableDebug = (EnableDebugging)GetProcAddress(wsaWrap, MAKEINTRESOURCE(14));
 	// Running EnableAsyncMessages function (#15) in WSAWrapper DLL
 	EnableAsyncMsgs = (EnableAsyncMessages)GetProcAddress(wsaWrap, MAKEINTRESOURCE(15));
 	// Running GetWSAError function (#16) in WSAWrapper DLL
@@ -340,7 +338,7 @@ void CMainDlg::ImportDllFunctions() {
 	// Running GetInputBuffer function (#20) in WSAWrapper DLL
 	GetInBuff = (GetInputBuffer)GetProcAddress(wsaWrap, MAKEINTRESOURCE(20));
 	// Running CloseConnection function (#21) in WSAWrapper DLL
-	WrapCloseConn = (CloseConnection)GetProcAddress(wsaWrap, MAKEINTRESOURCE(21));
+	WrapCloseConn = (CloseConnection)GetProcAddress(wsaWrap, MAKEINTRESOURCE(22));
 
 	ParseIRCPacket = (ParseIRCPacketFunc)GetProcAddress(ircParser, MAKEINTRESOURCE(2));
 	ParseIRCSendingMsg = (ParseIRCSendingMessageFunc)GetProcAddress(ircParser, MAKEINTRESOURCE(3));
@@ -422,6 +420,7 @@ LRESULT CMainDlg::WindowProc(UINT message, WPARAM wParam, LPARAM lParam)
 		} else if(sock_buff_str.GetLength() > 0) {
 			if(sock_buff_str.Left(4) == "PING") {
 				SendPing(sock_buff_str.Right(sock_buff_str.GetLength() - 3));
+				OutputDebugString(sock_buff_str.Right(sock_buff_str.GetLength() - 3));
 			} else {
 				if(ircParser != NULL) {
 					CString parsed_str = CString("");
@@ -500,7 +499,7 @@ void CMainDlg::OnConnectionStatistics()
 	statisticsDlg.ShowWindow(SW_SHOW);
 }
 
-void CMainDlg::SendIRCMessage() {
+void CMainDlg::SendIRCMessage(CWnd* parent) {
 	CEdit* thread_input_box = (CEdit*)thread_tab->GetDlgItem(IDC_CHAT_INPUT);
 	CEdit* thread_output_box = (CEdit*)thread_tab->GetDlgItem(IDC_CHAT_OUTPUT);
 	CString command;
@@ -511,6 +510,12 @@ void CMainDlg::SendIRCMessage() {
 			thread_output_box->SetWindowText("");
 			thread_input = "";
 			thread_input_box->SetWindowText("");
+			parent->SetWindowText("Tinelix IRC (Win32s)");
+			CEdit* thread_output_box = (CEdit*)thread_tab->GetDlgItem(IDC_CHAT_OUTPUT);
+			thread_output_box->EnableWindow(FALSE);
+			CButton* thread_send_btn = (CButton*)thread_tab->GetDlgItem(IDC_CHAT_SEND_MSG);
+			thread_send_btn->EnableWindow(FALSE);
+			(*WrapCloseConn)();
 		}
 	} else {
 		if((*SendOutBuff)(parsed_message)) {
